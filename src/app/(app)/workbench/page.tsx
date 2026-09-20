@@ -86,17 +86,17 @@ const bannerChips = [
 
 const statCards = [
   { icon: Folder, tint: 'bg-blue/10 text-blue', title: '进行中课题', tag: '较上周 +1', tagCls: 'bg-red/10 text-red', num: 5, detail: '2 项本周有关键节点', href: '/collaboration/projects' },
-  { icon: ClipboardCheck, tint: 'bg-amber/10 text-amber', title: '待办任务', tag: '较上周 -2', tagCls: 'bg-success/10 text-success', num: 6, detail: '1 项已超期', detailCls: 'text-red', href: '/workbench#todo' },
+  { icon: ClipboardCheck, tint: 'bg-amber/10 text-amber', title: '待办任务', tag: '较上周 -2', tagCls: 'bg-success/10 text-success', num: 6, detail: '1 项已超期', detailCls: 'text-red', href: '/tasks' },
   { icon: Settings, tint: 'bg-success/10 text-success', title: '运行计算', tag: '较上周 +3', tagCls: 'bg-red/10 text-red', num: 2, detail: '最长已运行 5 h', href: '/compute-tasks' },
   { icon: FlaskConical, tint: 'bg-purple/10 text-purple', title: '进行中实验', tag: '较上周 +1', tagCls: 'bg-red/10 text-red', num: 3, detail: '1 项待确认', detailCls: 'text-red', href: '/experiments' },
-  { icon: FileText, tint: 'bg-blue/10 text-blue', title: '科研成果', tag: '较上周 +2', tagCls: 'bg-red/10 text-red', num: 12, detail: '本月新增 2 项', href: '/research-flow/publication' },
+  { icon: FileText, tint: 'bg-blue/10 text-blue', title: '科研成果', tag: '较上周 +2', tagCls: 'bg-red/10 text-red', num: 12, detail: '本月新增 2 项', href: '/assets/data-knowledge?category=outcome' },
 ];
 
 const researchZones = [
   { char: '读', color: 'text-blue', icon: BookOpen, tile: 'bg-blue/10 text-blue', subtitle: '知识与情报', links: [
     { label: '文献与标准检索', href: '/literature-search' },
     { label: '科研文献整理与研读', href: '/literature-search/1' },
-    { label: '专利空白分析', href: '/patent-analysis' },
+    { label: '全网专利分析', href: '/patent-analysis' },
   ] },
   { char: '算', color: 'text-cyan', icon: Calculator, tile: 'bg-cyan/10 text-cyan', subtitle: '计算与仿真', links: [
     { label: '科研计算求解', href: '/compute-space' },
@@ -274,13 +274,16 @@ function WorkbenchPage() {
         className="relative overflow-hidden rounded-xl"
         style={{ background: 'linear-gradient(100deg, #0a2c66 0%, #10408f 48%, #1e63d6 100%)' }}
       >
-        {/* 机器人吉祥物（右侧，向左渐隐） */}
+        {/* 机器人吉祥物：按参考图保持完整姿态，沿横幅高度等比展示 */}
         <div
-          className="absolute inset-y-0 right-0 w-[46%] bg-cover bg-center"
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-[3%] z-0 w-[42%] bg-no-repeat"
           style={{
-            backgroundImage: 'url(/robot-mascot.jpg)',
-            maskImage: 'linear-gradient(to left, black 55%, transparent 100%)',
-            WebkitMaskImage: 'linear-gradient(to left, black 55%, transparent 100%)',
+            backgroundImage: 'url(/robot-banner-reference.png)',
+            backgroundPosition: 'right center',
+            backgroundSize: 'auto 100%',
+            maskImage: 'linear-gradient(to right, transparent 0%, black 40%, black 82%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 40%, black 82%, transparent 100%)',
           }}
         />
         {/* 右上角标语 */}

@@ -49,6 +49,8 @@ export const workflows: ResearchRecord[] = [
 ];
 
 export const assets: ResearchRecord[] = [
+  { id: 'AST-RESULT-04', name: '催化剂活性评价阶段报告', description: '关联实验 GB-2026-0915 与计算任务 1024 的示例成果，已完成课题内审核。', project: 'CO₂ 加氢制甲醇催化剂研究', owner: '张博士', status: '已完成', updatedAt: '2026-09-20', source: 'AI4S', kind: 'asset' },
+  { id: 'AST-KNOW-05', name: '催化剂失活机理专题知识', description: '文献、笔记和术语形成的知识集合，保留资料版本与来源。', project: 'CO₂ 加氢制甲醇催化剂研究', owner: '张博士', status: '已完成', updatedAt: '2026-09-20', source: '知识平台', kind: 'asset' },
   { id: 'AST-DATA-01', name: 'CuZnO_001 计算数据集', description: '与课题和 VASP 任务 #1024 关联，可按权限复用。', project: 'CO₂ 加氢制甲醇催化剂研究', owner: '张博士', status: '已完成', updatedAt: '昨天 10:20', source: 'AI中台', kind: 'asset' },
   { id: 'AST-MODEL-02', name: '催化活性预测模型 v2', description: '模型版本、训练指标与数据血缘可追溯。', project: 'CO₂ 加氢制甲醇催化剂研究', owner: '张博士', status: '待确认', updatedAt: '9 月 15 日', source: 'AI中台', kind: 'asset' },
   { id: 'AST-PLAN-03', name: '固定床反应实验方案 v3', description: '实验方案已定版，待发布至项目资产空间。', project: '加氢脱硫催化剂性能提升', owner: '赵博士', status: '进行中', updatedAt: '9 月 14 日', source: 'AI4S', kind: 'asset' },
@@ -60,6 +62,10 @@ export const experts: ResearchRecord[] = [
 ];
 
 export const tools: ResearchRecord[] = [
+  { id: 'SERVICE-AGENT', name: '科研活动与管理智能体', description: '按课题绑定输入资料，查看智能体版本、用途与调用范围。', project: 'CO₂ 加氢制甲醇催化剂研究', owner: '课题组', status: '已完成', updatedAt: '2026-09-20', source: 'AI中台', kind: 'tool' },
+  { id: 'SERVICE-SKILL', name: '科研技能与算法组件', description: '科研术语抽取、数据校验与分析工具的技能目录。', project: '功能性 PE 配方优化', owner: '课题组', status: '已完成', updatedAt: '2026-09-20', source: 'AI中台', kind: 'tool' },
+  { id: 'SERVICE-WORKFLOW', name: '科研流程模板资产', description: '已发布的流程模板及版本，仅作为可引用的科研资产。', project: '功能性 PE 配方优化', owner: '课题组', status: '已完成', updatedAt: '2026-09-20', source: 'AI中台', kind: 'tool' },
+  { id: 'SERVICE-DEVICE', name: '设备连接与状态监控服务', description: '设备连接器、状态点位和调用范围的业务侧封装。', project: 'CO₂ 加氢制甲醇催化剂研究', owner: '实验室 A', status: '待确认', updatedAt: '2026-09-20', source: 'iLOMS', kind: 'tool' },
   { id: 'TOOL-VASP', name: 'VASP 电子结构计算', description: '材料电子结构计算工具，关联科研计算任务与结果。', project: 'CO₂ 加氢制甲醇催化剂研究', owner: 'AI中台', status: '进行中', updatedAt: '今天 08:50', source: 'AI中台', kind: 'tool' },
   { id: 'TOOL-GROMACS', name: 'GROMACS 分子动力学', description: '分子动力学模拟工具，支持任务提交和产物回流。', project: '功能性 PE 配方优化', owner: 'AI中台', status: '进行中', updatedAt: '今天 09:41', source: 'AI中台', kind: 'tool' },
   { id: 'TOOL-ELN', name: 'ELN 实验数据同步', description: '实验记录由来源系统管理，AI4S 查看同步状态与证据。', project: 'CO₂ 加氢制甲醇催化剂研究', owner: '实验室 A', status: '待确认', updatedAt: '今天 10:30', source: 'ELN', kind: 'tool' },

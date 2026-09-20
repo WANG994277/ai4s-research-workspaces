@@ -1,0 +1,80 @@
+[
+  {
+    "view": "trend",
+    "charts": 10,
+    "content": 1377,
+    "height": 941,
+    "images": [],
+    "overflow": false,
+    "width": 1672
+  },
+  {
+    "view": "strategy",
+    "charts": 10,
+    "content": 1377,
+    "height": 941,
+    "images": [],
+    "overflow": false,
+    "width": 1672
+  },
+  {
+    "view": "resources",
+    "charts": 14,
+    "content": 1377,
+    "height": 941,
+    "images": [],
+    "overflow": false,
+    "width": 1672
+  },
+  {
+    "view": "projects",
+    "charts": 9,
+    "content": 1377,
+    "height": 941,
+    "images": [],
+    "overflow": false,
+    "width": 1672
+  },
+  {
+    "view": "outcomes",
+    "charts": 6,
+    "content": 1377,
+    "height": 941,
+    "images": [
+      {
+        "alt": "地球与能源科技网络",
+        "loaded": true
+      },
+      {
+        "alt": "能源化工配图",
+        "loaded": true
+      },
+      {
+        "alt": "石油工程配图",
+        "loaded": true
+      },
+      {
+        "alt": "新材料配图",
+        "loaded": true
+      },
+      {
+        "alt": "清洁能源配图",
+        "loaded": true
+      },
+      {
+        "alt": "AI4S配图",
+        "loaded": true
+      },
+      {
+        "alt": "非常规油气配图",
+        "loaded": true
+      },
+      {
+        "alt": "能源化工科研成果配图",
+        "loaded": true
+      }
+    ],
+    "overflow": false,
+    "width": 1672
+  }
+]

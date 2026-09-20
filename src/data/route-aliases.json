@@ -1,0 +1,543 @@
+{
+  "/workbench/wb-01/01": {
+    "href": "/workbench#research-zone",
+    "feature": "WB-01-01"
+  },
+  "/workbench/wb-01/02": {
+    "href": "/workbench#research-zone",
+    "feature": "WB-01-02"
+  },
+  "/workbench/wb-01": {
+    "href": "/workbench#research-zone"
+  },
+  "/workbench/wb-02/01": {
+    "href": "/ai-assistant",
+    "feature": "WB-02-01"
+  },
+  "/workbench/wb-02/02": {
+    "href": "/ai-assistant",
+    "feature": "WB-02-02"
+  },
+  "/workbench/wb-02": {
+    "href": "/ai-assistant"
+  },
+  "/workbench/wb-03/01": {
+    "href": "/tasks",
+    "feature": "WB-03-01"
+  },
+  "/workbench/wb-03/02": {
+    "href": "/tasks",
+    "feature": "WB-03-02"
+  },
+  "/workbench/wb-03": {
+    "href": "/tasks"
+  },
+  "/workbench/wb-04/01": {
+    "href": "/dashboard",
+    "feature": "WB-04-01"
+  },
+  "/workbench/wb-04/02": {
+    "href": "/dashboard",
+    "feature": "WB-04-02"
+  },
+  "/workbench/wb-04": {
+    "href": "/dashboard"
+  },
+  "/dashboard/dc-01/01": {
+    "href": "/dashboard?view=trend",
+    "feature": "DC-01-01"
+  },
+  "/dashboard/dc-01": {
+    "href": "/dashboard?view=trend"
+  },
+  "/dashboard/dc-02/01": {
+    "href": "/dashboard?view=strategy",
+    "feature": "DC-02-01"
+  },
+  "/dashboard/dc-02": {
+    "href": "/dashboard?view=strategy"
+  },
+  "/dashboard/dc-03/01": {
+    "href": "/dashboard?view=resources",
+    "feature": "DC-03-01"
+  },
+  "/dashboard/dc-03": {
+    "href": "/dashboard?view=resources"
+  },
+  "/dashboard/dc-04/01": {
+    "href": "/dashboard?view=projects",
+    "feature": "DC-04-01"
+  },
+  "/dashboard/dc-04": {
+    "href": "/dashboard?view=projects"
+  },
+  "/dashboard/dc-05/01": {
+    "href": "/dashboard?view=outcomes",
+    "feature": "DC-05-01"
+  },
+  "/dashboard/dc-05": {
+    "href": "/dashboard?view=outcomes"
+  },
+  "/dashboard/dc-06/01": {
+    "href": "/dashboard?view=technology-tree",
+    "feature": "DC-06-01"
+  },
+  "/dashboard/dc-06": {
+    "href": "/dashboard?view=technology-tree"
+  },
+  "/collaboration/co-01/01": {
+    "href": "/collaboration/projects",
+    "feature": "CO-01-01"
+  },
+  "/collaboration/co-01/02": {
+    "href": "/collaboration/projects",
+    "feature": "CO-01-02"
+  },
+  "/collaboration/co-01": {
+    "href": "/collaboration/projects"
+  },
+  "/collaboration/co-02/01": {
+    "href": "/collaboration/experiments",
+    "feature": "CO-02-01"
+  },
+  "/collaboration/co-02/02": {
+    "href": "/collaboration/experiments",
+    "feature": "CO-02-02"
+  },
+  "/collaboration/co-02": {
+    "href": "/collaboration/experiments"
+  },
+  "/collaboration/co-03/01": {
+    "href": "/collaboration/files-notes",
+    "feature": "CO-03-01"
+  },
+  "/collaboration/co-03/02": {
+    "href": "/collaboration/files-notes",
+    "feature": "CO-03-02"
+  },
+  "/collaboration/co-03": {
+    "href": "/collaboration/files-notes"
+  },
+  "/collaboration/co-04/01": {
+    "href": "/collaboration/experts",
+    "feature": "CO-04-01"
+  },
+  "/collaboration/co-04/02": {
+    "href": "/collaboration/experts",
+    "feature": "CO-04-02"
+  },
+  "/collaboration/co-04": {
+    "href": "/collaboration/experts"
+  },
+  "/read/rd-01/01": {
+    "href": "/read-space",
+    "feature": "RD-01-01"
+  },
+  "/read/rd-01": {
+    "href": "/read-space"
+  },
+  "/read/rd-02/01": {
+    "href": "/literature-search",
+    "feature": "RD-02-01"
+  },
+  "/read/rd-02/02": {
+    "href": "/literature-search",
+    "feature": "RD-02-02"
+  },
+  "/read/rd-02": {
+    "href": "/literature-search"
+  },
+  "/read/rd-03/01": {
+    "href": "/literature-search/[id]",
+    "feature": "RD-03-01"
+  },
+  "/read/rd-03/02": {
+    "href": "/literature-search/[id]",
+    "feature": "RD-03-02"
+  },
+  "/read/rd-03/03": {
+    "href": "/literature-search/[id]",
+    "feature": "RD-03-03"
+  },
+  "/read/rd-03": {
+    "href": "/literature-search/[id]"
+  },
+  "/read/rd-04/01": {
+    "href": "/knowledge-graph",
+    "feature": "RD-04-01"
+  },
+  "/read/rd-04": {
+    "href": "/knowledge-graph"
+  },
+  "/read/rd-05/01": {
+    "href": "/standards-benchmark",
+    "feature": "RD-05-01"
+  },
+  "/read/rd-05": {
+    "href": "/standards-benchmark"
+  },
+  "/read/rd-06/01": {
+    "href": "/patent-analysis",
+    "feature": "RD-06-01"
+  },
+  "/read/rd-06/02": {
+    "href": "/patent-analysis",
+    "feature": "RD-06-02"
+  },
+  "/read/rd-06": {
+    "href": "/patent-analysis"
+  },
+  "/read/rd-07/01": {
+    "href": "/literature-search/data-extract",
+    "feature": "RD-07-01"
+  },
+  "/read/rd-07/02": {
+    "href": "/literature-search/data-extract",
+    "feature": "RD-07-02"
+  },
+  "/read/rd-07": {
+    "href": "/literature-search/data-extract"
+  },
+  "/read/rd-08/01": {
+    "href": "/research-writing",
+    "feature": "RD-08-01"
+  },
+  "/read/rd-08/02": {
+    "href": "/research-writing",
+    "feature": "RD-08-02"
+  },
+  "/read/rd-08": {
+    "href": "/research-writing"
+  },
+  "/compute/cp-01/01": {
+    "href": "/compute-space",
+    "feature": "CP-01-01"
+  },
+  "/compute/cp-01": {
+    "href": "/compute-space"
+  },
+  "/compute/cp-02/01": {
+    "href": "/compute-space/design",
+    "feature": "CP-02-01"
+  },
+  "/compute/cp-02/02": {
+    "href": "/compute-space/design",
+    "feature": "CP-02-02"
+  },
+  "/compute/cp-02": {
+    "href": "/compute-space/design"
+  },
+  "/compute/cp-03/01": {
+    "href": "/compute-tasks",
+    "feature": "CP-03-01"
+  },
+  "/compute/cp-03/02": {
+    "href": "/compute-tasks",
+    "feature": "CP-03-02"
+  },
+  "/compute/cp-03/03": {
+    "href": "/compute-tasks",
+    "feature": "CP-03-03"
+  },
+  "/compute/cp-03/04": {
+    "href": "/compute-tasks",
+    "feature": "CP-03-04"
+  },
+  "/compute/cp-03/05": {
+    "href": "/compute-tasks",
+    "feature": "CP-03-05"
+  },
+  "/compute/cp-03/06": {
+    "href": "/compute-tasks",
+    "feature": "CP-03-06"
+  },
+  "/compute/cp-03": {
+    "href": "/compute-tasks"
+  },
+  "/compute/cp-04/01": {
+    "href": "/compute-space/data",
+    "feature": "CP-04-01"
+  },
+  "/compute/cp-04/02": {
+    "href": "/compute-space/data",
+    "feature": "CP-04-02"
+  },
+  "/compute/cp-04": {
+    "href": "/compute-space/data"
+  },
+  "/compute/cp-05/01": {
+    "href": "/compute-space/models",
+    "feature": "CP-05-01"
+  },
+  "/compute/cp-05": {
+    "href": "/compute-space/models"
+  },
+  "/compute/cp-06/01": {
+    "href": "/compute-space/tools",
+    "feature": "CP-06-01"
+  },
+  "/compute/cp-06/02": {
+    "href": "/compute-space/tools",
+    "feature": "CP-06-02"
+  },
+  "/compute/cp-06/03": {
+    "href": "/compute-space/tools",
+    "feature": "CP-06-03"
+  },
+  "/compute/cp-06": {
+    "href": "/compute-space/tools"
+  },
+  "/experiment/ex-01/01": {
+    "href": "/experiment-design",
+    "feature": "EX-01-01"
+  },
+  "/experiment/ex-01/02": {
+    "href": "/experiment-design",
+    "feature": "EX-01-02"
+  },
+  "/experiment/ex-01": {
+    "href": "/experiment-design"
+  },
+  "/experiment/ex-02/01": {
+    "href": "/experiments/samples",
+    "feature": "EX-02-01"
+  },
+  "/experiment/ex-02/02": {
+    "href": "/experiments/samples",
+    "feature": "EX-02-02"
+  },
+  "/experiment/ex-02": {
+    "href": "/experiments/samples"
+  },
+  "/experiment/ex-03/01": {
+    "href": "/lab-resources",
+    "feature": "EX-03-01"
+  },
+  "/experiment/ex-03/02": {
+    "href": "/lab-resources",
+    "feature": "EX-03-02"
+  },
+  "/experiment/ex-03/03": {
+    "href": "/lab-resources",
+    "feature": "EX-03-03"
+  },
+  "/experiment/ex-03": {
+    "href": "/lab-resources"
+  },
+  "/experiment/ex-04/01": {
+    "href": "/lab-resources/reservations",
+    "feature": "EX-04-01"
+  },
+  "/experiment/ex-04/02": {
+    "href": "/lab-resources/reservations",
+    "feature": "EX-04-02"
+  },
+  "/experiment/ex-04/03": {
+    "href": "/lab-resources/reservations",
+    "feature": "EX-04-03"
+  },
+  "/experiment/ex-04": {
+    "href": "/lab-resources/reservations"
+  },
+  "/experiment/ex-05/01": {
+    "href": "/experiments/orchestrator",
+    "feature": "EX-05-01"
+  },
+  "/experiment/ex-05/02": {
+    "href": "/experiments/orchestrator",
+    "feature": "EX-05-02"
+  },
+  "/experiment/ex-05": {
+    "href": "/experiments/orchestrator"
+  },
+  "/experiment/ex-06/01": {
+    "href": "/experiments",
+    "feature": "EX-06-01"
+  },
+  "/experiment/ex-06/02": {
+    "href": "/experiments",
+    "feature": "EX-06-02"
+  },
+  "/experiment/ex-06/03": {
+    "href": "/experiments",
+    "feature": "EX-06-03"
+  },
+  "/experiment/ex-06": {
+    "href": "/experiments"
+  },
+  "/experiment/ex-07/01": {
+    "href": "/experiment-analysis",
+    "feature": "EX-07-01"
+  },
+  "/experiment/ex-07/02": {
+    "href": "/experiment-analysis",
+    "feature": "EX-07-02"
+  },
+  "/experiment/ex-07/03": {
+    "href": "/experiment-analysis",
+    "feature": "EX-07-03"
+  },
+  "/experiment/ex-07/04": {
+    "href": "/experiment-analysis",
+    "feature": "EX-07-04"
+  },
+  "/experiment/ex-07": {
+    "href": "/experiment-analysis"
+  },
+  "/connections/43": "/project-management/pm-01",
+  "/project-management/pm-01/01": {
+    "href": "/project-management/pm-01",
+    "feature": "PM-01-01"
+  },
+  "/project-management/pm-01/02": {
+    "href": "/project-management/pm-01",
+    "feature": "PM-01-02"
+  },
+  "/project-management/pm-01/03": {
+    "href": "/project-management/pm-01",
+    "feature": "PM-01-03"
+  },
+  "/project-management/pm-01/04": {
+    "href": "/project-management/pm-01",
+    "feature": "PM-01-04"
+  },
+  "/project-management/pm-01": {
+    "href": "/project-management/pm-01"
+  },
+  "/connections/44": "/project-management/pm-02",
+  "/project-management/pm-02/01": {
+    "href": "/project-management/pm-02",
+    "feature": "PM-02-01"
+  },
+  "/project-management/pm-02/02": {
+    "href": "/project-management/pm-02",
+    "feature": "PM-02-02"
+  },
+  "/project-management/pm-02/03": {
+    "href": "/project-management/pm-02",
+    "feature": "PM-02-03"
+  },
+  "/project-management/pm-02": {
+    "href": "/project-management/pm-02"
+  },
+  "/connections/45": "/project-management/pm-03",
+  "/project-management/pm-03/01": {
+    "href": "/project-management/pm-03",
+    "feature": "PM-03-01"
+  },
+  "/project-management/pm-03": {
+    "href": "/project-management/pm-03"
+  },
+  "/connections/46": "/project-management/pm-04",
+  "/project-management/pm-04/01": {
+    "href": "/project-management/pm-04",
+    "feature": "PM-04-01"
+  },
+  "/project-management/pm-04/02": {
+    "href": "/project-management/pm-04",
+    "feature": "PM-04-02"
+  },
+  "/project-management/pm-04": {
+    "href": "/project-management/pm-04"
+  },
+  "/connections/47": "/project-management/pm-05",
+  "/project-management/pm-05/01": {
+    "href": "/project-management/pm-05",
+    "feature": "PM-05-01"
+  },
+  "/project-management/pm-05": {
+    "href": "/project-management/pm-05"
+  },
+  "/connections/48": "/project-management/pm-06",
+  "/project-management/pm-06/01": {
+    "href": "/project-management/pm-06",
+    "feature": "PM-06-01"
+  },
+  "/project-management/pm-06/02": {
+    "href": "/project-management/pm-06",
+    "feature": "PM-06-02"
+  },
+  "/project-management/pm-06": {
+    "href": "/project-management/pm-06"
+  },
+  "/connections/49": "/project-management/pm-07",
+  "/project-management/pm-07/01": {
+    "href": "/project-management/pm-07",
+    "feature": "PM-07-01"
+  },
+  "/project-management/pm-07/02": {
+    "href": "/project-management/pm-07",
+    "feature": "PM-07-02"
+  },
+  "/project-management/pm-07/03": {
+    "href": "/project-management/pm-07",
+    "feature": "PM-07-03"
+  },
+  "/project-management/pm-07": {
+    "href": "/project-management/pm-07"
+  },
+  "/assets/as-01/01": {
+    "href": "/assets/data-knowledge",
+    "feature": "AS-01-01"
+  },
+  "/assets/as-01/02": {
+    "href": "/assets/data-knowledge",
+    "feature": "AS-01-02"
+  },
+  "/assets/as-01/03": {
+    "href": "/assets/data-knowledge",
+    "feature": "AS-01-03"
+  },
+  "/assets/as-01": {
+    "href": "/assets/data-knowledge"
+  },
+  "/assets/as-02/01": {
+    "href": "/assets/models",
+    "feature": "AS-02-01"
+  },
+  "/assets/as-02": {
+    "href": "/assets/models"
+  },
+  "/assets/as-03/01": {
+    "href": "/assets/plans",
+    "feature": "AS-03-01"
+  },
+  "/assets/as-03/02": {
+    "href": "/assets/plans",
+    "feature": "AS-03-02"
+  },
+  "/assets/as-03": {
+    "href": "/assets/plans"
+  },
+  "/assets/as-04/01": {
+    "href": "/assets/intelligent-services",
+    "feature": "AS-04-01"
+  },
+  "/assets/as-04/02": {
+    "href": "/assets/intelligent-services",
+    "feature": "AS-04-02"
+  },
+  "/assets/as-04/03": {
+    "href": "/assets/intelligent-services",
+    "feature": "AS-04-03"
+  },
+  "/assets/as-04/04": {
+    "href": "/assets/intelligent-services",
+    "feature": "AS-04-04"
+  },
+  "/assets/as-04/05": {
+    "href": "/assets/intelligent-services",
+    "feature": "AS-04-05"
+  },
+  "/assets/as-04/06": {
+    "href": "/assets/intelligent-services",
+    "feature": "AS-04-06"
+  },
+  "/assets/as-04/07": {
+    "href": "/assets/intelligent-services",
+    "feature": "AS-04-07"
+  },
+  "/assets/as-04": {
+    "href": "/assets/intelligent-services"
+  }
+}

@@ -1,47 +1,51 @@
 [
   {
     "id": 1,
-    "group": "工作台",
+    "group": "个人工作台",
     "label": "科研专区",
     "href": "/workbench#research-zone",
     "priority": "P0",
     "strategy": "入口聚合/深链",
     "role": "普通科研人员",
     "legacy": "/workbench",
-    "nav": "一级：工作台；二级不展开"
+    "nav": "工作台入口",
+    "pageId": "WB-01"
   },
   {
     "id": 2,
-    "group": "工作台",
+    "group": "个人工作台",
     "label": "科研助手",
     "href": "/ai-assistant",
     "priority": "P0",
     "strategy": "AI4S自建+能力复用",
     "role": "普通科研人员",
     "legacy": "/ai-assistant",
-    "nav": "一级：工作台；二级不展开"
+    "nav": "工作台入口",
+    "pageId": "WB-02"
   },
   {
     "id": 3,
-    "group": "工作台",
+    "group": "个人工作台",
     "label": "任务与待办",
-    "href": "/workbench#todo",
+    "href": "/tasks",
     "priority": "P0",
     "strategy": "入口聚合/深链",
     "role": "普通科研人员",
     "legacy": "/workbench",
-    "nav": "一级：工作台；二级不展开"
+    "nav": "工作台入口",
+    "pageId": "WB-03"
   },
   {
     "id": 4,
-    "group": "工作台",
+    "group": "个人工作台",
     "label": "智能驾驶舱",
     "href": "/dashboard",
     "priority": "P1",
     "strategy": "入口聚合/深链",
     "role": "普通科研人员",
     "legacy": "/dashboard",
-    "nav": "一级：工作台；二级不展开"
+    "nav": "工作台入口",
+    "pageId": "WB-04"
   },
   {
     "id": 5,
@@ -52,7 +56,8 @@
     "strategy": "AI4S自建+能力复用",
     "role": "项目负责人/科研管理人员",
     "legacy": "/dashboard",
-    "nav": "按角色显示"
+    "nav": "是",
+    "pageId": "DC-01"
   },
   {
     "id": 6,
@@ -63,7 +68,8 @@
     "strategy": "AI4S自建",
     "role": "项目负责人/科研管理人员",
     "legacy": "/dashboard",
-    "nav": "按角色显示"
+    "nav": "是",
+    "pageId": "DC-02"
   },
   {
     "id": 7,
@@ -74,7 +80,8 @@
     "strategy": "AI4S自建+能力复用",
     "role": "项目负责人/科研管理人员",
     "legacy": "/dashboard",
-    "nav": "按角色显示"
+    "nav": "是",
+    "pageId": "DC-03"
   },
   {
     "id": 8,
@@ -85,7 +92,8 @@
     "strategy": "外部系统集成/跳转",
     "role": "项目负责人/科研管理人员",
     "legacy": "/dashboard",
-    "nav": "按角色显示"
+    "nav": "是",
+    "pageId": "DC-04"
   },
   {
     "id": 9,
@@ -96,7 +104,8 @@
     "strategy": "AI4S自建+能力复用",
     "role": "项目负责人/科研管理人员",
     "legacy": "/dashboard",
-    "nav": "按角色显示"
+    "nav": "是",
+    "pageId": "DC-05"
   },
   {
     "id": 10,
@@ -107,7 +116,8 @@
     "strategy": "AI4S自建+能力复用",
     "role": "项目负责人/科研管理人员",
     "legacy": "/knowledge-graph",
-    "nav": "按角色显示"
+    "nav": "是",
+    "pageId": "DC-06"
   },
   {
     "id": 11,
@@ -118,7 +128,8 @@
     "strategy": "AI4S自建",
     "role": "普通科研人员",
     "legacy": "无",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "CO-01"
   },
   {
     "id": 12,
@@ -129,7 +140,8 @@
     "strategy": "AI4S自建+外部集成",
     "role": "普通科研人员",
     "legacy": "无",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "CO-02"
   },
   {
     "id": 13,
@@ -140,7 +152,8 @@
     "strategy": "AI4S自建+能力复用",
     "role": "普通科研人员",
     "legacy": "无",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "CO-03"
   },
   {
     "id": 14,
@@ -151,7 +164,8 @@
     "strategy": "混合：AI4S自建 / AI4S自建+能力复用",
     "role": "普通科研人员",
     "legacy": "无",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "CO-04"
   },
   {
     "id": 15,
@@ -162,7 +176,8 @@
     "strategy": "待确认",
     "role": "普通科研人员",
     "legacy": "无",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "RD-01"
   },
   {
     "id": 16,
@@ -173,7 +188,8 @@
     "strategy": "混合：外部科研资源接入 / AI4S自建+能力复用",
     "role": "普通科研人员",
     "legacy": "/literature-search",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "RD-02"
   },
   {
     "id": 17,
@@ -184,7 +200,8 @@
     "strategy": "AI4S自建+能力复用",
     "role": "普通科研人员",
     "legacy": "/smart-read + /literature-search/[id]",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "RD-03"
   },
   {
     "id": 18,
@@ -195,7 +212,8 @@
     "strategy": "AI4S自建+能力复用",
     "role": "普通科研人员",
     "legacy": "/knowledge-graph",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "RD-04"
   },
   {
     "id": 19,
@@ -206,18 +224,20 @@
     "strategy": "AI4S自建+能力复用",
     "role": "普通科研人员",
     "legacy": "无",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "RD-05"
   },
   {
     "id": 20,
     "group": "读空间",
-    "label": "专利空白分析",
+    "label": "全网专利分析",
     "href": "/patent-analysis",
     "priority": "P0",
     "strategy": "混合：外部科研资源接入 / AI4S自建+能力复用",
     "role": "普通科研人员",
     "legacy": "/patent-analysis + /patent-disclosure",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "RD-06"
   },
   {
     "id": 21,
@@ -228,7 +248,8 @@
     "strategy": "混合：AI4S自建+能力复用 / AI4S自建",
     "role": "普通科研人员",
     "legacy": "/literature-search/data-extract",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "RD-07"
   },
   {
     "id": 22,
@@ -239,18 +260,20 @@
     "strategy": "AI4S自建+能力复用",
     "role": "普通科研人员",
     "legacy": "/review-generation + /paper-writing",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "RD-08"
   },
   {
     "id": 23,
     "group": "算空间",
-    "label": "科研计算求解（总）",
+    "label": "科研助手（科研计算求解）",
     "href": "/compute-space",
     "priority": "P0",
     "strategy": "AI4S自建+能力复用",
     "role": "普通科研人员",
     "legacy": "无",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "CP-01"
   },
   {
     "id": 24,
@@ -261,7 +284,8 @@
     "strategy": "专业场景适配",
     "role": "普通科研人员",
     "legacy": "/molecular-design + /protein-engineering + /proxy-model",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "CP-02"
   },
   {
     "id": 25,
@@ -272,7 +296,8 @@
     "strategy": "混合：AI4S自建+能力复用 / 专业场景适配",
     "role": "普通科研人员",
     "legacy": "/compute-tasks + /compute-results/[id]",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "CP-03"
   },
   {
     "id": 26,
@@ -283,7 +308,8 @@
     "strategy": "AI4S自建+能力复用",
     "role": "普通科研人员",
     "legacy": "/compute-management",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "CP-04"
   },
   {
     "id": 27,
@@ -294,7 +320,8 @@
     "strategy": "AI4S自建+能力复用",
     "role": "普通科研人员",
     "legacy": "/compute-management + /proxy-model",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "CP-05"
   },
   {
     "id": 28,
@@ -305,7 +332,8 @@
     "strategy": "专业场景适配",
     "role": "普通科研人员",
     "legacy": "无",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "CP-06"
   },
   {
     "id": 29,
@@ -316,7 +344,8 @@
     "strategy": "混合：AI4S自建+外部集成 / AI4S自建",
     "role": "普通科研人员",
     "legacy": "/experiment-design",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "EX-01"
   },
   {
     "id": 30,
@@ -327,7 +356,8 @@
     "strategy": "外部系统集成/跳转",
     "role": "普通科研人员",
     "legacy": "无",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "EX-02"
   },
   {
     "id": 31,
@@ -338,7 +368,8 @@
     "strategy": "混合：外部系统集成/跳转 / 设备适配 / AI4S自建+外部集成",
     "role": "普通科研人员",
     "legacy": "无",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "EX-03"
   },
   {
     "id": 32,
@@ -349,7 +380,8 @@
     "strategy": "外部系统集成/跳转",
     "role": "普通科研人员",
     "legacy": "无",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "EX-04"
   },
   {
     "id": 33,
@@ -360,7 +392,8 @@
     "strategy": "混合：AI4S自建+外部集成 / 设备适配",
     "role": "普通科研人员",
     "legacy": "无",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "EX-05"
   },
   {
     "id": 34,
@@ -371,7 +404,8 @@
     "strategy": "AI4S自建+外部集成",
     "role": "普通科研人员",
     "legacy": "/experiment-log",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "EX-06"
   },
   {
     "id": 35,
@@ -382,490 +416,139 @@
     "strategy": "混合：AI4S自建+外部集成 / 专业场景适配",
     "role": "普通科研人员",
     "legacy": "/data-analysis",
-    "nav": "是"
-  },
-  {
-    "id": 36,
-    "group": "科研流程贯通",
-    "label": "科研流程自动化",
-    "href": "/research-flow",
-    "priority": "P0",
-    "strategy": "AI4S自建",
-    "role": "普通科研人员",
-    "legacy": "无",
-    "nav": "是"
-  },
-  {
-    "id": 37,
-    "group": "科研流程贯通",
-    "label": "科研智能体与Skill",
-    "href": "/research-flow/agents",
-    "priority": "P0",
-    "strategy": "AI4S自建+能力复用",
-    "role": "普通科研人员",
-    "legacy": "无",
-    "nav": "是"
-  },
-  {
-    "id": 38,
-    "group": "科研流程贯通",
-    "label": "科研工作流编排",
-    "href": "/research-flow/workflows",
-    "priority": "P0",
-    "strategy": "AI4S自建+能力复用",
-    "role": "普通科研人员",
-    "legacy": "无",
-    "nav": "是"
-  },
-  {
-    "id": 39,
-    "group": "科研流程贯通",
-    "label": "闭环优化",
-    "href": "/research-flow/optimization",
-    "priority": "P1",
-    "strategy": "专业场景适配",
-    "role": "普通科研人员",
-    "legacy": "无",
-    "nav": "是"
-  },
-  {
-    "id": 40,
-    "group": "科研流程贯通",
-    "label": "特种实验人工审核",
-    "href": "/research-flow/review",
-    "priority": "P0",
-    "strategy": "AI4S自建+能力复用",
-    "role": "普通科研人员",
-    "legacy": "无",
-    "nav": "是"
-  },
-  {
-    "id": 41,
-    "group": "科研流程贯通",
-    "label": "结果回流与复现",
-    "href": "/research-flow/reproducibility",
-    "priority": "P0",
-    "strategy": "AI4S自建",
-    "role": "普通科研人员",
-    "legacy": "无",
-    "nav": "是"
-  },
-  {
-    "id": 42,
-    "group": "科研流程贯通",
-    "label": "科研成果发布",
-    "href": "/research-flow/publication",
-    "priority": "P0",
-    "strategy": "AI4S自建+外部集成",
-    "role": "普通科研人员",
-    "legacy": "无",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "EX-07"
   },
   {
     "id": 43,
-    "group": "科研项目管理科研管理&驾驶舱（川庆）",
+    "group": "科研项目管理",
     "label": "立项管理",
-    "href": "/connections/43",
+    "href": "/project-management/pm-01",
     "priority": "P0",
     "strategy": "外部系统集成/跳转",
     "role": "项目负责人/科研管理人员",
     "legacy": "无",
-    "nav": "管理角色/后台导航"
+    "nav": "是",
+    "pageId": "PM-01"
   },
   {
     "id": 44,
-    "group": "科研项目管理科研管理&驾驶舱（川庆）",
+    "group": "科研项目管理",
     "label": "过程管理",
-    "href": "/connections/44",
+    "href": "/project-management/pm-02",
     "priority": "P0",
     "strategy": "AI4S自建+外部集成",
     "role": "项目负责人/科研管理人员",
     "legacy": "无",
-    "nav": "管理角色/后台导航"
+    "nav": "是",
+    "pageId": "PM-02"
   },
   {
     "id": 45,
-    "group": "科研项目管理科研管理&驾驶舱（川庆）",
+    "group": "科研项目管理",
     "label": "外协管理",
-    "href": "/connections/45",
+    "href": "/project-management/pm-03",
     "priority": "P1",
     "strategy": "外部系统集成/跳转",
     "role": "项目负责人/科研管理人员",
     "legacy": "无",
-    "nav": "管理角色/后台导航"
+    "nav": "是",
+    "pageId": "PM-03"
   },
   {
     "id": 46,
-    "group": "科研项目管理科研管理&驾驶舱（川庆）",
+    "group": "科研项目管理",
     "label": "成果管理",
-    "href": "/connections/46",
+    "href": "/project-management/pm-04",
     "priority": "P0",
     "strategy": "外部系统集成/跳转",
     "role": "项目负责人/科研管理人员",
     "legacy": "无",
-    "nav": "管理角色/后台导航"
+    "nav": "是",
+    "pageId": "PM-04"
   },
   {
     "id": 47,
-    "group": "科研项目管理科研管理&驾驶舱（川庆）",
+    "group": "科研项目管理",
     "label": "人才管理",
-    "href": "/connections/47",
+    "href": "/project-management/pm-05",
     "priority": "P1",
     "strategy": "外部系统集成/跳转",
     "role": "项目负责人/科研管理人员",
     "legacy": "无",
-    "nav": "管理角色/后台导航"
+    "nav": "是",
+    "pageId": "PM-05"
   },
   {
     "id": 48,
-    "group": "科研项目管理科研管理&驾驶舱（川庆）",
+    "group": "科研项目管理",
     "label": "考核管理",
-    "href": "/connections/48",
+    "href": "/project-management/pm-06",
     "priority": "P1",
     "strategy": "外部系统集成/跳转",
     "role": "项目负责人/科研管理人员",
     "legacy": "无",
-    "nav": "管理角色/后台导航"
+    "nav": "是",
+    "pageId": "PM-06"
   },
   {
     "id": 49,
-    "group": "科研项目管理科研管理&驾驶舱（川庆）",
+    "group": "科研项目管理",
     "label": "日常管理",
-    "href": "/connections/49",
+    "href": "/project-management/pm-07",
     "priority": "P1",
     "strategy": "外部系统集成/跳转",
     "role": "项目负责人/科研管理人员",
     "legacy": "无",
-    "nav": "管理角色/后台导航"
+    "nav": "是",
+    "pageId": "PM-07"
   },
   {
     "id": 50,
-    "group": "共享资产",
+    "group": "科研资产",
     "label": "科研数据及知识",
     "href": "/assets/data-knowledge",
     "priority": "P0",
     "strategy": "混合：AI4S自建+能力复用 / AI4S自建+外部集成",
     "role": "普通科研人员",
     "legacy": "无",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "AS-01"
   },
   {
     "id": 51,
-    "group": "共享资产",
+    "group": "科研资产",
     "label": "科研模型",
     "href": "/assets/models",
     "priority": "P0",
     "strategy": "AI4S自建+能力复用",
     "role": "普通科研人员",
     "legacy": "无",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "AS-02"
   },
   {
     "id": 52,
-    "group": "共享资产",
+    "group": "科研资产",
     "label": "科研方案",
     "href": "/assets/plans",
     "priority": "P0",
     "strategy": "AI4S自建+能力复用",
     "role": "普通科研人员",
     "legacy": "无",
-    "nav": "是"
+    "nav": "是",
+    "pageId": "AS-03"
   },
   {
     "id": 53,
-    "group": "共享资产",
+    "group": "科研资产",
     "label": "科研智能服务",
     "href": "/assets/intelligent-services",
     "priority": "P0",
     "strategy": "AI4S自建+能力复用",
     "role": "普通科研人员",
     "legacy": "无",
-    "nav": "是"
-  },
-  {
-    "id": 54,
-    "group": "身份与组织对接",
-    "label": "统一身份认证",
-    "href": "/connections/54",
-    "priority": "P0",
-    "strategy": "AI中台/公共能力复用",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 55,
-    "group": "身份与组织对接",
-    "label": "组织与租户管理",
-    "href": "/connections/55",
-    "priority": "P0",
-    "strategy": "AI中台/公共能力复用",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 56,
-    "group": "租户空间管理",
-    "label": "租户空间列表",
-    "href": "/admin/workspaces",
-    "priority": "P0",
-    "strategy": "AI中台/公共能力复用",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 57,
-    "group": "租户空间管理",
-    "label": "角色及权限",
-    "href": "/admin/roles",
-    "priority": "P0",
-    "strategy": "AI中台/公共能力复用",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 58,
-    "group": "租户空间管理",
-    "label": "成员管理",
-    "href": "/admin/members",
-    "priority": "P0",
-    "strategy": "AI中台/公共能力复用",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 59,
-    "group": "租户空间管理",
-    "label": "绑定资源组",
-    "href": "/admin/resource-binding",
-    "priority": "P0",
-    "strategy": "AI中台/公共能力复用",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 60,
-    "group": "租户空间管理",
-    "label": "资源组管理",
-    "href": "/admin/resource-groups",
-    "priority": "P0",
-    "strategy": "AI中台/公共能力复用",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 61,
-    "group": "租户空间管理",
-    "label": "告警管理",
-    "href": "/admin/alerts",
-    "priority": "P0",
-    "strategy": "AI中台/公共能力复用",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 62,
-    "group": "租户空间管理",
-    "label": "操作日志",
-    "href": "/admin/audit-logs",
-    "priority": "P0",
-    "strategy": "AI中台/公共能力复用",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 63,
-    "group": "平台引导",
-    "label": "平台引导",
-    "href": "/help",
-    "priority": "P0",
-    "strategy": "AI中台/公共能力复用",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 64,
-    "group": "AI4S安全方案",
-    "label": "全域安全防护",
-    "href": "/admin/security?tab=boundary",
-    "priority": "P0",
-    "strategy": "复用为主+AI4S补建",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 65,
-    "group": "AI4S安全方案",
-    "label": "科研数据安全",
-    "href": "/admin/security?tab=data",
-    "priority": "P0",
-    "strategy": "复用为主+AI4S补建",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 66,
-    "group": "AI4S安全方案",
-    "label": "应用安全",
-    "href": "/admin/security?tab=app",
-    "priority": "P0",
-    "strategy": "复用为主+AI4S补建",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 67,
-    "group": "AI4S安全方案",
-    "label": "AI应用安全",
-    "href": "/admin/security?tab=ai",
-    "priority": "P0",
-    "strategy": "复用为主+AI4S补建",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 68,
-    "group": "AI4S安全方案",
-    "label": "应急管控",
-    "href": "/admin/security?tab=emergency",
-    "priority": "P0",
-    "strategy": "复用为主+AI4S补建",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 69,
-    "group": "AI4S安全方案",
-    "label": "国产化安全可控",
-    "href": "/admin/security?tab=domestic",
-    "priority": "P0",
-    "strategy": "复用为主+AI4S补建",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 70,
-    "group": "AI4S安全方案",
-    "label": "安全运营审计",
-    "href": "/admin/security?tab=audit",
-    "priority": "P0",
-    "strategy": "复用为主+AI4S补建",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 71,
-    "group": "平台运营",
-    "label": "用户、租户、租户空间管理复用AI中台能力",
-    "href": "/connections/71",
-    "priority": "待确认",
-    "strategy": "待确认",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 72,
-    "group": "平台运营",
-    "label": "运营支撑",
-    "href": "/admin/operation/support",
-    "priority": "待确认",
-    "strategy": "待确认",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 73,
-    "group": "平台运营",
-    "label": "运营看板",
-    "href": "/admin/operation/dashboard",
-    "priority": "P1",
-    "strategy": "AI4S自建+能力复用",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 74,
-    "group": "平台运营",
-    "label": "资产共享与推广",
-    "href": "/admin/operation/assets",
-    "priority": "P1",
-    "strategy": "AI4S自建",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 75,
-    "group": "平台运营",
-    "label": "资源用量与成效",
-    "href": "/admin/operation/resources",
-    "priority": "P0",
-    "strategy": "AI4S自建+能力复用",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 76,
-    "group": "平台运维",
-    "label": "任务与服务监控",
-    "href": "/admin/ops/monitor",
-    "priority": "P0",
-    "strategy": "AI4S自建+能力复用",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 77,
-    "group": "平台运维",
-    "label": "资源与性能运维",
-    "href": "/admin/ops/resources",
-    "priority": "P0",
-    "strategy": "AI4S自建+能力复用",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 78,
-    "group": "平台运维",
-    "label": "日志告警与恢复",
-    "href": "/admin/ops/logs-alerts",
-    "priority": "P0",
-    "strategy": "AI4S自建+能力复用",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
-  },
-  {
-    "id": 79,
-    "group": "平台运维",
-    "label": "环境与兼容管理",
-    "href": "/admin/ops/environment",
-    "priority": "P0",
-    "strategy": "AI4S自建+能力复用",
-    "role": "平台管理员/运营运维",
-    "legacy": "无",
-    "nav": "管理角色/后台导航"
+    "nav": "是",
+    "pageId": "AS-04"
   }
 ]

@@ -1,0 +1,42 @@
+[
+  {
+    "view": "trend",
+    "contentWidth": 1001,
+    "height": 900,
+    "mainOverflow": false,
+    "overflow": false,
+    "width": 1280
+  },
+  {
+    "view": "strategy",
+    "contentWidth": 1169,
+    "height": 900,
+    "mainOverflow": false,
+    "overflow": false,
+    "width": 1280
+  },
+  {
+    "view": "resources",
+    "contentWidth": 1169,
+    "height": 900,
+    "mainOverflow": false,
+    "overflow": false,
+    "width": 1280
+  },
+  {
+    "view": "projects",
+    "contentWidth": 1169,
+    "height": 900,
+    "mainOverflow": false,
+    "overflow": false,
+    "width": 1280
+  },
+  {
+    "view": "outcomes",
+    "contentWidth": 1169,
+    "height": 900,
+    "mainOverflow": false,
+    "overflow": false,
+    "width": 1280
+  }
+]

@@ -132,13 +132,15 @@ export default function DataExtractPage() {
       </div>
 
       <div className="max-w-[1200px] mx-auto px-6 py-6">
+        <input id="source-data-file" type="file" accept=".pdf,.png,.jpg,.jpeg" className="sr-only" onChange={(e) => setSelectedFile(e.target.files?.[0]?.name ?? null)} />
+        <p className="mb-4 rounded-lg border border-line bg-white p-3 text-xs leading-6 text-muted-foreground">原型演示：可选择文件、编辑示例提取表格并导出 CSV（Excel 可打开）；未接入真实 PDF/OCR 解析。来源文件：{selectedFile ?? '未选择'}，原文页码与坐标待核验。</p>
         {/* File Upload Area */}
         <div className="rounded-xl border border-dashed border-[var(--color-line)] bg-[var(--color-surface)] p-8 mb-6 text-center">
           <Upload className="w-10 h-10 text-[var(--color-muted-foreground)] mx-auto mb-3" />
           <h3 className="text-[15px] font-bold text-[var(--color-text)] mb-1">上传论文PDF或图片</h3>
           <p className="text-[13px] text-[var(--color-muted-foreground)] mb-4">支持 PDF、PNG、JPG 格式，将自动识别表格和图表</p>
           <div className="flex items-center justify-center gap-3">
-            <button className="px-4 py-2 rounded-lg text-[13px] bg-[var(--color-blue)] text-white hover:bg-[var(--color-blue)]/90 transition-colors" onClick={() => setSelectedFile('sample_paper.pdf')}>
+            <button className="px-4 py-2 rounded-lg text-[13px] bg-[var(--color-blue)] text-white hover:bg-[var(--color-blue)]/90 transition-colors" onClick={() => document.getElementById('source-data-file')?.click()}>
               <Upload className="w-3.5 h-3.5 inline mr-1.5" />选择文件
             </button>
             <button className="px-4 py-2 rounded-lg text-[13px] border border-[var(--color-line)] text-[var(--color-muted-foreground)] hover:border-[var(--color-blue)]/30 hover:text-[var(--color-blue)] transition-colors" onClick={() => { setSelectedFile('demo_catalyst.pdf'); }}>

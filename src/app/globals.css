@@ -85,31 +85,31 @@
 :root {
   --radius: 0.5rem;
   /* AI4S Design System V1.0: 朱丹红用于品牌和正式操作。 */
-  --brand-red: #a6191e;
-  --brand-red-deep: #7f1116;
-  --brand-red-soft: #fcebec;
+  --brand-red: #b4232d;
+  --brand-red-deep: #8d1b24;
+  --brand-red-soft: #fbecee;
   --scientific-blue: #2878d0;
   --compute-cyan: #0788a8;
   --experiment-green: #168b68;
   --ai-purple: #6558d3;
-  --background: #f6f7f9;
-  --foreground: #1f2937;
+  --background: #f5f6f8;
+  --foreground: #1f2329;
   --card: #ffffff;
-  --card-foreground: #1f2937;
+  --card-foreground: #1f2329;
   --popover: #ffffff;
-  --popover-foreground: #1f2937;
-  --primary: #a6191e;
+  --popover-foreground: #1f2329;
+  --primary: #b4232d;
   --primary-foreground: #ffffff;
-  --secondary: #fcebec;
-  --secondary-foreground: #7f1116;
+  --secondary: #fbecee;
+  --secondary-foreground: #8d1b24;
   --muted: #f8fafc;
-  --muted-foreground: #667085;
-  --accent: #fcebec;
-  --accent-foreground: #7f1116;
+  --muted-foreground: #4e5969;
+  --accent: #fbecee;
+  --accent-foreground: #8d1b24;
   --destructive: #d92d20;
-  --border: #d9dee7;
-  --input: #d9dee7;
-  --ring: #a6191e;
+  --border: #d9dde3;
+  --input: #d9dde3;
+  --ring: #b4232d;
   --chart-1: #2878d0;
   --chart-2: #0788a8;
   --chart-3: #168b68;
@@ -117,44 +117,44 @@
   --chart-5: #6558d3;
   --chart-6: #d92d20;
   /* PETROLAB 自定义变量 */
-  --navy: #1f2937;
+  --navy: #1f2329;
   --cyan: #0788a8;
   --amber: #d97706;
   --gold: #c99325;
-  --faint: #98a2b3;
+  --faint: #86909c;
   --surface: #ffffff;
   --surface-2: #f8fafc;
-  --line: #d9dee7;
+  --line: #d9dde3;
   --line-2: #c7ced9;
   --blue: #2878d0;
-  --text: #1f2937;
+  --text: #1f2329;
   --red: #d92d20;
   --purple: #6558d3;
-  --bg: #f6f7f9;
+  --bg: #f5f6f8;
   --green: #168b68;
   --success: #168b68;
   --success-bg: #e9f7f1;
   --warning-bg: #fff3e0;
   --neutral-bg: #f5f5f5;
   --error-bg: #fff0ef;
-  --primary-container: #fcebec;
-  --on-surface-variant: #667085;
+  --primary-container: #fbecee;
+  --on-surface-variant: #4e5969;
   --outline-variant: #c7ced9;
   --surface-container: #f8fafc;
-  --surface-container-high: #fcebec;
+  --surface-container-high: #fbecee;
   --surface-container-highest: #e7ebf0;
   --shadow-card: 0 2px 8px rgba(16, 38, 79, 0.04);
   --shadow-float: 0 4px 12px rgba(16, 38, 79, 0.08);
   --shadow-dialog: 0 10px 25px rgba(16, 38, 79, 0.12);
   /* Sidebar */
   --sidebar: #ffffff;
-  --sidebar-foreground: #1f2937;
-  --sidebar-primary: #a6191e;
+  --sidebar-foreground: #1f2329;
+  --sidebar-primary: #b4232d;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #fcebec;
-  --sidebar-accent-foreground: #7f1116;
-  --sidebar-border: #d9dee7;
-  --sidebar-ring: #a6191e;
+  --sidebar-accent: #fbecee;
+  --sidebar-accent-foreground: #8d1b24;
+  --sidebar-border: #d9dde3;
+  --sidebar-ring: #b4232d;
 }
 
 @layer base {
@@ -164,6 +164,24 @@
   body {
     @apply bg-background text-foreground;
   }
+  button, a, input, select, textarea {
+    &:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+  }
+  button { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+}
+
+@layer components {
+  .research-input { @apply min-h-10 w-full rounded-lg border border-line bg-white px-3 py-2 text-sm; }
+  .research-button { @apply inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm transition-colors hover:bg-surface-2 disabled:opacity-50; }
+  .research-primary { @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50; }
+  .research-table { @apply w-full text-left text-sm; }
+  .research-table th { @apply bg-surface-2 px-4 py-3 text-xs font-medium text-muted-foreground; }
+  .research-table td { @apply border-t border-line px-4 py-3; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 
 @keyframes slideInRight {

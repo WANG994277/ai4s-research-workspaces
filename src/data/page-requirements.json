@@ -1,0 +1,1860 @@
+[
+  {
+    "id": "WB-01",
+    "name": "科研专区",
+    "type": "工作台/任务入口",
+    "boundary": "AI4S原生开发",
+    "route": "/workbench/wb-01",
+    "children": [
+      {
+        "id": "WB-01-01",
+        "name": "科研应用导航",
+        "route": "/workbench/wb-01/01",
+        "description": "按角色统一展示读、算、做入口、最近课题与常用资产，跨应用跳转。",
+        "sourceRows": [
+          3
+        ],
+        "requirements": [
+          "按角色统一展示读、算、做入口、最近课题与常用资产，跨应用跳转。"
+        ]
+      },
+      {
+        "id": "WB-01-02",
+        "name": "个人科研概览与快捷工作入口",
+        "route": "/workbench/wb-01/02",
+        "description": "聚合个人任务、近期进展、常用资源和工作状态，提供面向科研日常工作的快捷入口。",
+        "sourceRows": [
+          4
+        ],
+        "requirements": [
+          "聚合个人任务、近期进展、常用资源和工作状态，提供面向科研日常工作的快捷入口。"
+        ]
+      }
+    ],
+    "group": "个人工作台",
+    "href": "/workbench#research-zone"
+  },
+  {
+    "id": "WB-02",
+    "name": "科研助手",
+    "type": "Agent任务工作区",
+    "boundary": "AI4S原生开发",
+    "route": "/workbench/wb-02",
+    "children": [
+      {
+        "id": "WB-02-01",
+        "name": "科研思路探索",
+        "route": "/workbench/wb-02/01",
+        "description": "支持文档问答、历史会话、课题资料选择和引用回看，复用推理与检索",
+        "sourceRows": [
+          5
+        ],
+        "requirements": [
+          "支持文档问答、历史会话、课题资料选择和引用回看，复用推理与检索"
+        ]
+      },
+      {
+        "id": "WB-02-02",
+        "name": "科研计算求解",
+        "route": "/workbench/wb-02/02",
+        "description": "多模态输入、工具执行轨迹、可编辑记忆及草稿转任务；敏感操作需确认",
+        "sourceRows": [
+          6
+        ],
+        "requirements": [
+          "多模态输入、工具执行轨迹、可编辑记忆及草稿转任务；敏感操作需确认"
+        ]
+      }
+    ],
+    "group": "个人工作台",
+    "href": "/ai-assistant"
+  },
+  {
+    "id": "WB-03",
+    "name": "任务与待办",
+    "type": "列表—详情—流程",
+    "boundary": "AI4S原生开发",
+    "route": "/workbench/wb-03",
+    "children": [
+      {
+        "id": "WB-03-01",
+        "name": "跨系统科研待办聚合",
+        "route": "/workbench/wb-03/01",
+        "description": "统一汇集审核、计算、实验和项目待办，展示来源、状态、责任人、期限及深链接。",
+        "sourceRows": [
+          7
+        ],
+        "requirements": [
+          "统一汇集审核、计算、实验和项目待办，展示来源、状态、责任人、期限及深链接。"
+        ]
+      },
+      {
+        "id": "WB-03-02",
+        "name": "消息提醒与任务状态追踪",
+        "route": "/workbench/wb-03/02",
+        "description": "围绕待办创建、催办、到期、完成和异常状态提供统一提醒及处理闭环。",
+        "sourceRows": [
+          8
+        ],
+        "requirements": [
+          "围绕待办创建、催办、到期、完成和异常状态提供统一提醒及处理闭环。"
+        ]
+      }
+    ],
+    "group": "个人工作台",
+    "href": "/tasks"
+  },
+  {
+    "id": "WB-04",
+    "name": "智能驾驶舱",
+    "type": "分析驾驶舱",
+    "boundary": "AI4S原生开发",
+    "route": "/workbench/wb-04",
+    "children": [
+      {
+        "id": "WB-04-01",
+        "name": "分角色科研驾驶舱入口",
+        "route": "/workbench/wb-04/01",
+        "description": "面向科研人员、项目负责人和管理人员提供差异化驾驶舱入口与默认视图。",
+        "sourceRows": [
+          9
+        ],
+        "requirements": [
+          "面向科研人员、项目负责人和管理人员提供差异化驾驶舱入口与默认视图。"
+        ]
+      },
+      {
+        "id": "WB-04-02",
+        "name": "科研指标概览及视图",
+        "route": "/workbench/wb-04/02",
+        "description": "展示个人或管理范围内的核心指标、风险和资源概况，并支持下钻到课题与来源系统。",
+        "sourceRows": [
+          10
+        ],
+        "requirements": [
+          "展示个人或管理范围内的核心指标、风险和资源概况，并支持下钻到课题与来源系统。"
+        ]
+      }
+    ],
+    "group": "个人工作台",
+    "href": "/dashboard"
+  },
+  {
+    "id": "DC-01",
+    "name": "科技态势分析",
+    "type": "分析驾驶舱",
+    "boundary": "AI4S原生开发",
+    "route": "/dashboard/dc-01",
+    "children": [
+      {
+        "id": "DC-01-01",
+        "name": "专题态势监测",
+        "route": "/dashboard/dc-01/01",
+        "description": "按领域聚合论文、专利、标准及机构趋势，保留来源和更新时间",
+        "sourceRows": [
+          11
+        ],
+        "requirements": [
+          "按领域聚合论文、专利、标准及机构趋势，保留来源和更新时间"
+        ]
+      }
+    ],
+    "group": "科研驾驶舱",
+    "href": "/dashboard?view=trend"
+  },
+  {
+    "id": "DC-02",
+    "name": "战略方向研判",
+    "type": "分析驾驶舱",
+    "boundary": "AI4S原生开发",
+    "route": "/dashboard/dc-02",
+    "children": [
+      {
+        "id": "DC-02-01",
+        "name": "技术方向证据研判",
+        "route": "/dashboard/dc-02/01",
+        "description": "多源证据比较技术方向、机会与不确定性，专家确认研判结论",
+        "sourceRows": [
+          12
+        ],
+        "requirements": [
+          "多源证据比较技术方向、机会与不确定性，专家确认研判结论"
+        ]
+      }
+    ],
+    "group": "科研驾驶舱",
+    "href": "/dashboard?view=strategy"
+  },
+  {
+    "id": "DC-03",
+    "name": "资源统筹配置",
+    "type": "分析驾驶舱",
+    "boundary": "AI4S原生开发",
+    "route": "/dashboard/dc-03",
+    "children": [
+      {
+        "id": "DC-03-01",
+        "name": "科研资源供需看板",
+        "route": "/dashboard/dc-03/01",
+        "description": "聚合算力、设备和人员资源申请、占用与容量；只提供建议不替代审批",
+        "sourceRows": [
+          13
+        ],
+        "requirements": [
+          "聚合算力、设备和人员资源申请、占用与容量；只提供建议不替代审批"
+        ]
+      }
+    ],
+    "group": "科研驾驶舱",
+    "href": "/dashboard?view=resources"
+  },
+  {
+    "id": "DC-04",
+    "name": "重大项目监管",
+    "type": "分析驾驶舱",
+    "boundary": "AI4S原生开发",
+    "route": "/dashboard/dc-04",
+    "children": [
+      {
+        "id": "DC-04-01",
+        "name": "项目进度与风险穿透",
+        "route": "/dashboard/dc-04/01",
+        "description": "同步项目里程碑、经费摘要、风险和成果，支持钻取来源系统",
+        "sourceRows": [
+          14
+        ],
+        "requirements": [
+          "同步项目里程碑、经费摘要、风险和成果，支持钻取来源系统"
+        ]
+      }
+    ],
+    "group": "科研驾驶舱",
+    "href": "/dashboard?view=projects"
+  },
+  {
+    "id": "DC-05",
+    "name": "科技成果展示",
+    "type": "分析驾驶舱",
+    "boundary": "AI4S原生开发",
+    "route": "/dashboard/dc-05",
+    "children": [
+      {
+        "id": "DC-05-01",
+        "name": "成果专题展示",
+        "route": "/dashboard/dc-05/01",
+        "description": "展示经审核可公开或内部共享的成果、应用及关联项目",
+        "sourceRows": [
+          15
+        ],
+        "requirements": [
+          "展示经审核可公开或内部共享的成果、应用及关联项目"
+        ]
+      }
+    ],
+    "group": "科研驾驶舱",
+    "href": "/dashboard?view=outcomes"
+  },
+  {
+    "id": "DC-06",
+    "name": "科技树",
+    "type": "分析驾驶舱",
+    "boundary": "AI4S原生开发",
+    "route": "/dashboard/dc-06",
+    "children": [
+      {
+        "id": "DC-06-01",
+        "name": "技术谱系与布局分析",
+        "route": "/dashboard/dc-06/01",
+        "description": "技术节点、层级与证据维护，关联课题、专利、模型和成果",
+        "sourceRows": [
+          16
+        ],
+        "requirements": [
+          "技术节点、层级与证据维护，关联课题、专利、模型和成果"
+        ]
+      }
+    ],
+    "group": "科研驾驶舱",
+    "href": "/dashboard?view=technology-tree"
+  },
+  {
+    "id": "CO-01",
+    "name": "课题协作",
+    "type": "列表—详情—流程",
+    "boundary": "AI4S原生开发",
+    "route": "/collaboration/co-01",
+    "children": [
+      {
+        "id": "CO-01-01",
+        "name": "课题空间与组织管理",
+        "route": "/collaboration/co-01/01",
+        "description": "创建课题空间并维护成员、角色、里程碑和基础配置，关联科技管理项目主键。",
+        "sourceRows": [
+          17
+        ],
+        "requirements": [
+          "创建课题空间并维护成员、角色、里程碑和基础配置，关联科技管理项目主键。"
+        ]
+      },
+      {
+        "id": "CO-01-02",
+        "name": "科研任务、进展与风险协作",
+        "route": "/collaboration/co-01/02",
+        "description": "支持任务分派、状态流转、活动动态、阶段汇报和风险行动项协同。",
+        "sourceRows": [
+          18
+        ],
+        "requirements": [
+          "支持任务分派、状态流转、活动动态、阶段汇报和风险行动项协同。"
+        ]
+      }
+    ],
+    "group": "科研协作",
+    "href": "/collaboration/projects"
+  },
+  {
+    "id": "CO-02",
+    "name": "实验协作",
+    "type": "列表—详情—流程",
+    "boundary": "AI4S原生开发",
+    "route": "/collaboration/co-02",
+    "children": [
+      {
+        "id": "CO-02-01",
+        "name": "实验任务进度与流转",
+        "route": "/collaboration/co-02/01",
+        "description": "明确实验负责人、操作人，记录任务分派、交接、协作状态与责任边界。",
+        "sourceRows": [
+          19
+        ],
+        "requirements": [
+          "明确实验负责人、操作人，记录任务分派、交接、协作状态与责任边界。"
+        ]
+      },
+      {
+        "id": "CO-02-02",
+        "name": "实验问题与过程协同",
+        "route": "/collaboration/co-02/02",
+        "description": "围绕实验准备、执行和结果处理记录问题、讨论、处理结论及闭环证据。",
+        "sourceRows": [
+          20
+        ],
+        "requirements": [
+          "围绕实验准备、执行和结果处理记录问题、讨论、处理结论及闭环证据。"
+        ]
+      }
+    ],
+    "group": "科研协作",
+    "href": "/collaboration/experiments"
+  },
+  {
+    "id": "CO-03",
+    "name": "文件与笔记",
+    "type": "结构化编辑器",
+    "boundary": "AI4S原生开发",
+    "route": "/collaboration/co-03",
+    "children": [
+      {
+        "id": "CO-03-01",
+        "name": "科研文档与笔记管理",
+        "route": "/collaboration/co-03/01",
+        "description": "统一管理文档、目录、标签、科研笔记及其与课题、任务和成果的关联。",
+        "sourceRows": [
+          21
+        ],
+        "requirements": [
+          "统一管理文档、目录、标签、科研笔记及其与课题、任务和成果的关联。"
+        ]
+      },
+      {
+        "id": "CO-03-02",
+        "name": "版本协作与授权分享",
+        "route": "/collaboration/co-03/02",
+        "description": "提供版本留痕、协作编辑、评论引用、授权分享和撤回，保证资料可追踪。",
+        "sourceRows": [
+          22
+        ],
+        "requirements": [
+          "提供版本留痕、协作编辑、评论引用、授权分享和撤回，保证资料可追踪。"
+        ]
+      }
+    ],
+    "group": "科研协作",
+    "href": "/collaboration/files-notes"
+  },
+  {
+    "id": "CO-04",
+    "name": "专家智库",
+    "type": "检索与证据工作区",
+    "boundary": "AI4S原生开发",
+    "route": "/collaboration/co-04",
+    "children": [
+      {
+        "id": "CO-04-01",
+        "name": "专家档案与能力检索",
+        "route": "/collaboration/co-04/01",
+        "description": "维护专家领域、成果、经历和可服务范围，支持按专业能力和合作条件检索。",
+        "sourceRows": [
+          23
+        ],
+        "requirements": [
+          "维护专家领域、成果、经历和可服务范围，支持按专业能力和合作条件检索。"
+        ]
+      },
+      {
+        "id": "CO-04-02",
+        "name": "专家咨询与服务反馈（集成员工助手）",
+        "route": "/collaboration/co-04/02",
+        "description": "支持咨询申请、专家匹配、过程协同、成果回收和服务评价。",
+        "sourceRows": [
+          24
+        ],
+        "requirements": [
+          "支持咨询申请、专家匹配、过程协同、成果回收和服务评价。"
+        ]
+      }
+    ],
+    "group": "科研协作",
+    "href": "/collaboration/experts"
+  },
+  {
+    "id": "RD-01",
+    "name": "科研思路探索（总）",
+    "type": "模块总览/列表",
+    "boundary": "AI4S原生开发",
+    "route": "/read/rd-01",
+    "children": [
+      {
+        "id": "RD-01-01",
+        "name": "科研思路探索",
+        "route": "/read/rd-01/01",
+        "description": "针对科研读阶段查找思路、文件检索等通用性需求，支持自动调用其他文献研读、撰写等Agent能力。",
+        "sourceRows": [
+          25
+        ],
+        "requirements": [
+          "针对科研读阶段查找思路、文件检索等通用性需求，支持自动调用其他文献研读、撰写等Agent能力。"
+        ]
+      }
+    ],
+    "group": "读空间",
+    "href": "/read-space"
+  },
+  {
+    "id": "RD-02",
+    "name": "文献与标准检索",
+    "type": "检索与证据工作区",
+    "boundary": "AI4S原生开发",
+    "route": "/read/rd-02",
+    "children": [
+      {
+        "id": "RD-02-01",
+        "name": "统一文献与标准检索",
+        "route": "/read/rd-02/01",
+        "description": "多源检索、筛选、来源标识、全文访问和检索历史；依授权接入；检索策略生成、检索历史记录查看，支持化学结构与反应式专业检索。",
+        "sourceRows": [
+          26
+        ],
+        "requirements": [
+          "多源检索、筛选、来源标识、全文访问和检索历史；依授权接入；检索策略生成、检索历史记录查看，支持化学结构与反应式专业检索。"
+        ]
+      },
+      {
+        "id": "RD-02-02",
+        "name": "专题跟踪与批量收藏",
+        "route": "/read/rd-02/02",
+        "description": "作者画像与学术关联分析；检索策略保存；批量收藏、订阅与批量获取；结果去重与增量更新",
+        "sourceRows": [
+          27,
+          28,
+          29,
+          30
+        ],
+        "requirements": [
+          "作者画像与学术关联分析",
+          "检索策略保存",
+          "批量收藏、订阅与批量获取",
+          "结果去重与增量更新"
+        ]
+      }
+    ],
+    "group": "读空间",
+    "href": "/literature-search"
+  },
+  {
+    "id": "RD-03",
+    "name": "科研文献整理与研读",
+    "type": "阅读/证据分析工作区",
+    "boundary": "AI4S原生开发",
+    "route": "/read/rd-03",
+    "children": [
+      {
+        "id": "RD-03-01",
+        "name": "文献精读与证据引用",
+        "route": "/read/rd-03/01",
+        "description": "PDF结构解析；摘要、问答式AI解读；笔记、收藏与批注；输出页码或段落依据",
+        "sourceRows": [
+          31,
+          32,
+          33,
+          34
+        ],
+        "requirements": [
+          "PDF结构解析",
+          "摘要、问答式AI解读",
+          "笔记、收藏与批注",
+          "输出页码或段落依据"
+        ]
+      },
+      {
+        "id": "RD-03-02",
+        "name": "专题综述与术语管理",
+        "route": "/read/rd-03/02",
+        "description": "专题综述；多文献对比；中英翻译；术语记忆与人工纠错",
+        "sourceRows": [
+          35,
+          36,
+          37,
+          38
+        ],
+        "requirements": [
+          "专题综述",
+          "多文献对比",
+          "中英翻译",
+          "术语记忆与人工纠错"
+        ]
+      },
+      {
+        "id": "RD-03-03",
+        "name": "作者画像与学术关联分析",
+        "route": "/read/rd-03/03",
+        "description": "围绕作者研究方向、代表成果、合作关系、发文趋势和关键词分布形成画像，支持关联文献下钻和来源核验。",
+        "sourceRows": [
+          39
+        ],
+        "requirements": [
+          "围绕作者研究方向、代表成果、合作关系、发文趋势和关键词分布形成画像，支持关联文献下钻和来源核验。"
+        ]
+      }
+    ],
+    "group": "读空间",
+    "href": "/literature-search/[id]"
+  },
+  {
+    "id": "RD-04",
+    "name": "科研知识图谱",
+    "type": "阅读/证据分析工作区",
+    "boundary": "AI4S原生开发",
+    "route": "/read/rd-04",
+    "children": [
+      {
+        "id": "RD-04-01",
+        "name": "知识图谱构建与节点下钻",
+        "route": "/read/rd-04/01",
+        "description": "按课题配置实体与关系类型，组织文献、专利、技术点、模型和业务对象，支持节点下钻至关联资料、证据来源及问答检索。",
+        "sourceRows": [
+          40
+        ],
+        "requirements": [
+          "按课题配置实体与关系类型，组织文献、专利、技术点、模型和业务对象，支持节点下钻至关联资料、证据来源及问答检索。"
+        ]
+      }
+    ],
+    "group": "读空间",
+    "href": "/knowledge-graph"
+  },
+  {
+    "id": "RD-05",
+    "name": "国内外标准对标",
+    "type": "阅读/证据分析工作区",
+    "boundary": "AI4S原生开发",
+    "route": "/read/rd-05",
+    "children": [
+      {
+        "id": "RD-05-01",
+        "name": "标准条款差异对比",
+        "route": "/read/rd-05/01",
+        "description": "标准版本识别与管理；标准条款对照；指标与单位差异识别；人工确认与差异结论",
+        "sourceRows": [
+          41,
+          42,
+          43,
+          44
+        ],
+        "requirements": [
+          "标准版本识别与管理",
+          "标准条款对照",
+          "指标与单位差异识别",
+          "人工确认与差异结论"
+        ]
+      }
+    ],
+    "group": "读空间",
+    "href": "/standards-benchmark"
+  },
+  {
+    "id": "RD-06",
+    "name": "全网专利分析",
+    "type": "检索与证据工作区",
+    "boundary": "AI4S原生开发",
+    "route": "/read/rd-06",
+    "children": [
+      {
+        "id": "RD-06-01",
+        "name": "专利检索与证据查看",
+        "route": "/read/rd-06/01",
+        "description": "按领域、地区、申请人、状态检索；同族/权利要求/引用网络",
+        "sourceRows": [
+          45,
+          46
+        ],
+        "requirements": [
+          "按领域、地区、申请人、状态检索",
+          "同族/权利要求/引用网络"
+        ]
+      },
+      {
+        "id": "RD-06-02",
+        "name": "技术布局与空白辅助分析",
+        "route": "/read/rd-06/02",
+        "description": "主题聚类、权利要求相似性比较、空白线索和交底草稿；竞争分析看板；专利主题聚类；权利要求相似性比较；技术空白与布局线索；技术交底书草稿生成",
+        "sourceRows": [
+          47,
+          48,
+          49,
+          50,
+          51,
+          52
+        ],
+        "requirements": [
+          "主题聚类、权利要求相似性比较、空白线索和交底草稿",
+          "竞争分析看板",
+          "专利主题聚类",
+          "权利要求相似性比较",
+          "技术空白与布局线索",
+          "技术交底书草稿生成"
+        ]
+      }
+    ],
+    "group": "读空间",
+    "href": "/patent-analysis"
+  },
+  {
+    "id": "RD-07",
+    "name": "文献图表提取",
+    "type": "阅读/证据分析工作区",
+    "boundary": "AI4S原生开发",
+    "route": "/read/rd-07",
+    "children": [
+      {
+        "id": "RD-07-01",
+        "name": "表格与图像结构化提取",
+        "route": "/read/rd-07/01",
+        "description": "PDF表格识别；字段与单位校对；Excel导出；图文来源绑定",
+        "sourceRows": [
+          53,
+          54,
+          55,
+          56
+        ],
+        "requirements": [
+          "PDF表格识别",
+          "字段与单位校对",
+          "Excel导出",
+          "图文来源绑定"
+        ]
+      },
+      {
+        "id": "RD-07-02",
+        "name": "曲线数据提取与校准",
+        "route": "/read/rd-07/02",
+        "description": "曲线图识别；坐标轴标定；曲线扣点；误差提示与人工修正；曲线数据入库与导出",
+        "sourceRows": [
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        "requirements": [
+          "曲线图识别",
+          "坐标轴标定",
+          "曲线扣点",
+          "误差提示与人工修正",
+          "曲线数据入库与导出"
+        ]
+      }
+    ],
+    "group": "读空间",
+    "href": "/literature-search/data-extract"
+  },
+  {
+    "id": "RD-08",
+    "name": "科研报告撰写",
+    "type": "结构化编辑器",
+    "boundary": "AI4S原生开发",
+    "route": "/read/rd-08",
+    "children": [
+      {
+        "id": "RD-08-01",
+        "name": "模板化科研报告与协作编辑",
+        "route": "/read/rd-08/01",
+        "description": "基于证据和任务结果生成大纲、章节、图表及引用，支持编辑导出；报告/综述模板选择；引用格式与本地写作联动；报告在线编辑",
+        "sourceRows": [
+          62,
+          68,
+          69,
+          70
+        ],
+        "requirements": [
+          "基于证据和任务结果生成大纲、章节、图表及引用，支持编辑导出",
+          "报告/综述模板选择",
+          "引用格式与本地写作联动",
+          "报告在线编辑"
+        ]
+      },
+      {
+        "id": "RD-08-02",
+        "name": "专业文稿质量辅助检查",
+        "route": "/read/rd-08/02",
+        "description": "论文/报告格式检查；专业术语一致性检查；引用与参考文献检查；重复内容/AIGC检测接入；技术交底结构检查",
+        "sourceRows": [
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        "requirements": [
+          "论文/报告格式检查",
+          "专业术语一致性检查",
+          "引用与参考文献检查",
+          "重复内容/AIGC检测接入",
+          "技术交底结构检查"
+        ]
+      }
+    ],
+    "group": "读空间",
+    "href": "/research-writing"
+  },
+  {
+    "id": "CP-01",
+    "name": "科研助手（科研计算求解）",
+    "type": "Agent任务工作区",
+    "boundary": "AI4S原生开发",
+    "route": "/compute/cp-01",
+    "children": [
+      {
+        "id": "CP-01-01",
+        "name": "科研计算求解",
+        "route": "/compute/cp-01/01",
+        "description": "全流程智能化完成部分场景的科研计算方案设计及自动调用工具、模型完成计算任务创建及执行。",
+        "sourceRows": [
+          71
+        ],
+        "requirements": [
+          "全流程智能化完成部分场景的科研计算方案设计及自动调用工具、模型完成计算任务创建及执行。"
+        ]
+      }
+    ],
+    "group": "算空间",
+    "href": "/compute-space"
+  },
+  {
+    "id": "CP-02",
+    "name": "智能设计与筛选",
+    "type": "模块总览/列表",
+    "boundary": "AI4S原生开发",
+    "route": "/compute/cp-02",
+    "children": [
+      {
+        "id": "CP-02-01",
+        "name": "多目标候选设计与筛选",
+        "route": "/compute/cp-02/01",
+        "description": "多目标指标配置",
+        "sourceRows": [
+          72
+        ],
+        "requirements": [
+          "多目标指标配置"
+        ]
+      },
+      {
+        "id": "CP-02-02",
+        "name": "业务场景专项设计插件",
+        "route": "/compute/cp-02/02",
+        "description": "地球科学专项插件；材料科学专项插件；合成生物学专项插件；定义插件统一接入方式",
+        "sourceRows": [
+          73,
+          74,
+          75,
+          76
+        ],
+        "requirements": [
+          "地球科学专项插件",
+          "材料科学专项插件",
+          "合成生物学专项插件",
+          "定义插件统一接入方式"
+        ]
+      }
+    ],
+    "group": "算空间",
+    "href": "/compute-space/design"
+  },
+  {
+    "id": "CP-03",
+    "name": "智能计算模拟任务",
+    "type": "任务运行与结果分析",
+    "boundary": "AI4S原生开发",
+    "route": "/compute/cp-03",
+    "children": [
+      {
+        "id": "CP-03-01",
+        "name": "计算任务规划",
+        "route": "/compute/cp-03/01",
+        "description": "调用中枢大模型",
+        "sourceRows": [
+          77
+        ],
+        "requirements": [
+          "调用中枢大模型"
+        ]
+      },
+      {
+        "id": "CP-03-02",
+        "name": "任务资源申请与绑定",
+        "route": "/compute/cp-03/02",
+        "description": "模拟计算通算、智算资源申请",
+        "sourceRows": [
+          78
+        ],
+        "requirements": [
+          "模拟计算通算、智算资源申请"
+        ]
+      },
+      {
+        "id": "CP-03-03",
+        "name": "创建计算任务",
+        "route": "/compute/cp-03/03",
+        "description": "支持参数智能推荐，自动完成创建",
+        "sourceRows": [
+          79
+        ],
+        "requirements": [
+          "支持参数智能推荐，自动完成创建"
+        ]
+      },
+      {
+        "id": "CP-03-04",
+        "name": "计算任务管理",
+        "route": "/compute/cp-03/04",
+        "description": "模拟计算任务删改查",
+        "sourceRows": [
+          80
+        ],
+        "requirements": [
+          "模拟计算任务删改查"
+        ]
+      },
+      {
+        "id": "CP-03-05",
+        "name": "任务执行记录管理",
+        "route": "/compute/cp-03/05",
+        "description": "模拟计算执行记录管理，任务执行状态机；日志、结果产物查看与下载",
+        "sourceRows": [
+          81
+        ],
+        "requirements": [
+          "模拟计算执行记录管理，任务执行状态机；日志、结果产物查看与下载"
+        ]
+      },
+      {
+        "id": "CP-03-06",
+        "name": "计算结果分析及评价",
+        "route": "/compute/cp-03/06",
+        "description": "计算结果联动设计/实验",
+        "sourceRows": [
+          82
+        ],
+        "requirements": [
+          "计算结果联动设计/实验"
+        ]
+      }
+    ],
+    "group": "算空间",
+    "href": "/compute-tasks"
+  },
+  {
+    "id": "CP-04",
+    "name": "科研数据处理",
+    "type": "模块总览/列表",
+    "boundary": "能力复用：AI中台页面深链接 + 状态回显",
+    "route": "/compute/cp-04",
+    "children": [
+      {
+        "id": "CP-04-01",
+        "name": "科研数据接入与质量处理（复用 AI 中台）",
+        "route": "/compute/cp-04/01",
+        "description": "数据处理任务创建（跳转 AI 中台）；数据处理任务记录、流程模板管理及共享；科研数据版本管理（预览、查看、可视化分析等）",
+        "sourceRows": [
+          83,
+          84,
+          85
+        ],
+        "requirements": [
+          "数据处理任务创建（跳转 AI 中台）",
+          "数据处理任务记录、流程模板管理及共享",
+          "科研数据版本管理（预览、查看、可视化分析等）"
+        ]
+      },
+      {
+        "id": "CP-04-02",
+        "name": "代码与自定义算子处理 （复用 AI 中台）",
+        "route": "/compute/cp-04/02",
+        "description": "自定义算子开发（跳转 AI 中台）；自定义算子沉淀、管理及共享",
+        "sourceRows": [],
+        "requirements": []
+      }
+    ],
+    "group": "算空间",
+    "href": "/compute-space/data"
+  },
+  {
+    "id": "CP-05",
+    "name": "科研模型训练与评价",
+    "type": "任务运行与结果分析",
+    "boundary": "AI4S原生开发",
+    "route": "/compute/cp-05",
+    "children": [
+      {
+        "id": "CP-05-01",
+        "name": "训练任务管理",
+        "route": "/compute/cp-05/01",
+        "description": "创建训练及微调任务（跳转 AI 中台）；训练任务列表及版本管理；科研模型列表及管理；多模型固定测试集对比",
+        "sourceRows": [
+          88,
+          89,
+          90,
+          91
+        ],
+        "requirements": [
+          "创建训练及微调任务（跳转 AI 中台）",
+          "训练任务列表及版本管理",
+          "科研模型列表及管理",
+          "多模型固定测试集对比"
+        ]
+      }
+    ],
+    "group": "算空间",
+    "href": "/compute-space/models"
+  },
+  {
+    "id": "CP-06",
+    "name": "工具/软件集成",
+    "type": "任务运行与结果分析",
+    "boundary": "AI4S原生开发",
+    "route": "/compute/cp-06",
+    "children": [
+      {
+        "id": "CP-06-01",
+        "name": "机理仿真",
+        "route": "/compute/cp-06/01",
+        "description": "仿真输入参数配置；仿真软件/求解器选择；仿真结果回传",
+        "sourceRows": [
+          92,
+          93,
+          94
+        ],
+        "requirements": [
+          "仿真输入参数配置",
+          "仿真软件/求解器选择",
+          "仿真结果回传"
+        ]
+      },
+      {
+        "id": "CP-06-02",
+        "name": "科学软件集成",
+        "route": "/compute/cp-06/02",
+        "description": "科学软件目录；软件版本管理；许可与授权管理；输入输出模板；软件运行环境绑定",
+        "sourceRows": [
+          95,
+          96,
+          97,
+          98,
+          99
+        ],
+        "requirements": [
+          "科学软件目录",
+          "软件版本管理",
+          "许可与授权管理",
+          "输入输出模板",
+          "软件运行环境绑定"
+        ]
+      },
+      {
+        "id": "CP-06-03",
+        "name": "工具/软件建设",
+        "route": "/compute/cp-06/03",
+        "description": "工具接口封装 （GeoEast处理解释软件、AGT正演软件（速度场生成、波场正演）、Tech Log、petrel、frsmart、MATLAB（数值计算）；参数模式定义；调试与测试；工具发布与版本管理",
+        "sourceRows": [
+          100,
+          101,
+          102,
+          103
+        ],
+        "requirements": [
+          "工具接口封装 （GeoEast处理解释软件、AGT正演软件（速度场生成、波场正演）、Tech Log、petrel、frsmart、MATLAB（数值计算）",
+          "参数模式定义",
+          "调试与测试",
+          "工具发布与版本管理"
+        ]
+      }
+    ],
+    "group": "算空间",
+    "href": "/compute-space/tools"
+  },
+  {
+    "id": "EX-01",
+    "name": "实验方案设计",
+    "type": "结构化编辑器",
+    "boundary": "AI4S原生开发",
+    "route": "/experiment/ex-01",
+    "children": [
+      {
+        "id": "EX-01-01",
+        "name": "实验方案模板与版本",
+        "route": "/experiment/ex-01/01",
+        "description": "实验方案模板管理；AI方案自动生成；方案版本与变更溯源",
+        "sourceRows": [
+          104,
+          105,
+          106
+        ],
+        "requirements": [
+          "实验方案模板管理",
+          "AI方案自动生成",
+          "方案版本与变更溯源"
+        ]
+      },
+      {
+        "id": "EX-01-02",
+        "name": "方案审核与执行转换",
+        "route": "/experiment/ex-01/02",
+        "description": "多角色会签审批；方案定版锁定",
+        "sourceRows": [
+          107,
+          108
+        ],
+        "requirements": [
+          "多角色会签审批",
+          "方案定版锁定"
+        ]
+      }
+    ],
+    "group": "做空间",
+    "href": "/experiment-design"
+  },
+  {
+    "id": "EX-02",
+    "name": "实验样品与记录",
+    "type": "列表—详情—流程",
+    "boundary": "AI4S原生开发",
+    "route": "/experiment/ex-02",
+    "children": [
+      {
+        "id": "EX-02-01",
+        "name": "样品与批次全生命周期管理",
+        "route": "/experiment/ex-02/01",
+        "description": "样品/材料登记；样品状态管理；样品流转记录；样品与实验/检测关联；批次追溯",
+        "sourceRows": [
+          109,
+          110,
+          111,
+          112,
+          113
+        ],
+        "requirements": [
+          "样品/材料登记",
+          "样品状态管理",
+          "样品流转记录",
+          "样品与实验/检测关联",
+          "批次追溯"
+        ]
+      },
+      {
+        "id": "EX-02-02",
+        "name": "实验过程记录与证据追溯",
+        "route": "/experiment/ex-02/02",
+        "description": "ELN数据集成",
+        "sourceRows": [
+          114
+        ],
+        "requirements": [
+          "ELN数据集成"
+        ]
+      }
+    ],
+    "group": "做空间",
+    "href": "/experiments/samples"
+  },
+  {
+    "id": "EX-03",
+    "name": "实验设备纳管与共享",
+    "type": "列表—详情—流程",
+    "boundary": "AI4S原生开发",
+    "route": "/experiment/ex-03",
+    "children": [
+      {
+        "id": "EX-03-01",
+        "name": "实验设备台账",
+        "route": "/experiment/ex-03/01",
+        "description": "实验设备基础台账/实验设备能力与技术档案/实验设备接口与协议信息；实验设备共享范围；实验设备接入状态",
+        "sourceRows": [
+          115,
+          116,
+          117
+        ],
+        "requirements": [
+          "实验设备基础台账/实验设备能力与技术档案/实验设备接口与协议信息",
+          "实验设备共享范围",
+          "实验设备接入状态"
+        ]
+      },
+      {
+        "id": "EX-03-02",
+        "name": "实验设备状态与数据采集",
+        "route": "/experiment/ex-03/02",
+        "description": "实验设备开关机/运行状态采集；实验数据自动采集；实验设备协议适配管理；实验设备批量接收与时间对齐；实验设备断点续传与异常补采",
+        "sourceRows": [
+          118,
+          119,
+          120,
+          121,
+          122
+        ],
+        "requirements": [
+          "实验设备开关机/运行状态采集",
+          "实验数据自动采集",
+          "实验设备协议适配管理",
+          "实验设备批量接收与时间对齐",
+          "实验设备断点续传与异常补采"
+        ]
+      },
+      {
+        "id": "EX-03-03",
+        "name": "实验设备开放共享与使用分析",
+        "route": "/experiment/ex-03/03",
+        "description": "实验设备开放范围与服务配置；实验设备共享服务发布；实验设备使用记录；使用率/开放机时分析",
+        "sourceRows": [
+          123,
+          124,
+          125,
+          126
+        ],
+        "requirements": [
+          "实验设备开放范围与服务配置",
+          "实验设备共享服务发布",
+          "实验设备使用记录",
+          "使用率/开放机时分析"
+        ]
+      }
+    ],
+    "group": "做空间",
+    "href": "/lab-resources"
+  },
+  {
+    "id": "EX-04",
+    "name": "实验仪器预约",
+    "type": "分析驾驶舱",
+    "boundary": "AI4S原生开发",
+    "route": "/experiment/ex-04",
+    "children": [
+      {
+        "id": "EX-04-01",
+        "name": "开放机时与预约规则配置",
+        "route": "/experiment/ex-04/01",
+        "description": "设备开放时段配置、开放范围配置；预约规则设置，如提前量与预约时长规则、设备停机/维护占用规则",
+        "sourceRows": [
+          127,
+          128
+        ],
+        "requirements": [
+          "设备开放时段配置、开放范围配置",
+          "预约规则设置，如提前量与预约时长规则、设备停机/维护占用规则"
+        ]
+      },
+      {
+        "id": "EX-04-02",
+        "name": "仪器预约申请与排期审批",
+        "route": "/experiment/ex-04/02",
+        "description": "可用时段查询；预约申请/冲突校验/排期审批/预约取消与变更",
+        "sourceRows": [
+          129,
+          130
+        ],
+        "requirements": [
+          "可用时段查询",
+          "预约申请/冲突校验/排期审批/预约取消与变更"
+        ]
+      },
+      {
+        "id": "EX-04-03",
+        "name": "机时统计分析",
+        "route": "/experiment/ex-04/03",
+        "description": "机时使用记录；开放机时统计/实际使用率统计/闲置与冲突分析",
+        "sourceRows": [
+          131,
+          132
+        ],
+        "requirements": [
+          "机时使用记录",
+          "开放机时统计/实际使用率统计/闲置与冲突分析"
+        ]
+      }
+    ],
+    "group": "做空间",
+    "href": "/lab-resources/reservations"
+  },
+  {
+    "id": "EX-05",
+    "name": "实验自动编排智能体",
+    "type": "Agent任务工作区",
+    "boundary": "AI4S原生开发",
+    "route": "/experiment/ex-05",
+    "children": [
+      {
+        "id": "EX-05-01",
+        "name": "实验任务登记与审核下发",
+        "route": "/experiment/ex-05/01",
+        "description": "责任人和执行要求登记/任务审核/任务下发/执行状态回传",
+        "sourceRows": [
+          133
+        ],
+        "requirements": [
+          "责任人和执行要求登记/任务审核/任务下发/执行状态回传"
+        ]
+      },
+      {
+        "id": "EX-05-02",
+        "name": "实验过程编排与执行跟踪",
+        "route": "/experiment/ex-05/02",
+        "description": "异常记录与处置；实验状态暂停/恢复，实验原始结果回传、汇总",
+        "sourceRows": [
+          134,
+          135
+        ],
+        "requirements": [
+          "异常记录与处置",
+          "实验状态暂停/恢复，实验原始结果回传、汇总"
+        ]
+      }
+    ],
+    "group": "做空间",
+    "href": "/experiments/orchestrator"
+  },
+  {
+    "id": "EX-06",
+    "name": "实验管理",
+    "type": "任务运行与结果分析",
+    "boundary": "AI4S原生开发",
+    "route": "/experiment/ex-06",
+    "children": [
+      {
+        "id": "EX-06-01",
+        "name": "实验台账管理",
+        "route": "/experiment/ex-06/01",
+        "description": "管理实验批次、实验基本信息、进度及状态等台账",
+        "sourceRows": [
+          136
+        ],
+        "requirements": [
+          "管理实验批次、实验基本信息、进度及状态等台账"
+        ]
+      },
+      {
+        "id": "EX-06-02",
+        "name": "实验运行记录",
+        "route": "/experiment/ex-06/02",
+        "description": "实验全运行过程记录",
+        "sourceRows": [
+          137
+        ],
+        "requirements": [
+          "实验全运行过程记录"
+        ]
+      },
+      {
+        "id": "EX-06-03",
+        "name": "实验调优迭代",
+        "route": "/experiment/ex-06/03",
+        "description": "实验参数调整、实验结果迭代",
+        "sourceRows": [
+          138
+        ],
+        "requirements": [
+          "实验参数调整、实验结果迭代"
+        ]
+      }
+    ],
+    "group": "做空间",
+    "href": "/experiments"
+  },
+  {
+    "id": "EX-07",
+    "name": "实验表征分析",
+    "type": "检索与证据工作区",
+    "boundary": "AI4S原生开发",
+    "route": "/experiment/ex-07",
+    "children": [
+      {
+        "id": "EX-07-01",
+        "name": "实验结果采集与处理",
+        "route": "/experiment/ex-07/01",
+        "description": "汇总/解析/清洗/加工/转换",
+        "sourceRows": [
+          139
+        ],
+        "requirements": [
+          "汇总/解析/清洗/加工/转换"
+        ]
+      },
+      {
+        "id": "EX-07-02",
+        "name": "实验结果分析",
+        "route": "/experiment/ex-07/02",
+        "description": "AI辅助特征识别 /机理解释与结论",
+        "sourceRows": [
+          140
+        ],
+        "requirements": [
+          "AI辅助特征识别 /机理解释与结论"
+        ]
+      },
+      {
+        "id": "EX-07-03",
+        "name": "实验报告生成",
+        "route": "/experiment/ex-07/03",
+        "description": "AI生成实验报告",
+        "sourceRows": [
+          141
+        ],
+        "requirements": [
+          "AI生成实验报告"
+        ]
+      },
+      {
+        "id": "EX-07-04",
+        "name": "实验数据查询",
+        "route": "/experiment/ex-07/04",
+        "description": "按设备查询/按人员/课题查询/按时间/批次查询/按样品查询",
+        "sourceRows": [
+          142
+        ],
+        "requirements": [
+          "按设备查询/按人员/课题查询/按时间/批次查询/按样品查询"
+        ]
+      }
+    ],
+    "group": "做空间",
+    "href": "/experiment-analysis"
+  },
+  {
+    "id": "PM-01",
+    "name": "立项管理",
+    "type": "分析驾驶舱",
+    "boundary": "集成应用：统一入口 + 单点登录 + 深链接/嵌入",
+    "route": "/project-management/pm-01",
+    "children": [
+      {
+        "id": "PM-01-01",
+        "name": "科技情报探员",
+        "route": "/project-management/pm-01/01",
+        "description": "情报周速递；情报深探索",
+        "sourceRows": [
+          158,
+          159
+        ],
+        "requirements": [
+          "情报周速递",
+          "情报深探索"
+        ]
+      },
+      {
+        "id": "PM-01-02",
+        "name": "科研立项审查专员",
+        "route": "/project-management/pm-01/02",
+        "description": "开题报告编制；开题报告AI审查",
+        "sourceRows": [
+          160,
+          161
+        ],
+        "requirements": [
+          "开题报告编制",
+          "开题报告AI审查"
+        ]
+      },
+      {
+        "id": "PM-01-03",
+        "name": "需求分析专员",
+        "route": "/project-management/pm-01/03",
+        "description": "科研需求澄清；科研查重；可研报告编制",
+        "sourceRows": [
+          162,
+          163,
+          164
+        ],
+        "requirements": [
+          "科研需求澄清",
+          "科研查重",
+          "可研报告编制"
+        ]
+      },
+      {
+        "id": "PM-01-04",
+        "name": "三新审查专员",
+        "route": "/project-management/pm-01/04",
+        "description": "",
+        "sourceRows": [
+          165
+        ],
+        "requirements": []
+      }
+    ],
+    "group": "科研项目管理",
+    "href": "/project-management/pm-01"
+  },
+  {
+    "id": "PM-02",
+    "name": "过程管理",
+    "type": "分析驾驶舱",
+    "boundary": "集成应用：统一入口 + 单点登录 + 深链接/嵌入",
+    "route": "/project-management/pm-02",
+    "children": [
+      {
+        "id": "PM-02-01",
+        "name": "科研进度跟踪",
+        "route": "/project-management/pm-02/01",
+        "description": "项目进度监控；分级分类跟踪；AI分析与报告",
+        "sourceRows": [
+          166,
+          167,
+          168
+        ],
+        "requirements": [
+          "项目进度监控",
+          "分级分类跟踪",
+          "AI分析与报告"
+        ]
+      },
+      {
+        "id": "PM-02-02",
+        "name": "科研经费预警",
+        "route": "/project-management/pm-02/02",
+        "description": "经费查询与总览；经费监控与预警；经费统计与分析",
+        "sourceRows": [
+          169,
+          170,
+          171
+        ],
+        "requirements": [
+          "经费查询与总览",
+          "经费监控与预警",
+          "经费统计与分析"
+        ]
+      },
+      {
+        "id": "PM-02-03",
+        "name": "实验室智慧共享专员",
+        "route": "/project-management/pm-02/03",
+        "description": "实验室需求表单；AI推荐结果",
+        "sourceRows": [
+          172,
+          173
+        ],
+        "requirements": [
+          "实验室需求表单",
+          "AI推荐结果"
+        ]
+      }
+    ],
+    "group": "科研项目管理",
+    "href": "/project-management/pm-02"
+  },
+  {
+    "id": "PM-03",
+    "name": "外协管理",
+    "type": "分析驾驶舱",
+    "boundary": "集成应用：统一入口 + 单点登录 + 深链接/嵌入",
+    "route": "/project-management/pm-03",
+    "children": [
+      {
+        "id": "PM-03-01",
+        "name": "科研外协管理专家",
+        "route": "/project-management/pm-03/01",
+        "description": "外协管理",
+        "sourceRows": [
+          174
+        ],
+        "requirements": [
+          "外协管理"
+        ]
+      }
+    ],
+    "group": "科研项目管理",
+    "href": "/project-management/pm-03"
+  },
+  {
+    "id": "PM-04",
+    "name": "成果管理",
+    "type": "分析驾驶舱",
+    "boundary": "集成应用：统一入口 + 单点登录 + 深链接/嵌入",
+    "route": "/project-management/pm-04",
+    "children": [
+      {
+        "id": "PM-04-01",
+        "name": "科技成果评价师",
+        "route": "/project-management/pm-04/01",
+        "description": "成果报告",
+        "sourceRows": [
+          175
+        ],
+        "requirements": [
+          "成果报告"
+        ]
+      },
+      {
+        "id": "PM-04-02",
+        "name": "知识产权架构师",
+        "route": "/project-management/pm-04/02",
+        "description": "专利导航；知识产权布局策略",
+        "sourceRows": [
+          176,
+          177
+        ],
+        "requirements": [
+          "专利导航",
+          "知识产权布局策略"
+        ]
+      }
+    ],
+    "group": "科研项目管理",
+    "href": "/project-management/pm-04"
+  },
+  {
+    "id": "PM-05",
+    "name": "人才管理",
+    "type": "分析驾驶舱",
+    "boundary": "集成应用：统一入口 + 单点登录 + 深链接/嵌入",
+    "route": "/project-management/pm-05",
+    "children": [
+      {
+        "id": "PM-05-01",
+        "name": "科研人才匹配专家",
+        "route": "/project-management/pm-05/01",
+        "description": "",
+        "sourceRows": [
+          178
+        ],
+        "requirements": []
+      }
+    ],
+    "group": "科研项目管理",
+    "href": "/project-management/pm-05"
+  },
+  {
+    "id": "PM-06",
+    "name": "考核管理",
+    "type": "分析驾驶舱",
+    "boundary": "集成应用：统一入口 + 单点登录 + 深链接/嵌入",
+    "route": "/project-management/pm-06",
+    "children": [
+      {
+        "id": "PM-06-01",
+        "name": "管理支撑能力",
+        "route": "/project-management/pm-06/01",
+        "description": "指标提炼；数据下钻",
+        "sourceRows": [
+          179,
+          180
+        ],
+        "requirements": [
+          "指标提炼",
+          "数据下钻"
+        ]
+      },
+      {
+        "id": "PM-06-02",
+        "name": "验收考核",
+        "route": "/project-management/pm-06/02",
+        "description": "",
+        "sourceRows": [
+          181
+        ],
+        "requirements": []
+      }
+    ],
+    "group": "科研项目管理",
+    "href": "/project-management/pm-06"
+  },
+  {
+    "id": "PM-07",
+    "name": "日常管理",
+    "type": "分析驾驶舱",
+    "boundary": "集成应用：统一入口 + 单点登录 + 深链接/嵌入",
+    "route": "/project-management/pm-07",
+    "children": [
+      {
+        "id": "PM-07-01",
+        "name": "科研日程助手",
+        "route": "/project-management/pm-07/01",
+        "description": "主要落实情况；工作总览；计划安排；课题周报；周报展示·历史查阅；周报填报·结构化填写；动态录入·一键提交",
+        "sourceRows": [
+          182,
+          183,
+          184,
+          185,
+          186,
+          187,
+          188
+        ],
+        "requirements": [
+          "主要落实情况",
+          "工作总览",
+          "计划安排",
+          "课题周报",
+          "周报展示·历史查阅",
+          "周报填报·结构化填写",
+          "动态录入·一键提交"
+        ]
+      },
+      {
+        "id": "PM-07-02",
+        "name": "科研智慧文员",
+        "route": "/project-management/pm-07/02",
+        "description": "智能问数",
+        "sourceRows": [
+          189
+        ],
+        "requirements": [
+          "智能问数"
+        ]
+      },
+      {
+        "id": "PM-07-03",
+        "name": "虚拟咨询顾问",
+        "route": "/project-management/pm-07/03",
+        "description": "科研相关问题问答（对话历史、新建对话、对话输入框）",
+        "sourceRows": [
+          190
+        ],
+        "requirements": [
+          "科研相关问题问答（对话历史、新建对话、对话输入框）"
+        ]
+      }
+    ],
+    "group": "科研项目管理",
+    "href": "/project-management/pm-07"
+  },
+  {
+    "id": "AS-01",
+    "name": "科研数据及知识",
+    "type": "资产目录/详情",
+    "boundary": "AI4S原生开发",
+    "route": "/assets/as-01",
+    "children": [
+      {
+        "id": "AS-01-01",
+        "name": "科研数据",
+        "route": "/assets/as-01/01",
+        "description": "科研数据入库与检索",
+        "sourceRows": [
+          191
+        ],
+        "requirements": [
+          "科研数据入库与检索"
+        ]
+      },
+      {
+        "id": "AS-01-02",
+        "name": "科研知识",
+        "route": "/assets/as-01/02",
+        "description": "科研知识入库与检索",
+        "sourceRows": [
+          192
+        ],
+        "requirements": [
+          "科研知识入库与检索"
+        ]
+      },
+      {
+        "id": "AS-01-03",
+        "name": "科研成果",
+        "route": "/assets/as-01/03",
+        "description": "科研成果登记与共享",
+        "sourceRows": [
+          193
+        ],
+        "requirements": [
+          "科研成果登记与共享"
+        ]
+      }
+    ],
+    "group": "科研资产",
+    "href": "/assets/data-knowledge"
+  },
+  {
+    "id": "AS-02",
+    "name": "科研模型",
+    "type": "资产目录/详情",
+    "boundary": "AI4S原生开发",
+    "route": "/assets/as-02",
+    "children": [
+      {
+        "id": "AS-02-01",
+        "name": "科研专业模型",
+        "route": "/assets/as-02/01",
+        "description": "专业模型发布与调用",
+        "sourceRows": [
+          194
+        ],
+        "requirements": [
+          "专业模型发布与调用"
+        ]
+      }
+    ],
+    "group": "科研资产",
+    "href": "/assets/models"
+  },
+  {
+    "id": "AS-03",
+    "name": "科研方案",
+    "type": "任务运行与结果分析",
+    "boundary": "AI4S原生开发",
+    "route": "/assets/as-03",
+    "children": [
+      {
+        "id": "AS-03-01",
+        "name": "计算方案",
+        "route": "/assets/as-03/01",
+        "description": "计算方案保存与复用",
+        "sourceRows": [
+          195
+        ],
+        "requirements": [
+          "计算方案保存与复用"
+        ]
+      },
+      {
+        "id": "AS-03-02",
+        "name": "实验方案",
+        "route": "/assets/as-03/02",
+        "description": "实验方案保存与复用",
+        "sourceRows": [
+          196
+        ],
+        "requirements": [
+          "实验方案保存与复用"
+        ]
+      }
+    ],
+    "group": "科研资产",
+    "href": "/assets/plans"
+  },
+  {
+    "id": "AS-04",
+    "name": "科研智能服务",
+    "type": "资产目录/详情",
+    "boundary": "AI4S原生开发",
+    "route": "/assets/as-04",
+    "children": [
+      {
+        "id": "AS-04-01",
+        "name": "科研智能体",
+        "route": "/assets/as-04/01",
+        "description": "科研活动智能体发布与调用；科研管理智能体发布与调用",
+        "sourceRows": [
+          197,
+          198
+        ],
+        "requirements": [
+          "科研活动智能体发布与调用",
+          "科研管理智能体发布与调用"
+        ]
+      },
+      {
+        "id": "AS-04-02",
+        "name": "科研工作流",
+        "route": "/assets/as-04/02",
+        "description": "科研流程模板发布与复用",
+        "sourceRows": [
+          199
+        ],
+        "requirements": [
+          "科研流程模板发布与复用"
+        ]
+      },
+      {
+        "id": "AS-04-03",
+        "name": "科研技能",
+        "route": "/assets/as-04/03",
+        "description": "Skill封装与上架",
+        "sourceRows": [
+          200
+        ],
+        "requirements": [
+          "Skill封装与上架"
+        ]
+      },
+      {
+        "id": "AS-04-04",
+        "name": "科学软件",
+        "route": "/assets/as-04/04",
+        "description": "科学软件登记与授权",
+        "sourceRows": [
+          201
+        ],
+        "requirements": [
+          "科学软件登记与授权"
+        ]
+      },
+      {
+        "id": "AS-04-05",
+        "name": "算法工具",
+        "route": "/assets/as-04/05",
+        "description": "算法组件发布与调用",
+        "sourceRows": [
+          202
+        ],
+        "requirements": [
+          "算法组件发布与调用"
+        ]
+      },
+      {
+        "id": "AS-04-06",
+        "name": "设备连接服务",
+        "route": "/assets/as-04/06",
+        "description": "设备连接器配置与调用（业务侧封装）",
+        "sourceRows": [
+          203
+        ],
+        "requirements": [
+          "设备连接器配置与调用（业务侧封装）"
+        ]
+      },
+      {
+        "id": "AS-04-07",
+        "name": "设备状态监控服务",
+        "route": "/assets/as-04/07",
+        "description": "设备监控工具接入与配置（业务侧封装）",
+        "sourceRows": [
+          204
+        ],
+        "requirements": [
+          "设备监控工具接入与配置（业务侧封装）"
+        ]
+      }
+    ],
+    "group": "科研资产",
+    "href": "/assets/intelligent-services"
+  }
+]

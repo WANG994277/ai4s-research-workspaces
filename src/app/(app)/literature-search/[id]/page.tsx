@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { getPaperById, getCitation, citationFormats, papers, type Paper } from '@/lib/literature-data';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 type DetailTab = 'abstract' | 'fulltext' | 'refs' | 'citations' | 'chat' | 'notes' | 'authors' | 'related';
 
@@ -33,7 +34,8 @@ export default function LiteratureDetailPage({ params }: { params: Promise<{ id:
   const paperId = parseInt(id, 10);
   const paper = getPaperById(paperId);
 
-  const [activeTab, setActiveTab] = useState<DetailTab>('abstract');
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState<DetailTab>(searchParams.get('tab') === 'authors' ? 'authors' : 'abstract');
   const [starred, setStarred] = useState(paper?.starred ?? false);
   const [showCiteModal, setShowCiteModal] = useState(false);
   const [citeFormat, setCiteFormat] = useState('apa');

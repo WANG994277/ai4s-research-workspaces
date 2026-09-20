@@ -1,3 +1,5 @@
-export default function ManageLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+import { notFound } from 'next/navigation';
+
+export default function ManageLayout() {
+  notFound();
 }

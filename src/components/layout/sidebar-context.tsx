@@ -15,6 +15,8 @@ interface SidebarContextType {
   setCurrentSpace: (space: string) => void;
   role: DemoRole;
   setRole: (role: DemoRole) => void;
+  projectId: string;
+  setProjectId: (id: string) => void;
 }
 
 const SidebarContext = createContext<SidebarContextType>({
@@ -26,6 +28,8 @@ const SidebarContext = createContext<SidebarContextType>({
   setCurrentSpace: () => {},
   role: 'researcher',
   setRole: () => {},
+  projectId: 'PROJ-CCUS-01',
+  setProjectId: () => {},
 });
 
 export function SidebarProvider({ children }: { children: ReactNode }) {
@@ -33,10 +37,19 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const [currentSpace, setCurrentSpace] = useState('read');
   const [role, setRoleState] = useState<DemoRole>('researcher');
+  const [projectId, setProjectIdState] = useState('PROJ-CCUS-01');
+  const setProjectId = useCallback((id: string) => {
+    localStorage.setItem('ai4s-current-project', id);
+    setProjectIdState(id);
+  }, []);
 
   useEffect(() => {
     const saved = localStorage.getItem('ai4s-demo-role');
-    if (saved === 'researcher' || saved === 'lead' || saved === 'manager' || saved === 'admin') setRoleState(saved);
+    if (saved === 'researcher' || saved === 'lead' || saved === 'manager') setRoleState(saved);
+    if (saved === 'admin') setRoleState('manager');
+    const project = localStorage.getItem('ai4s-current-project');
+    if (project) setProjectIdState(project);
+    if (window.innerWidth <= 1280) setCollapsed(true);
   }, []);
 
   const setRole = useCallback((next: DemoRole) => {
@@ -48,7 +61,7 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
 
   return (
     <SidebarContext.Provider
-      value={{ mode, setMode, collapsed, toggleCollapsed, currentSpace, setCurrentSpace, role, setRole }}
+      value={{ mode, setMode, collapsed, toggleCollapsed, currentSpace, setCurrentSpace, role, setRole, projectId, setProjectId }}
     >
       {children}
     </SidebarContext.Provider>

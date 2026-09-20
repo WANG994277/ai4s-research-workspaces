@@ -10,7 +10,7 @@ import {
   RefreshCw, Award, ClipboardList, FileCode, BrainCircuit
 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { addReviewPaper, isPaperAdded } from '@/lib/review-papers';
 import { addSmartReadPaper, isPaperInSmartRead } from '@/lib/smart-read-papers';
@@ -78,7 +78,8 @@ function getLiteratureTypeInfo(type: Paper['literatureType']): { icon: React.Ele
 
 export default function LiteratureSearchPage() {
   const router = useRouter();
-  const [query, setQuery] = useState('');
+  const searchParams = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get('q') ?? '');
   const [selectedPaper, setSelectedPaper] = useState<Paper | null>(null);
   const [showDetail, setShowDetail] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
