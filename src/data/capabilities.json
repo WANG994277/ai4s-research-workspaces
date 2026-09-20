@@ -266,7 +266,7 @@
   {
     "id": 23,
     "group": "算空间",
-    "label": "科研助手（科研计算求解）",
+    "label": "开始计算",
     "href": "/compute-space",
     "priority": "P0",
     "strategy": "AI4S自建+能力复用",
@@ -290,7 +290,7 @@
   {
     "id": 25,
     "group": "算空间",
-    "label": "智能计算模拟任务",
+    "label": "计算任务",
     "href": "/compute-tasks",
     "priority": "P0",
     "strategy": "混合：AI4S自建+能力复用 / 专业场景适配",
@@ -314,7 +314,7 @@
   {
     "id": 27,
     "group": "算空间",
-    "label": "科研模型训练与评价",
+    "label": "模型训练与评价",
     "href": "/compute-space/models",
     "priority": "P0",
     "strategy": "AI4S自建+能力复用",
@@ -326,7 +326,7 @@
   {
     "id": 28,
     "group": "算空间",
-    "label": "工具/软件集成",
+    "label": "科研工具",
     "href": "/compute-space/tools",
     "priority": "P0",
     "strategy": "专业场景适配",

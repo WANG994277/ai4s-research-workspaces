@@ -539,5 +539,9 @@
   },
   "/assets/as-04": {
     "href": "/assets/intelligent-services"
-  }
+  },
+  "/lab-resources": "/do-space/equipment",
+  "/lab-resources/reservations": "/do-space/bookings",
+  "/experiments": "/do-space/tasks",
+  "/experiments/orchestrator": "/do-space/tasks"
 }

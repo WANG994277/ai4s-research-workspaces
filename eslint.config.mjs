@@ -23,6 +23,7 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   {
+    files: ['**/*.{js,jsx,mjs,ts,tsx,mts,cts}'],
     rules: {
       'import/no-cycle': ['error', { ignoreExternal: true }],
       'react-hooks/set-state-in-effect': 'off',
@@ -39,6 +40,7 @@ const eslintConfig = defineConfig([
   globalIgnores([
     // Default ignores of eslint-config-next:
     '.next/**',
+    '.next-read-preview/**',
     'out/**',
     'build/**',
     'next-env.d.ts',

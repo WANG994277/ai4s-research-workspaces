@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "noEmit": true, "incremental": false },
+  "include": [
+    "../../next-env.d.ts",
+    "../../src/components/read-space/**/*.ts",
+    "../../src/components/read-space/**/*.tsx",
+    "../../src/app/(app)/read-space/**/*.tsx",
+    "../../src/app/(app)/literature-search/**/*.tsx",
+    "../../src/app/(app)/standards-benchmark/**/*.tsx",
+    "../../src/app/(app)/patent-analysis/page.tsx",
+    "../../src/app/(app)/knowledge-graph/page.tsx",
+    "../../src/app/(app)/research-writing/page.tsx",
+    "../../scripts/check-read-space.ts"
+  ],
+  "exclude": ["../../node_modules", "../../.next"]
+}

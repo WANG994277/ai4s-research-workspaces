@@ -1,0 +1,38 @@
+{
+  "name": "patents",
+  "url": "/patent-analysis",
+  "heading": "全网专利分析",
+  "buttons": [
+    "研究笔记 ",
+    "导出当前结果",
+    "专利分析 Agent",
+    "精确检索工作台",
+    "开始专利分析",
+    "编辑筛选与检索范围",
+    "保存当前产物",
+    "技术地图",
+    "技术路线趋势",
+    "主要申请人",
+    "权利要求",
+    "技术空白候选",
+    "高温高压条件下岩石真三轴试验装置",
+    "Cyclic heating apparatus for rock permeability",
+    "页岩水力压裂裂缝扩展监测方法",
+    "面向储层改造的多场耦合参数反演方法",
+    "Thermal fracture simulation for shale reservoirs",
+    "复杂应力路径下页岩压裂工艺优化方法",
+    "本页需求",
+    "导出本页",
+    "完整 PRD"
+  ],
+  "tabs": [
+    "专利分析 Agent",
+    "精确检索工作台",
+    "技术地图",
+    "技术路线趋势",
+    "主要申请人",
+    "权利要求",
+    "技术空白候选"
+  ],
+  "overflow": false
+}

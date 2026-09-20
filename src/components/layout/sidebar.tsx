@@ -6,7 +6,7 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import {
   BookOpen, Building2, ChevronDown, ChevronLeft, ChevronRight,
   Database, FlaskConical, FolderKanban,
-  Gauge, LayoutDashboard, Users, Calculator,
+  Gauge, LayoutDashboard, Users, Calculator, Library,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { capabilities, visibleGroups, isCurrentCapability, navigationHref } from '@/lib/capabilities';
@@ -14,7 +14,7 @@ import { useSidebar, type DemoRole } from './sidebar-context';
 import { cn } from '@/lib/utils';
 
 const icons: Record<string, LucideIcon> = {
-  科研协作: Users, 读空间: BookOpen, 算空间: Calculator, 做空间: FlaskConical,
+  科研协作: Users, 读空间: BookOpen, 知识库: Library, 算空间: Calculator, 做空间: FlaskConical,
   科研资产: Database, 科研驾驶舱: Gauge,
   科研项目管理: Building2,
 };
@@ -26,8 +26,8 @@ const roles: { value: DemoRole; label: string }[] = [
 ];
 
 const projectManagementOrder = ['立项管理', '过程管理', '外协管理', '人才管理', '成果管理', '考核管理', '日常管理'];
-const mergedChildren = ['RD-03','RD-07','CP-05','EX-04','EX-05'];
-const workspaceLabels: Record<string,string> = { 'RD-02':'文献工作区', 'CP-04':'科研数据与模型', 'EX-03':'仪器与预约', 'EX-06':'实验执行与管理' };
+const mergedChildren = ['RD-03','RD-07','EX-04','EX-05'];
+const workspaceLabels: Record<string,string> = { 'RD-02':'文献工作区', 'CP-01':'开始计算', 'CP-03':'计算任务', 'CP-04':'科研数据处理', 'CP-05':'模型训练与评价', 'CP-06':'科研工具', 'EX-03':'仪器与预约', 'EX-06':'实验执行与管理' };
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -45,7 +45,7 @@ export function Sidebar() {
 
   useEffect(() => {
     const active = capabilities.find((item) => isCurrentCapability(currentHref, item.href));
-    if (active) setOpenGroups((current) => current.includes(active.group) ? current : [...current.slice(-1), active.group]);
+    if (active && active.group !== '知识库') setOpenGroups((current) => current.includes(active.group) ? current : [...current.slice(-1), active.group]);
   }, [currentHref]);
 
   const toggleGroup = (group: string) => {
@@ -67,12 +67,25 @@ export function Sidebar() {
         </Link>
         {groups.map((group) => {
           const Icon = icons[group] ?? FolderKanban;
-          const items = capabilities
+          const items = group === '做空间' ? [
+            ...[['EX-01','开始实验设计','/do-space'],['EX-01','实验方案','/do-space/plans'],['EX-02','样品与记录','/do-space/samples'],['EX-03','实验设备','/do-space/equipment'],['EX-04','仪器预约','/do-space/bookings'],['EX-06','实验管理','/do-space/tasks'],['EX-07','表征分析','/do-space/analysis']].map(([pageId,label,href],index)=>({...capabilities.find(item=>item.pageId===pageId)!,id:3000+index,pageId:`DO-NAV-${index}`,label,href}))
+          ] : group === '读空间' ? [
+            { ...capabilities.find(item => item.pageId === 'RD-01')!, label: '开始研究', href: '/read-space', pageId: 'READ-HOME' },
+            { ...capabilities.find(item => item.pageId === 'RD-02')!, label: '文献检索', pageId: 'READ-SEARCH' },
+            { ...capabilities.find(item => item.pageId === 'RD-01')!, id: 1099, label: '研究任务', href: '/read-space/tasks', pageId: 'READ-TASKS' },
+          ] : capabilities
             .filter((item) => item.group === group && item.nav !== '否' && !mergedChildren.includes(item.pageId))
             .sort((a, b) => group === '科研项目管理'
               ? projectManagementOrder.indexOf(a.label) - projectManagementOrder.indexOf(b.label)
               : 0);
           const open = openGroups.includes(group);
+          if (group === '知识库') {
+            const active = isCurrentCapability(currentHref, '/knowledge');
+            return <Link key={group} href="/knowledge" aria-label="知识库" title={collapsed ? group : undefined} aria-current={active ? 'page' : undefined} className={cn('mb-1 flex h-9 items-center gap-2.5 rounded-md px-3 text-[13px] font-medium', active ? 'border-l-[3px] border-primary bg-secondary pl-[9px] text-primary' : 'text-foreground hover:bg-[#F6F7F9]')}>
+              <Icon className={cn('size-4 shrink-0', active ? 'text-primary' : 'text-muted-foreground')} />
+              {!collapsed && <span className="min-w-0 flex-1 truncate">知识库</span>}
+            </Link>;
+          }
           return <div key={group} className="mb-1">
             <button type="button" title={collapsed ? group : undefined} aria-expanded={open} onClick={() => collapsed ? toggleCollapsed() : toggleGroup(group)} className="flex h-9 w-full items-center gap-2.5 rounded-md px-3 text-left text-[13px] font-medium text-foreground hover:bg-[#F6F7F9]">
               <Icon className="size-4 shrink-0 text-muted-foreground" />

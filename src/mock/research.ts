@@ -13,6 +13,7 @@ export interface ResearchRecord {
 }
 
 export const projects: ResearchRecord[] = [
+  { id: 'PROJ-SHALE-06', name: '深层页岩气储层机理研究', description: '研究温压耦合对页岩裂缝扩展的影响，进行计算与实验对照。', project: '深层页岩气储层机理研究', owner: '张博士', status: '进行中', updatedAt: '今天 10:20', source: 'AI4S', kind: 'project' },
   { id: 'PROJ-CCUS-01', name: 'CO₂ 加氢制甲醇催化剂研究', description: '中期评审材料 3 天后到期，催化剂活性实验正在复核。', project: 'CO₂ 加氢制甲醇催化剂研究', owner: '张博士', status: '需关注', updatedAt: '今天 09:20', source: '科研管理&驾驶舱（川庆）', kind: 'project' },
   { id: 'PROJ-PE-02', name: '功能性 PE 配方优化', description: '本周周报已更新，等待项目组确认下一阶段配方。', project: '功能性 PE 配方优化', owner: '李工', status: '进行中', updatedAt: '昨天 18:20', source: 'AI4S', kind: 'project' },
   { id: 'PROJ-RES-03', name: '储层智能评价方法研究', description: '地震解释数据整理中，等待模型训练结果。', project: '储层智能评价方法研究', owner: '王研究员', status: '进行中', updatedAt: '昨天 15:10', source: 'AI4S', kind: 'project' },

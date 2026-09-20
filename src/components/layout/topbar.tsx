@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Bell, CheckSquare, ChevronRight, Search, Sparkles, X } from 'lucide-react';
-import { capabilities, getCapability, navigationHref, canAccessCapability } from '@/lib/capabilities';
+import { capabilities, getCapability, navigationHref, canAccessCapability, isReadSpacePath } from '@/lib/capabilities';
 import { useSidebar } from './sidebar-context';
 import { ResearchProfileMenu } from '@/components/research/profile-menu';
 import { ProjectContext } from '@/components/research/project-context';
@@ -37,7 +37,7 @@ export function Topbar() {
     window.addEventListener('keydown',handle); return () => window.removeEventListener('keydown',handle);
   }, []);
 
-  const openAssistant = () => window.dispatchEvent(new CustomEvent('petrolab:open-assistant'));
+  const openAssistant = () => pathname.startsWith('/do-space') ? router.push('/do-space') : isReadSpacePath(pathname) ? router.push('/read-space/agent') : window.dispatchEvent(new CustomEvent('petrolab:open-assistant'));
 
   return <>
     <header className="flex h-14 shrink-0 items-center gap-3 border-b border-line bg-white px-4">
@@ -54,7 +54,7 @@ export function Topbar() {
       <div className="ml-auto flex shrink-0 items-center gap-1 md:ml-0">
         <button onClick={() => setSearchOpen(true)} className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-[#F6F7F9] md:hidden" aria-label="搜索"><Search className="size-4" /></button>
         <button onClick={openAssistant} className="flex size-8 items-center justify-center rounded-md text-primary hover:bg-[#FCEBEC]" aria-label="打开 AI 科研助手" title="AI 科研助手"><Sparkles className="size-4" /></button>
-        <button onClick={() => router.push('/tasks')} className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-[#F6F7F9]" aria-label="查看待办"><CheckSquare className="size-4" /></button>
+        <button onClick={() => router.push(isReadSpacePath(pathname) ? '/read-space/tasks' : '/tasks')} className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-[#F6F7F9]" aria-label="查看待办"><CheckSquare className="size-4" /></button>
         <div className="relative">
           <button onClick={() => setNoticeOpen(!noticeOpen)} className="relative flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-[#F6F7F9]" aria-label="消息通知"><Bell className="size-4" /><i className="absolute right-1 top-1 size-1.5 rounded-full bg-[#D92D20]" /></button>
           {noticeOpen && <div className="absolute right-0 top-10 z-50 w-64 rounded-lg border border-line bg-white p-3 shadow-lg"><strong className="text-sm">消息通知</strong><p className="mt-2 text-xs leading-5 text-muted-foreground">实验 GB-2026-0915 数据已同步至 ELN。计算任务 #1024 已完成。</p><Link href="/workbench#activity" onClick={() => setNoticeOpen(false)} className="mt-2 inline-block text-xs text-primary hover:underline">查看科研活动</Link></div>}

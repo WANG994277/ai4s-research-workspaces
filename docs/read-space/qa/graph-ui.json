@@ -1,0 +1,15 @@
+{
+  "name": "graph",
+  "url": "/knowledge-graph",
+  "heading": "科研知识关系",
+  "buttons": [
+    "研究笔记 ",
+    "添加示例研究关系",
+    "加载示例研究关系",
+    "本页需求",
+    "导出本页",
+    "完整 PRD"
+  ],
+  "tabs": [],
+  "overflow": false
+}

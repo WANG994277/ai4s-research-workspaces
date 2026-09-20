@@ -1,2 +1,2 @@
-import { ReportWorkspace } from "@/components/research/report-workspace";
-export default function ReportPage() { return <ReportWorkspace />; }
+import { ReadWriting } from '@/components/read-space/writing';
+export default function WritingPage() { return <ReadWriting/>; }

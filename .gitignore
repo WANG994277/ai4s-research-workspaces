@@ -16,6 +16,7 @@ __pycache__/
 
 # JS/TS bundlers & build outputs
 .next
+.next-read-preview/
 .nuxt
 .turbo
 .vercel
@@ -103,6 +104,8 @@ out/
 coverage/
 *.lcov
 .nyc_output
+.playwright-cli/
+.playwright-mcp/
 # Environment variables
 .env.local
 .env.development.local

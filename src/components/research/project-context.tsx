@@ -4,6 +4,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { FolderKanban } from 'lucide-react';
 import { useSidebar } from '@/components/layout/sidebar-context';
 import { projects } from '@/mock/research';
+import { isReadSpacePath } from '@/lib/capabilities';
 import { Modal, useResearchProject } from './workspace-kit';
 
 export function ProjectContext() {
@@ -18,7 +19,10 @@ export function ProjectContext() {
     const search = new URLSearchParams(params.toString());
     search.set('projectId', next);
     search.delete('sourceId');
-    router.push(`${pathname}?${search}`);
+    if (isReadSpacePath(pathname)) ['task', 'doc', 'page', 'draft'].forEach(key => search.delete(key));
+    if (pathname.startsWith('/do-space')) ['task','plan','result','readDraft'].forEach(key => search.delete(key));
+    const nextPath = pathname.startsWith('/do-space') ? `/do-space${['plans','tasks'].includes(pathname.split('/')[2]) ? '/'+pathname.split('/')[2] : ''}` : pathname;
+    router.push(`${nextPath}?${search}`);
     setNext('');
   }
   return (

@@ -1,0 +1,36 @@
+async (page) => {
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.getByRole('textbox',{name:'实验目标',exact:true}).fill('演示验收：验证 CO₂ 加氢反应的温压梯度与甲醇选择性');
+  await page.getByRole('button',{name:'生成实验方案',exact:true}).click();
+  await page.getByRole('heading',{name:'实验方案设计与生成',exact:true}).waitFor();
+  await page.getByRole('button',{name:'比较方案',exact:true}).waitFor({state:'visible'});
+  await page.getByRole('button',{name:'比较方案',exact:true}).click();
+  await page.getByRole('button',{name:'采用方案 C'}).click();
+  await page.getByRole('tab',{name:'参数确认',exact:true}).click();
+  await page.getByRole('button',{name:'确认以上参数与来源'}).click();
+  await page.screenshot({path:'output/playwright/do-agent.png'});
+  await page.getByRole('link',{name:'进入审核与会签'}).click();
+  await page.getByRole('tab',{name:'审核与会签',exact:true}).click();
+  await page.getByRole('button',{name:'发起会签',exact:true}).click();
+  await page.getByRole('button',{name:'退回',exact:true}).click();
+  await page.getByRole('button',{name:'修改后重新提交',exact:true}).click();
+  await page.getByRole('button',{name:'模拟审核人同意',exact:true}).click();
+  await page.getByRole('button',{name:'确认定版',exact:true}).click();
+  await page.getByRole('dialog').getByRole('button',{name:'确认',exact:true}).click();
+  await page.getByRole('button',{name:'进入实验执行',exact:true}).click();
+  await page.getByRole('heading',{name:'实验自动编排',exact:true}).waitFor();
+  await page.getByRole('checkbox').first().check();
+  await page.getByRole('link',{name:'选择机时与提交预约'}).click();
+  await page.getByRole('heading',{name:'实验仪器预约',exact:true}).waitFor();
+  await page.getByRole('textbox',{name:'预约日期',exact:true}).fill('2026-09-24');
+  await page.getByRole('button',{name:'提交预约',exact:true}).click();
+  await page.getByRole('dialog').getByRole('button',{name:'确认',exact:true}).click();
+  await page.getByRole('button',{name:'模拟审批通过',exact:true}).click();
+  await page.getByRole('dialog').getByRole('button',{name:'确认',exact:true}).click();
+  await page.getByRole('link',{name:'返回实验编排',exact:true}).click();
+  for(const name of ['样品条件','设备与预约','高风险实验','实验前审核'])await page.getByRole('checkbox',{name:new RegExp(name)}).check();
+  await page.screenshot({path:'output/playwright/do-orchestration.png'});
+  await page.getByRole('button',{name:'确认并下发任务',exact:true}).click();
+  await page.getByRole('dialog').getByRole('button',{name:'确认下发（模拟）',exact:true}).click();
+  return {url:page.url(),errors};
+}

@@ -1,0 +1,11 @@
+{
+  "results": [
+    "Homepage at 1440px; all six agents and eight task templates rendered",
+    "Research execution, two confirmation gates, five artifacts and reload recovery",
+    "Read → compute draft, explicit confirmation, native compute workspace receives goal, hypothesis and evidence",
+    "Read → experiment draft, human confirmation and native experiment plan generation",
+    "Project switching does not leak tasks from another project",
+    "Mobile homepage has no horizontal document overflow"
+  ],
+  "errors": []
+}
