@@ -16,6 +16,7 @@ import { useDoStore } from "./store";
 import { useResearchProject } from "@/components/research/workspace-kit";
 import { Button, Confirm } from "./ui";
 import { PrdTools, requirementSections } from "./requirements";
+import { SHOW_PROTOTYPE_REVIEW_TOOLS } from "@/lib/presentation";
 import "./do-space.css";
 const nav = [
   ["开始实验设计", "", FlaskConical],
@@ -95,7 +96,7 @@ export function DoShell({ children }: { children: ReactNode }) {
         </span>
       </nav>
       {error && <p role="alert">{error}</p>}
-      {inspect && (
+      {SHOW_PROTOTYPE_REVIEW_TOOLS && inspect && (
         <p className="do-note" style={{ marginBottom: 18 }}>
           需求检查已开启：点击功能区域可查看、编辑和导出对应 PRD
           章节。退出后继续业务演示。
@@ -122,7 +123,7 @@ export function DoShell({ children }: { children: ReactNode }) {
           </div>
         )}
       </div>
-      <footer className="do-bottom">
+      {SHOW_PROTOTYPE_REVIEW_TOOLS && <footer className="do-bottom">
         <PrdTools
           pageId={pageId}
           inspect={inspect}
@@ -134,8 +135,8 @@ export function DoShell({ children }: { children: ReactNode }) {
           <RotateCcw />
           重置演示
         </Button>
-      </footer>
-      <Confirm
+      </footer>}
+      {SHOW_PROTOTYPE_REVIEW_TOOLS && <Confirm
         open={reset}
         onClose={() => setReset(false)}
         title="重置做空间演示"
@@ -147,7 +148,7 @@ export function DoShell({ children }: { children: ReactNode }) {
         <p>
           清除本浏览器内新建的做空间方案、任务、预约与结果，恢复初始示例。此操作无法撤销。
         </p>
-      </Confirm>
+      </Confirm>}
     </div>
   );
 }

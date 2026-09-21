@@ -22,6 +22,7 @@ import {
   useResearchProject,
   downloadText,
 } from './workspace-kit';
+import { SHOW_COCKPIT_HEADER_TOOLS } from '@/lib/presentation';
 const views = [
   ['overview', '管理驾驶舱'],
   ['trend', '科技态势分析'],
@@ -97,6 +98,7 @@ export function ScientificDashboard() {
         title={title}
         description="从科研证据、课题、资源和成果查看进展，按领域下钻到明细。"
       >
+        {SHOW_COCKPIT_HEADER_TOOLS && (
         <button
           className="research-button"
           onClick={() =>
@@ -119,7 +121,9 @@ export function ScientificDashboard() {
         >
           导出视图
         </button>
+        )}
       </WorkspaceHeader>
+      {SHOW_COCKPIT_HEADER_TOOLS && (
       <nav className="flex flex-wrap gap-2" aria-label="科研驾驶舱视角">
         {views.map(([k, label]) => (
           <Link
@@ -132,6 +136,7 @@ export function ScientificDashboard() {
           </Link>
         ))}
       </nav>
+      )}
       <div className="flex items-end gap-4">
         <Field label="研究领域">
           <select

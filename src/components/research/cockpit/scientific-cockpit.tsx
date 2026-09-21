@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Download, ClipboardList, X, CheckCircle2 } from "lucide-react";
 import { ScientificDashboard } from "../scientific-dashboard";
+import { SHOW_COCKPIT_HEADER_TOOLS } from "@/lib/presentation";
 import {
   Modal,
   useLocalState,
@@ -202,7 +203,7 @@ function CockpitPage({ view, record }: { view: View; record?: string }) {
     <div className="ck">
       <header className="ck-header">
         <h1>{description[2]}</h1>
-        <nav className="ck-views" aria-label="科研驾驶舱视角">
+        {SHOW_COCKPIT_HEADER_TOOLS && <nav className="ck-views" aria-label="科研驾驶舱视角">
           {views.map(([key, label]) => (
             <Link
               key={key}
@@ -212,8 +213,8 @@ function CockpitPage({ view, record }: { view: View; record?: string }) {
               {label}
             </Link>
           ))}
-        </nav>
-        <button className="ck-button" onClick={showRecords}>
+        </nav>}
+        {SHOW_COCKPIT_HEADER_TOOLS && <><button className="ck-button" onClick={showRecords}>
           <ClipboardList size={14} />
           本机记录{records.length > 0 ? ` (${records.length})` : ""}
         </button>
@@ -244,7 +245,7 @@ function CockpitPage({ view, record }: { view: View; record?: string }) {
         >
           <Download size={14} />
           导出汇总
-        </button>
+        </button></>}
       </header>
 
       <form className="ck-filters" onSubmit={submit}>
