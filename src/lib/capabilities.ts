@@ -36,7 +36,7 @@ export const adminGroups: string[] = [];
 export function visibleGroups(role: string) {
   // Keep the research cockpit discoverable in every prototype role.
   return role === 'researcher'
-    ? ['科研协作', '读空间', '知识库', '算空间', '做空间', '科研驾驶舱', '科研资产']
+    ? ['科研驾驶舱', '科研协作', '读空间', '知识库', '算空间', '做空间', '科研资产']
     : ['科研驾驶舱', '科研协作', '读空间', '知识库', '算空间', '做空间', '科研项目管理', '科研资产'];
 }
 
