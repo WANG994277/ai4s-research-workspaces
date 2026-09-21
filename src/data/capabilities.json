@@ -504,6 +504,18 @@
     "pageId": "PM-07"
   },
   {
+    "id": 500,
+    "group": "科研资产",
+    "label": "科研资产首页",
+    "href": "/assets",
+    "priority": "P0",
+    "strategy": "AI4S自建",
+    "role": "普通科研人员",
+    "legacy": "无",
+    "nav": "是",
+    "pageId": "AS-00"
+  },
+  {
     "id": 50,
     "group": "科研资产",
     "label": "科研数据及知识",
@@ -550,5 +562,17 @@
     "legacy": "无",
     "nav": "是",
     "pageId": "AS-04"
+  },
+  {
+    "id": 501,
+    "group": "科研资产",
+    "label": "我的科研资产",
+    "href": "/assets/mine",
+    "priority": "P0",
+    "strategy": "AI4S自建",
+    "role": "普通科研人员",
+    "legacy": "无",
+    "nav": "是",
+    "pageId": "AS-05"
   }
 ]

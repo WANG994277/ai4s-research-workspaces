@@ -23,6 +23,7 @@ export default async function CapabilityRoute({ params, searchParams }: { params
     for (const [key, value] of Object.entries(query)) if (typeof value === 'string') target.searchParams.set(key, value);
     if (target.pathname !== pathname) redirect(`${target.pathname}${target.search}${target.hash}`);
   }
+  if (pathname === '/assets' || pathname.startsWith('/assets/')) return <AssetWorkspace />;
   const tab = typeof query.tab === 'string' ? query.tab : undefined;
   const view = typeof query.view === 'string' ? query.view : undefined;
   const exactHref = tab ? `${pathname}?tab=${tab}` : view ? `${pathname}?view=${view}` : pathname;
@@ -42,6 +43,5 @@ export default async function CapabilityRoute({ params, searchParams }: { params
   if (['EX-03','EX-04'].includes(item.pageId)) return <LabResources key={item.pageId} reservation={item.pageId === 'EX-04'} />;
   if (['EX-05','EX-06'].includes(item.pageId)) return <ExperimentsWorkspace key={item.pageId} orchestrator={item.pageId === 'EX-05'} />;
   if (item.group === '科研项目管理' || ['CP-04','CP-05'].includes(item.pageId)) return <IntegrationPlaceholder item={item} />;
-  if (pathname.startsWith('/assets/')) return <AssetWorkspace item={item} />;
   notFound();
 }

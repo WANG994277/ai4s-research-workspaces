@@ -81,6 +81,20 @@ export function getCapability(href: string) {
   if (isKnowledgePath(url.pathname)) return capabilities.find((item) => item.pageId === 'KB-01');
   if (url.pathname === '/experiment-plans') return capabilities.find((item) => item.pageId === 'EX-01');
   if (url.pathname === '/literature-library') return capabilities.find((item) => item.pageId === 'RD-02');
+  if (url.pathname === '/assets/upload') {
+    const base = capabilities.find((item) => item.pageId === 'AS-00');
+    return base ? { ...base, label: '上传科研资产' } : undefined;
+  }
+  if (url.pathname === '/assets/search') {
+    const base = capabilities.find((item) => item.pageId === 'AS-00');
+    return base ? { ...base, label: '科研资产搜索' } : undefined;
+  }
+  if (url.pathname === '/assets') return capabilities.find((item) => item.pageId === 'AS-00');
+  if (url.pathname === '/assets/mine') return capabilities.find((item) => item.pageId === 'AS-05');
+  if (url.pathname.startsWith('/assets/data-knowledge') || /^\/assets\/(data|knowledge|outcome)\//.test(url.pathname)) return capabilities.find((item) => item.pageId === 'AS-01');
+  if (url.pathname.startsWith('/assets/models') || url.pathname.startsWith('/assets/model/')) return capabilities.find((item) => item.pageId === 'AS-02');
+  if (url.pathname.startsWith('/assets/plans') || /^\/assets\/(compute-plan|experiment-plan)\//.test(url.pathname)) return capabilities.find((item) => item.pageId === 'AS-03');
+  if (url.pathname.startsWith('/assets/intelligent-services') || /^\/assets\/(agent|workflow|skill|software|algorithm)\//.test(url.pathname)) return capabilities.find((item) => item.pageId === 'AS-04');
   // Dashboard views remain distinct when links carry project/source context.
   if (url.pathname === '/dashboard' && url.searchParams.has('view')) {
     const dashboardView = url.searchParams.get('view');
@@ -112,6 +126,12 @@ export function isCurrentCapability(pathname: string, href: string) {
   if (target.pathname === '/compute-tasks') return current.pathname === '/compute-tasks' || current.pathname.startsWith('/compute-space/tasks') || current.pathname === '/compute-space/analysis';
   if (target.pathname === '/compute-space/tools') return current.pathname.startsWith('/compute-space/tools');
   if (target.pathname === '/compute-space') return current.pathname === '/compute-space' || current.pathname === '/compute-space/agent';
+  if (target.pathname === '/assets') return current.pathname === '/assets' || current.pathname === '/assets/upload' || current.pathname === '/assets/search';
+  if (target.pathname === '/assets/data-knowledge') return current.pathname === '/assets/data-knowledge' || /^\/assets\/(data|knowledge|outcome)\//.test(current.pathname);
+  if (target.pathname === '/assets/models') return current.pathname === '/assets/models' || current.pathname.startsWith('/assets/model/');
+  if (target.pathname === '/assets/plans') return current.pathname === '/assets/plans' || /^\/assets\/(compute-plan|experiment-plan)\//.test(current.pathname);
+  if (target.pathname === '/assets/intelligent-services') return current.pathname === '/assets/intelligent-services' || /^\/assets\/(agent|workflow|skill|software|algorithm)\//.test(current.pathname);
+  if (target.pathname === '/assets/mine') return current.pathname === '/assets/mine';
   return current.pathname === target.pathname;
 }
 

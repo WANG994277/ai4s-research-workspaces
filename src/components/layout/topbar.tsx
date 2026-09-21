@@ -22,6 +22,7 @@ export function Topbar() {
   const match = getCapability(`${pathname}?${params}`);
   const title = pathname === '/workbench' ? '工作台' : match?.label ?? '科研工作';
   const parent = pathname === '/workbench' ? 'AI4S' : match?.group ?? 'AI4S';
+  const assetHub = pathname === '/assets' || pathname.startsWith('/assets/');
   const results = useMemo(() => {
     const keyword = query.trim().toLowerCase();
     const accessible = capabilities.filter((item) => canAccessCapability(role,item));
@@ -47,7 +48,7 @@ export function Topbar() {
         {parent !== 'AI4S' && <><span className="hidden text-muted-foreground sm:inline">{parent}</span><ChevronRight className="hidden size-3 text-faint sm:inline" /></>}
         <span className="truncate font-medium text-foreground">{title}</span>
       </nav>
-      <ProjectContext />
+      {!assetHub && <ProjectContext />}
       <button onClick={() => setSearchOpen(true)} className="ml-auto hidden h-8 w-[min(32vw,360px)] items-center gap-2 rounded-md border border-line bg-[#F8FAFC] px-3 text-left text-xs text-muted-foreground hover:border-primary/40 md:flex" aria-label="全局搜索">
         <Search className="size-3.5" />搜索文献、数据、模型、实验、课题、专家
       </button>
