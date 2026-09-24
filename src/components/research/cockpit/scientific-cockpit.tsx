@@ -1,7 +1,6 @@
 "use client";
 import { useState, type ReactNode, type FormEvent } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { Download, ClipboardList, X, CheckCircle2 } from "lucide-react";
 import { ScientificDashboard } from "../scientific-dashboard";
 import { SHOW_COCKPIT_HEADER_TOOLS } from "@/lib/presentation";
@@ -42,20 +41,19 @@ type ActionRecord = {
   date: string;
   status: string;
 };
-export function ScientificCockpit() {
-  const params = useSearchParams();
-  const view = params.get("view") ?? "overview";
+export function ScientificCockpit({
+  initialView = "trend",
+  initialRecord,
+}: {
+  initialView?: string;
+  initialRecord?: string;
+}) {
+  const view = initialView;
   if (
     !["trend", "strategy", "resources", "projects", "outcomes"].includes(view)
   )
     return <ScientificDashboard />;
-  return (
-    <CockpitPage
-      key={view}
-      view={view as View}
-      record={params.get("record") ?? undefined}
-    />
-  );
+  return <CockpitPage key={view} view={view as View} record={initialRecord} />;
 }
 function CockpitPage({ view, record }: { view: View; record?: string }) {
   const { href } = useResearchProject();
@@ -203,49 +201,55 @@ function CockpitPage({ view, record }: { view: View; record?: string }) {
     <div className="ck">
       <header className="ck-header">
         <h1>{description[2]}</h1>
-        {SHOW_COCKPIT_HEADER_TOOLS && <nav className="ck-views" aria-label="科研驾驶舱视角">
-          {views.map(([key, label]) => (
-            <Link
-              key={key}
-              aria-current={view === key ? "page" : undefined}
-              href={href(`/dashboard?view=${key}`)}
+        {SHOW_COCKPIT_HEADER_TOOLS && (
+          <nav className="ck-views" aria-label="科研驾驶舱视角">
+            {views.map(([key, label]) => (
+              <Link
+                key={key}
+                aria-current={view === key ? "page" : undefined}
+                href={href(`/dashboard?view=${key}`)}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+        )}
+        {SHOW_COCKPIT_HEADER_TOOLS && (
+          <>
+            <button className="ck-button" onClick={showRecords}>
+              <ClipboardList size={14} />
+              本机记录{records.length > 0 ? ` (${records.length})` : ""}
+            </button>
+            <button
+              className="ck-button"
+              style={{ marginLeft: 0 }}
+              title="导出顶部筛选范围内的全部分类数据"
+              onClick={() => {
+                downloadText(
+                  `科研驾驶舱-${view}.json`,
+                  JSON.stringify(
+                    {
+                      view,
+                      filters,
+                      source: "历史演示数据，非实时统计",
+                      snapshot: "2024-12-10",
+                      scope:
+                        "顶部筛选范围的全部分类数据；不包含页面内的搜索、页签与排序条件",
+                      records: activeRows,
+                    },
+                    null,
+                    2,
+                  ),
+                  "application/json",
+                );
+                setNotice("顶部筛选范围的全部分类数据已导出为 JSON。");
+              }}
             >
-              {label}
-            </Link>
-          ))}
-        </nav>}
-        {SHOW_COCKPIT_HEADER_TOOLS && <><button className="ck-button" onClick={showRecords}>
-          <ClipboardList size={14} />
-          本机记录{records.length > 0 ? ` (${records.length})` : ""}
-        </button>
-        <button
-          className="ck-button"
-          style={{ marginLeft: 0 }}
-          title="导出顶部筛选范围内的全部分类数据"
-          onClick={() => {
-            downloadText(
-              `科研驾驶舱-${view}.json`,
-              JSON.stringify(
-                {
-                  view,
-                  filters,
-                  source: "历史演示数据，非实时统计",
-                  snapshot: "2024-12-10",
-                  scope:
-                    "顶部筛选范围的全部分类数据；不包含页面内的搜索、页签与排序条件",
-                  records: activeRows,
-                },
-                null,
-                2,
-              ),
-              "application/json",
-            );
-            setNotice("顶部筛选范围的全部分类数据已导出为 JSON。");
-          }}
-        >
-          <Download size={14} />
-          导出汇总
-        </button></>}
+              <Download size={14} />
+              导出汇总
+            </button>
+          </>
+        )}
       </header>
 
       <form className="ck-filters" onSubmit={submit}>

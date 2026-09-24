@@ -1,2 +1,2 @@
-import { ReadExtraction } from '@/components/read-space/extraction';
-export default function ExtractionPage() { return <ReadExtraction/>; }
+import { redirect } from 'next/navigation';
+export default function LegacyPage(){redirect('/knowledge');}

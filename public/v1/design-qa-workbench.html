@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI4S Workbench Design QA</title>
+    <style>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; background: #dfe7f2; font-family: sans-serif; }
+      main { display: grid; grid-template-columns: 1487px 1487px; gap: 16px; padding: 8px; }
+      section { position: relative; width: 1487px; height: 1058px; overflow: hidden; background: white; }
+      header { position: absolute; z-index: 2; top: 8px; left: 8px; padding: 5px 9px; border-radius: 4px; background: rgba(8, 38, 80, .78); color: white; font-size: 12px; }
+      img, iframe { display: block; width: 1487px; height: 1058px; border: 0; object-fit: cover; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section>
+        <header>选定UI设计图</header>
+        <img src="/v1/workbench-reference.png" alt="方案1工作台设计图" />
+      </section>
+      <section>
+        <header>当前前端实现</header>
+        <iframe src="/workspace" title="当前前端实现"></iframe>
+      </section>
+    </main>
+  </body>
+</html>

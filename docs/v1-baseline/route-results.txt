@@ -1,0 +1,22 @@
+AI4S V1 final route checks
+Date: 2026-09-24
+
+Result: PASS
+
+HTTP 200:
+- /workspace, /knowledge, /skills, /models
+- /tools: 科研工具、科研软件、MCP
+- /lab: 仪器设备纳管、仪器设备共享、实验任务管理、实验试剂耗材管理
+- /assets: 我的资产、项目资产
+- /space-management: 项目空间、课题空间、空间成员、角色与权限、空间配置
+- /research-management: 管理概览、项目运行、科研进展、风险与异常、科研成果
+- /dashboard
+- /project-management-external: 立项、过程、外协、成果、人才、考核、日常管理
+- /admin
+
+Compatibility redirects passed:
+- /workbench
+- /read-space
+- /compute-space
+- /do-space
+- /research-decision

@@ -1,6 +1,2 @@
 import { redirect } from 'next/navigation';
-
-export default function LegacyRedirect() {
-  redirect('/collaboration/files-notes');
-}
-
+export default function LegacyPage(){redirect('/knowledge');}

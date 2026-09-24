@@ -1,2 +1,2 @@
-import { ReadWriting } from '@/components/read-space/writing';
-export default function WritingPage() { return <ReadWriting/>; }
+import { redirect } from 'next/navigation';
+export default function LegacyPage(){redirect('/workspace');}

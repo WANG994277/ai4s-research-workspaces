@@ -1,39 +1,33 @@
 # AI4S 科研平台前端原型
 
-本项目按《AI4S科研平台功能清单V1.0_0917 (3).xlsx》的功能说明调整。原型说明书辅助理解，枫清科技产品介绍用于交互参考。范围见 `docs/prototype-alignment.md`，逐行位置见 `docs/feature-coverage.md`。
-
-保留8个科研业务模块、46个二级功能组。不呈现科研流程贯通、基础支撑、后台管理、运维、安全管理。科研项目管理和AI中台数据处理/模型训练采用来源占位说明。
-
-## 本地运行
+当前版本依据2026-09-24提供的15份V1.0 PRD、对象模型、权限矩阵和IA重构，默认入口 `/workspace`。
 
 ```bash
 pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-访问 `http://localhost:3000/workbench`。Windows 中文路径下开发服务器使用 webpack；生产构建使用 Next.js 默认构建器，并在 `next.config.ts` 中指定项目根目录。
+打开 http://localhost:3000/workspace 。用户入口提供6类演示角色。桌面Web为本次设计和验证范围。
+
+## 当前结构
+
+统一Research Agent工作台、知识中心、科研技能、科研模型、科研工具箱、云上实验室、科研资产、项目空间管理、科研管理工作台、科研驾驶舱、科研项目管理与平台治理入口。左侧显示完整功能树，无权限入口锁定；工作台和知识中心无二级菜单，工具箱固定科研工具/科研软件/MCP，科研项目管理固定七个二级入口。
+
+- [需求落点及集成边界](docs/v1-baseline/coverage.md)
+- [逐模块PRD最终审查](docs/v1-baseline/prd-final-audit.md)
+- [验收记录](docs/v1-baseline/acceptance.md)
+- [架构与复用选择](docs/v1-baseline/architecture.md)
+- [设计系统](design-system/ai4s-v1-baseline/MASTER.md)
 
 ```bash
 pnpm run ts-check
 pnpm run lint:build
-pnpm build
+node --import tsx --test src/components/v1/domain.test.ts src/components/v1/search.test.ts src/components/v1/navigation.test.ts src/components/v1/catalog.test.ts
+node scripts/check-v1-ui.mjs
+node scripts/check-v1-routes.mjs
+AI4S_PREVIEW_DIR=.next-v1-prod pnpm build
 ```
 
-## 原型结构
+页面与对象实现位于 `src/components/v1`；数据保存在当前浏览器独立localStorage键，不改旧版数据。AI执行、检索、模型、设备及外部系统使用明确标注的本地演示或未连接状态，未接真实后端、SSO或设备控制。权限原型不能代替服务端鉴权。
 
-- 工作台：按定稿截图组织 Banner、五项指标、科研专区、AI 推荐、科研活动及科研概览。
-- 全局导航：科研人员、课题负责人和科研管理人员演示角色；统一课题选择、命令搜索与二级入口。
-- 业务页面：文献、实验方案、实验执行、仪器预约、笔记编辑、报告编辑、科研驾驶舱等采用相应业务工作区。
-- 合并：文献工作区（检索/精读/提取/专题）、仪器与预约（台账/排期/统计）、实验执行与管理（台账/编排/记录/调优）、科研数据与模型（来源占位）。
-- 旧路由：通过重定向进入新版归属页面。
-- 集成边界：AI中台与外部系统页面展示来源标识和演示数据；正式深链、SSO、接口和数据回流需接入真实系统。
-
-演示数据位于 `src/mock/research.ts`。新增笔记、报告、实验、方案、样品、预约、资产登记保存在浏览器 localStorage；既有专业页面部分状态仍为会话演示。真实AI、检索、设备控制和外部系统未接入。路由检查：开发服务启动后运行 `node scripts/check-prototype-routes.mjs`。
-
-## 科研驾驶舱（2026-09-20 参考图版本）
-
-`/dashboard?view=trend|strategy|resources|projects|outcomes` 分别提供态势、方向研判、资源、项目与成果看板；管理概览和科技树保留原有视图。顶部条件点击“查询”后生效，“导出汇总”导出顶部筛选范围内的全部分类数据。
-
-专家确认申请、资源协调和成果共享申请保存在当前浏览器的 `ai4s-cockpit-actions-v1`，可通过“本机记录”查看；不会提交真实审批或发送通知。示例窗口为2019—2024，2025筛选用于检查无数据状态。
-
-验证：`node --import tsx scripts/check-cockpit-data.mjs`；启动开发服务后运行 `node scripts/check-cockpit-pages.mjs`。交互、视觉与边界记录见 `docs/cockpit/acceptance.md` 和 `design-qa.md`。
+此前版本记录保存在 `docs/v1-baseline/previous-readme.md`，不再作为当前功能边界。

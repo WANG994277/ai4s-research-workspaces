@@ -1,2 +1,2 @@
-import { ReadStandards } from '@/components/read-space/standards';
-export default function StandardsPage() { return <ReadStandards/>; }
+import { redirect } from 'next/navigation';
+export default function LegacyPage(){redirect('/knowledge');}

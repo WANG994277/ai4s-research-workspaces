@@ -1,2 +1,2 @@
-import { ReadGraph } from '@/components/read-space/graph';
-export default function KnowledgeGraphPage() { return <ReadGraph/>; }
+import { redirect } from 'next/navigation';
+export default function LegacyPage(){redirect('/knowledge');}

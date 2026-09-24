@@ -1,6 +1,2 @@
 import { redirect } from 'next/navigation';
-
-export default function LegacyRedirect() {
-  redirect('/literature-search/1');
-}
-
+export default function LegacyPage(){redirect('/knowledge');}

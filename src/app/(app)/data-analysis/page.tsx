@@ -1,6 +1,2 @@
 import { redirect } from 'next/navigation';
-
-export default function LegacyRedirect() {
-  redirect('/experiment-analysis');
-}
-
+export default function LegacyPage(){redirect('/workspace');}

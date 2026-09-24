@@ -41,6 +41,7 @@ const eslintConfig = defineConfig([
     // Default ignores of eslint-config-next:
     '.next/**',
     '.next-read-preview/**',
+    '.next-v1-prod/**',
     'out/**',
     'build/**',
     'next-env.d.ts',

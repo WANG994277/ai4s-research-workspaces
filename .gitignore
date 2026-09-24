@@ -163,3 +163,6 @@ Desktop.ini
 # Misc
 .coze-logs
 .codegraph
+
+# Isolated V1 production verification
+.next-v1-prod/

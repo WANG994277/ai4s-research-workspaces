@@ -1,2 +1,2 @@
-import { ReadReader } from '@/components/read-space/reader';
-export default function LiteratureReaderPage() { return <ReadReader/>; }
+import { redirect } from 'next/navigation';
+export default function LegacyPage(){redirect('/knowledge');}

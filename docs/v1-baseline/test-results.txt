@@ -1,0 +1,22 @@
+AI4S V1 final automated tests
+Date: 2026-09-24
+
+Command:
+node --import tsx --test src/components/v1/domain.test.ts src/components/v1/search.test.ts src/components/v1/navigation.test.ts src/components/v1/catalog.test.ts
+
+Result: PASS
+Tests: 25
+Pass: 25
+Fail: 0
+Skipped: 0
+
+Coverage groups:
+- Session / Task / Artifact / Asset boundaries
+- Project / Space / ACL isolation and expired/read-only shares
+- Task and experiment state transitions
+- Reservation overlap and invalid time ranges
+- Space role templates and archived-space write prevention
+- Advanced search fields and AND/OR/NOT behavior
+- User-confirmed navigation structure
+- Toolbox second-level view isolation
+- Deployed cockpit route preservation
