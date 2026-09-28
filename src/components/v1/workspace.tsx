@@ -1,14 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowUp,
   Plus,
-  Paperclip,
   BookOpen,
-  Database,
   PanelLeftClose,
   PanelLeftOpen,
   CheckCircle2,
@@ -16,14 +13,33 @@ import {
   Play,
   FileText,
   MoreHorizontal,
+  Pencil,
+  Pin,
+  Share2,
+  Trash2,
   SquareCheckBig,
   CirclePlay,
   FileStack,
   Bot,
+  Sparkles,
+  Activity,
+  FlaskConical,
+  Cpu,
+  Lightbulb,
+  Search,
+  ChartNoAxesColumnIncreasing,
+  ScrollText,
+  ChevronRight,
+  ChevronDown,
+  Cloud,
+  Laptop,
+  MapPin,
+  Star,
 } from "lucide-react";
 import { useResearch, notify } from "./store";
 import {
   activeTasks,
+  canEnter,
   canEdit,
   canRead,
   canUse,
@@ -47,48 +63,106 @@ import {
   Modal,
   SearchBox,
   Select,
+  download,
 } from "./ui";
 import { ContextActions, ResourcePicker, SaveAsset } from "./actions";
 import type { Artifact, Decision, Session, Task } from "./types";
-import { collectChatFiles, resolveWorkspaceSession } from "./workspace-view";
-export function Workspace() {
+import {
+  DEFAULT_WORKBENCH_MODEL,
+  buildResearchAssistantView,
+  buildWorkbenchHome,
+  resolveWorkspaceSession,
+} from "./workspace-view";
+
+const quickResearchTasks = [
+  { label: "文献检索", group: "读", icon: Search, prompt: "检索当前课题相关的最新文献并整理来源" },
+  { label: "文献精读", group: "读", icon: BookOpen, prompt: "精读一篇文献并提取研究方法、关键结论与证据" },
+  { label: "图表提取", group: "读", icon: ChartNoAxesColumnIncreasing, prompt: "从科研资料中提取关键图表和结构化数据" },
+  { label: "综述梳理", group: "读", icon: FileText, prompt: "梳理当前研究方向的文献综述和技术脉络" },
+  { label: "标准对标", group: "做", icon: ScrollText, prompt: "对比当前课题涉及的国内外标准与适用范围" },
+  { label: "专利分析", group: "算", icon: Lightbulb, prompt: "分析当前研究方向的专利布局与技术空白" },
+] as const;
+
+const assistantLaunchModes = {
+  读: {
+    title: "文献与知识",
+    description: "检索、研读并组织可信科研证据",
+    icon: BookOpen,
+    skills: ["文献调研", "研究空白识别", "证据提取", "综述梳理"],
+  },
+  算: {
+    title: "建模与计算",
+    description: "分析数据、计算参数并运行科研模型",
+    icon: Cpu,
+    skills: ["配方参数计算", "科研数据分析", "分子模拟", "模型预测"],
+  },
+  做: {
+    title: "实验与方案",
+    description: "设计实验、生成方案并形成执行材料",
+    icon: FlaskConical,
+    skills: ["实验方案生成", "DOE 实验设计", "SOP 生成", "实验复盘"],
+  },
+} as const;
+
+export function Workspace({ assistant = false, initialView }: { assistant?: boolean; initialView?: string }) {
   const { s, p, space, key, mutate } = useResearch();
   const router = useRouter();
   const query = useSearchParams();
+  const view = query.get("view") ?? initialView ?? "home";
   const taskId =
     query.get("task") ??
     s.sessions.find((x) => x.id === query.get("session"))?.taskId;
   const sessionId = query.get("session");
-  const view = query.get("view") ?? "home";
-  const [mode, setMode] = useState("自动");
+  const mode: string = "自动";
+  const [model, setModel] = useState(DEFAULT_WORKBENCH_MODEL);
   const [search, setSearch] = useState("");
   const [historyRange, setHistoryRange] = useState("当前空间");
   const [historyCollapsed, setHistoryCollapsed] = useState(false);
   const [panel, setPanel] = useState("");
   const [files, setFiles] = useState<string[]>([]);
-  const [fileTab, setFileTab] = useState<"产出" | "引用资料">("产出");
   const [decisionId, setDecisionId] = useState("");
+  const [dismissedDecisionId, setDismissedDecisionId] = useState("");
   const [choice, setChoice] = useState("");
   const [custom, setCustom] = useState("");
   const [output, setOutput] = useState<Artifact | null>(null);
   const [save, setSave] = useState(false);
   const [editSession, setEditSession] = useState<Session | null>(null);
+  const [sessionMenu, setSessionMenu] = useState("");
+  const [sessionDialog, setSessionDialog] = useState<"rename" | "share" | "">("");
   const [rename, setRename] = useState("");
   const [shareUser, setShareUser] = useState("");
   const [taskFilter, setTaskFilter] = useState("全部");
   const [plan, setPlan] = useState("");
   const [constraint, setConstraint] = useState("");
+  const [recommendationFilter, setRecommendationFilter] = useState("全部");
+  const [activityFilter, setActivityFilter] = useState("项目动态");
+  const [frontierDiscipline, setFrontierDiscipline] = useState("全部");
+  const [frontierType, setFrontierType] = useState("全部");
+  const [assistantTab, setAssistantTab] = useState<"process" | "outputs">("process");
+  const [assistantOutputFilter, setAssistantOutputFilter] = useState("全部");
+  const [expandedAssistantStages, setExpandedAssistantStages] = useState<string[]>(["research", "simulation"]);
+  const [assistantOutputMenu, setAssistantOutputMenu] = useState("");
+  const [executionEnvironment, setExecutionEnvironment] = useState<"本地电脑" | "云电脑">("本地电脑");
+  const [environmentMenuOpen, setEnvironmentMenuOpen] = useState(false);
+  const [assistantLaunchMode, setAssistantLaunchMode] = useState<keyof typeof assistantLaunchModes>("读");
+  const [assistantSkillTags, setAssistantSkillTags] = useState<string[]>([]);
+  const [publishedAssistantOutputs, setPublishedAssistantOutputs] = useState<string[]>([]);
   const draft = s.drafts[key] ?? "";
+  const assistantTaskIds = new Set(["task-read", "task-calculate", "task-experiment"]);
   const histories = s.sessions.filter(
     (x) =>
       canRead(x, p, space.id, s) &&
       !x.archived &&
-      (historyRange === "全部有权空间" || x.spaceId === space.id) &&
+      (!assistant || (!!x.taskId && assistantTaskIds.has(x.taskId))) &&
+      (assistant || historyRange === "全部有权空间" || x.spaceId === space.id) &&
       x.name.includes(search),
-  );
+  ).sort((a, b) => Number(b.favorite) - Number(a.favorite));
   const task = s.tasks.find(
     (t) => t.id === taskId && canRead(t, p, space.id, s),
   );
+  const activeSpace = task
+    ? s.spaces.find((item) => item.id === task.spaceId) ?? space
+    : space;
   const readableSessions = s.sessions.filter((item) =>
     canRead(item, p, space.id, s),
   );
@@ -115,9 +189,43 @@ export function Workspace() {
       d.status === "pending" &&
       s.tasks.some((t) => t.id === d.taskId && t.spaceId === space.id),
   );
-  const decision = s.decisions.find((d) => d.id === decisionId);
-  const editable = task ? canEdit(task, p, space.id, s) : true;
+  const workbenchHome = buildWorkbenchHome(s, space.id, p.id);
+  const visibleRecommendations = workbenchHome.recommendations.filter(
+    (item) => recommendationFilter === "全部" || item.category === recommendationFilter,
+  );
+  const visibleActivities = activityFilter === "项目动态"
+    ? workbenchHome.activities
+    : workbenchHome.activities.filter((item) => item.category === activityFilter);
+  const visibleFrontier = workbenchHome.frontier
+    .filter(
+      (item) =>
+        (frontierDiscipline === "全部" || item.discipline === frontierDiscipline) &&
+        (frontierType === "全部" || item.type === frontierType),
+    );
+  const pendingTaskDecision = task?.status === "WAITING_HUMAN"
+    ? s.decisions.find(
+        (item) => item.taskId === task.id && item.status === "pending" && item.assignee === p.id,
+      ) ?? (task.id === "task-experiment" ? {
+        id: "decision-experiment-slot",
+        taskId: task.id,
+        stepId: "task-experiment-3",
+        question: "两组配方验证实验采用哪组替代时段？",
+        recommendation: "分别预约周四 14:00–17:00 和周五 09:00–12:00。",
+        reason: "原定时段存在仪器冲突；两个替代时段均满足人员、仪器和耗材条件。",
+        options: ["采用两个推荐时段", "两组均安排在周五", "自定义"],
+        assignee: p.id,
+        status: "pending" as const,
+        choice: "",
+        at: "",
+        by: "",
+      } : undefined)
+    : undefined;
+  const decision = s.decisions.find((d) => d.id === decisionId) ??
+    (pendingTaskDecision?.id !== dismissedDecisionId ? pendingTaskDecision : undefined);
+  const effectiveChoice = choice || decision?.options[0] || "";
+  const editable = task ? canEdit(task, p, activeSpace.id, s) : true;
   const activeConversation = !!(task || session);
+  const assistantBase = "/assistant";
   const resourceById = (id: string) =>
     [
       ...s.assets,
@@ -128,23 +236,38 @@ export function Workspace() {
       ...s.sessions,
     ].find((item) => item.id === id);
   const resourceName = (id: string) => resourceById(id)?.name ?? id;
-  const chatFiles = collectChatFiles(
-    artifacts,
-    task,
-    session,
-    (id) => {
-      const resource = [
-        ...s.assets,
-        ...s.tools,
-        ...s.knowledge,
-        ...s.artifacts,
-        ...s.sessions,
-      ].find((item) => item.id === id);
-      return !!resource && canRead(resource, p, space.id, s);
-    },
-  );
+  const assistantView = task
+    ? buildResearchAssistantView(s, task, session)
+    : undefined;
+  const assistantScenarioTask = !!task && assistantTaskIds.has(task.id);
+  const assistantOutputs = assistantView?.outputs.filter(
+    (item) => assistantOutputFilter === "全部" || item.type === assistantOutputFilter,
+  ) ?? [];
+  useEffect(() => {
+    if (!assistantView) return;
+    const runningStage = assistantView.stages.find((stage) => stage.status === "running");
+    setExpandedAssistantStages(
+      [runningStage?.id ?? assistantView.stages[0]?.id].filter(
+        (id): id is string => !!id,
+      ),
+    );
+    setAssistantTab("process");
+    setAssistantOutputFilter("全部");
+    setAssistantOutputMenu("");
+  }, [taskId]);
+  useEffect(() => {
+    if (!decision) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setDismissedDecisionId(decision.id);
+        setDecisionId("");
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [decision?.id]);
   function openTask(t: Task) {
-    router.push("/workspace?task=" + t.id);
+    router.push(assistantBase + "?task=" + t.id);
   }
   function act(action: string) {
     if (!task) return;
@@ -234,7 +357,10 @@ export function Workspace() {
         ss.messages.push({
           id: uid("message"),
           role: "user",
-          text: draft + (files.length ? "\n附件：" + files.join("、") : ""),
+          text:
+            draft +
+            (assistantSkillTags.length ? "\nSkill：" + assistantSkillTags.join("、") : "") +
+            (files.length ? "\n附件：" + files.join("、") : ""),
           at: now(),
         });
         ss.updatedAt = now();
@@ -248,7 +374,7 @@ export function Workspace() {
               u.id,
             ),
             projectId: space.projectId,
-            type: mode === "深度研究" ? "深度研究" : "综合研究",
+            type: assistant ? `${assistantLaunchMode} · ${assistantLaunchModes[assistantLaunchMode].title}` : mode === "深度研究" ? "深度研究" : "综合研究",
             status: "PLANNING",
             steps: [
               "核对输入资料与研究范围",
@@ -289,21 +415,74 @@ export function Workspace() {
     );
     if (ok) {
       setFiles([]);
+      setAssistantSkillTags([]);
       router.push(
-        "/workspace?" + (newTaskId ? "task=" + newTaskId : "session=" + id),
+        assistantBase + "?" + (newTaskId ? "task=" + newTaskId : "session=" + id),
       );
     }
   }
   function decide(d: Decision) {
+    setDismissedDecisionId("");
     setDecisionId(d.id);
-    setChoice(d.options[1] ?? d.options[0]);
+    setChoice(d.options[0] ?? "");
     setCustom("");
+  }
+  function closeDecision() {
+    if (decision) setDismissedDecisionId(decision.id);
+    setDecisionId("");
+  }
+  function confirmDecision() {
+    if (!decision) return;
+    if (
+      mutate("已记录人工决策", decision.id, (d, u) => {
+        let item = d.decisions.find((x) => x.id === decision.id);
+        if (!item) {
+          item = structuredClone(decision);
+          d.decisions.push(item);
+        }
+        if (item.assignee !== u.id || item.status !== "pending")
+          throw new Error("当前不能处理此决策。");
+        item.status = "decided";
+        item.choice = effectiveChoice === "自定义" ? custom : effectiveChoice;
+        item.by = u.id;
+        item.at = now();
+        if (item.experimentId) {
+          const experiment = d.experiments.find((x) => x.id === item.experimentId);
+          if (experiment) {
+            experiment.status = "待执行";
+            experiment.exception = "";
+            experiment.records.push(now() + " 人工决策：" + item.choice);
+          }
+        }
+        const relatedTask = d.tasks.find((x) => x.id === item.taskId)!;
+        relatedTask.status = item.experimentId ? "WAITING_RESOURCE" : "RUNNING";
+        relatedTask.runAt = item.experimentId ? undefined : Date.now() + 8000;
+        if (item.experimentId)
+          relatedTask.reason = "等待实验重新执行与结果确认。";
+        const step = relatedTask.steps.find((x) => x.id === item.stepId);
+        if (step) step.status = "running";
+        const relatedSession = d.sessions.find((x) => x.id === relatedTask.sessionIds[0]);
+        relatedSession?.messages.push({
+          id: uid("m"),
+          role: "user",
+          text: "人工决策：" + item.choice,
+          at: now(),
+        });
+      })
+    ) {
+      setDecisionId("");
+      setDismissedDecisionId(decision.id);
+    }
   }
   const input = (
     <div className="v-composer">
       <textarea
         aria-label="科研任务输入"
-        placeholder="输入你的科研问题，或描述想推进的研究…"
+        placeholder={activeConversation
+          ? "继续输入要求，或告诉 AI 下一步要做什么……"
+          : assistantSkillTags.length
+            ? `描述“${assistantSkillTags.at(-1)}”的研究目标、问题、约束或材料……`
+            : "描述研究目标、科研问题，或上传材料开始研究……"}
         value={draft}
         onChange={(e) =>
           mutate("", space.id, (d) => {
@@ -317,9 +496,21 @@ export function Workspace() {
           }
         }}
       />
-      {[...(s.pendingContext[key] ?? []), ...(s.pendingCapabilities[key] ?? [])]
-        .length > 0 && (
+      {([...(s.pendingContext[key] ?? []), ...(s.pendingCapabilities[key] ?? [])]
+        .length > 0 || assistantSkillTags.length > 0) && (
         <div className="v-actions v-context-chips">
+          {assistantSkillTags.map((tag) => (
+            <span className="v-chip v-skill-context-chip" key={tag}>
+              <Sparkles size={12} />
+              Skill · {tag}
+              <button
+                aria-label={`移除 Skill ${tag}`}
+                onClick={() => setAssistantSkillTags((value) => value.filter((item) => item !== tag))}
+              >
+                ×
+              </button>
+            </span>
+          ))}
           {[
             ...(s.pendingContext[key] ?? []),
             ...(s.pendingCapabilities[key] ?? []),
@@ -350,75 +541,118 @@ export function Workspace() {
       )}
       <div className="v-composer-toolbar">
         <div className="v-actions">
-          <button onClick={() => setPanel("files")}>
-            <Paperclip size={15} />
-            附件
+          <button aria-label="添加附件" onClick={() => setPanel("files")}>
+            <Plus size={17} />
           </button>
-          <button onClick={() => setPanel("knowledge")}>
-            <BookOpen size={15} />
-            引用知识
-          </button>
-          <button onClick={() => setPanel("data")}>
-            <Database size={15} />
-            关联数据
-          </button>
+          {(activeConversation || assistant) && (
+            <span className="v-environment-picker">
+              <button
+                type="button"
+                aria-haspopup="menu"
+                aria-expanded={environmentMenuOpen}
+                onClick={() => setEnvironmentMenuOpen((value) => !value)}
+              >
+                {executionEnvironment === "本地电脑" ? <Laptop size={15} /> : <Cloud size={15} />}
+                {executionEnvironment}
+                <ChevronDown size={14} />
+              </button>
+              {environmentMenuOpen && <span className="v-environment-menu" role="menu" aria-label="选择运行环境">
+                {(["本地电脑", "云电脑"] as const).map((environment) => (
+                  <button
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={executionEnvironment === environment}
+                    key={environment}
+                    onClick={() => {
+                      setExecutionEnvironment(environment);
+                      setEnvironmentMenuOpen(false);
+                      notify(`已切换至${environment}环境（原型演示）。`);
+                    }}
+                  >
+                    {environment === "本地电脑" ? <Laptop size={15} /> : <Cloud size={15} />}
+                    {environment}
+                    {executionEnvironment === environment && <CheckCircle2 size={14} />}
+                  </button>
+                ))}
+              </span>}
+            </span>
+          )}
+          {(assistant || activeConversation) && <>
+            <button onClick={() => setPanel("knowledge")}>
+              知识与数据 <ChevronRight size={14} />
+            </button>
+            <button onClick={() => router.push("/skills")}>
+              技能 <ChevronRight size={14} />
+            </button>
+            <button onClick={() => router.push("/tools?view=科研工具")}>
+              工具 <ChevronRight size={14} />
+            </button>
+          </>}
+          {!assistant && !activeConversation && (
+            <label className="v-composer-space-picker">
+              <MapPin size={14} aria-hidden="true" />
+              <select
+                aria-label="选择当前科研空间"
+                value={space.id}
+                onChange={(event) => {
+                  const nextSpaceId = event.target.value;
+                  mutate("已切换当前空间", nextSpaceId, (draftState) => {
+                    if (!canEnter(draftState, p, nextSpaceId))
+                      throw new Error("无空间访问权限。");
+                    draftState.spaceId = nextSpaceId;
+                  });
+                }}
+              >
+                {s.spaces
+                  .filter((item) => canEnter(s, p, item.id) && item.status === "ACTIVE")
+                  .map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}
+              </select>
+              <ChevronDown size={13} />
+            </label>
+          )}
+        </div>
+        <div className="v-composer-end">
           <label>
-            <span className="sr-only">研究模式</span>
+            <span className="sr-only">模型</span>
             <select
-              aria-label="研究模式"
-              value={mode}
-              onChange={(e) => setMode(e.target.value)}
+              aria-label="模型"
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
             >
-              {["自动", "深度研究", "快速分析"].map((x) => (
+              {["deepseekV4Pro", "GPT-5.6", "Qwen3-Max"].map((x) => (
                 <option key={x}>{x}</option>
               ))}
             </select>
           </label>
+          <Button
+            primary
+            aria-label="发送科研任务"
+            disabled={
+              (!draft.trim() && !files.length) || !writable(s, p, space.id)
+            }
+            onClick={send}
+          >
+            <ArrowUp size={18} />
+          </Button>
         </div>
-        <Button
-          primary
-          aria-label="发送科研任务"
-          disabled={
-            (!draft.trim() && !files.length) || !writable(s, p, space.id)
-          }
-          onClick={send}
-        >
-          <ArrowUp size={18} />
-        </Button>
       </div>
     </div>
   );
   return (
     <div
-      className={`v-workspace ${historyCollapsed && !activeConversation ? "history-collapsed" : ""} ${activeConversation ? "conversation-active" : ""}`}
+      className={`v-workspace ${assistant ? "assistant-route" : ""} ${!assistant && view === "home" && !activeConversation ? "workbench-home" : ""} ${historyCollapsed && !activeConversation ? "history-collapsed" : ""} ${activeConversation ? "conversation-active" : ""}`}
     >
       <aside
         className={`v-history ${historyCollapsed && !activeConversation ? "collapsed" : ""}`}
       >
-        {activeConversation && (
-          <button
-            type="button"
-            className="v-chat-brand"
-            onClick={() => router.push("/workspace")}
-            aria-label="新建科研对话"
-          >
-            <Image
-              src="/v1/ai4s-logo.png"
-              alt="AI4S · AI for Science"
-              width={104}
-              height={44}
-            />
-            <span>Research Agent</span>
-          </button>
-        )}
         <div className="v-history-actions">
           {(!historyCollapsed || activeConversation) && (
-            <Button onClick={() => router.push("/workspace")}>
+            <Button onClick={() => router.push(assistant ? "/assistant" : "/workspace")}>
               <Plus size={16} />
-              {activeConversation ? "新建对话" : "新建科研任务"}
+              新建科研任务
             </Button>
           )}
-          {!activeConversation && (
+          {!activeConversation && !assistant && (
             <button
               type="button"
               className="v-history-toggle"
@@ -433,12 +667,12 @@ export function Workspace() {
               )}
             </button>
           )}
-          {historyCollapsed && !activeConversation && (
+          {historyCollapsed && !activeConversation && !assistant && (
             <button
               type="button"
               className="v-history-new-icon"
               aria-label="新建科研任务"
-              onClick={() => router.push("/workspace")}
+              onClick={() => router.push(assistant ? "/assistant" : "/workspace")}
             >
               <Plus size={17} />
             </button>
@@ -449,15 +683,15 @@ export function Workspace() {
             <SearchBox
               value={search}
               onChange={setSearch}
-              placeholder="搜索历史会话"
+              placeholder={assistant ? "搜索科研任务" : "搜索历史会话"}
             />
-            <Select
+            {!assistant && <Select
               label="范围"
               value={historyRange}
               onChange={setHistoryRange}
               options={["当前空间", "全部有权空间"]}
-            />
-            <p className="v-history-label">最近会话</p>
+            />}
+            <p className="v-history-label">{assistant ? "最近科研任务" : "最近会话"}</p>
             {histories.map((h) => (
           <div
             className={`v-history-item ${h.id === session?.id ? "selected" : ""}`}
@@ -470,11 +704,13 @@ export function Workspace() {
                     d.spaceId = h.spaceId;
                   });
                 }
-                router.push("/workspace?session=" + h.id);
+                router.push(assistantBase + "?session=" + h.id);
               }}
             >
-              {h.favorite ? "★ " : ""}
-              {h.name}
+              <span>{h.favorite ? "★ " : ""}{h.name}</span>
+              {assistant && h.taskId && (
+                <small>{taskLabels[s.tasks.find((item) => item.id === h.taskId)?.status ?? "PLANNING"]}</small>
+              )}
             </button>
             <button
               aria-label={h.name + " 会话操作"}
@@ -483,12 +719,30 @@ export function Workspace() {
                   notify("共享会话当前为只读。");
                   return;
                 }
-                setEditSession(h);
-                setRename(h.name);
+                setSessionMenu((value) => value === h.id ? "" : h.id);
               }}
             >
               <MoreHorizontal size={15} />
             </button>
+            {sessionMenu === h.id && (
+              <div className="v-session-bubble" role="menu" aria-label={`${h.name} 任务菜单`}>
+                <button role="menuitem" onClick={() => { setEditSession(h); setRename(h.name); setSessionDialog("rename"); setSessionMenu(""); }}><Pencil size={15} />重命名</button>
+                <button role="menuitem" onClick={() => { mutate(h.favorite ? "已取消置顶" : "已置顶科研任务", h.id, (d) => { d.sessions.find((x) => x.id === h.id)!.favorite = !h.favorite; }); setSessionMenu(""); }}><Pin size={15} />{h.favorite ? "取消置顶" : "置顶"}</button>
+                <button role="menuitem" onClick={() => { setEditSession(h); setShareUser(""); setSessionDialog("share"); setSessionMenu(""); }}><Share2 size={15} />分享</button>
+                <div className="v-session-menu-divider" />
+                <Confirm
+                  title="删除科研任务会话"
+                  description="删除本地会话记录，关联任务与正式产出保留。"
+                  onConfirm={() => {
+                    mutate("已删除会话", h.id, (d) => { d.sessions = d.sessions.filter((x) => x.id !== h.id); });
+                    setSessionMenu("");
+                    if (h.id === session?.id) router.push("/assistant");
+                  }}
+                >
+                  <span className="v-session-delete"><Trash2 size={15} />删除</span>
+                </Confirm>
+              </div>
+            )}
           </div>
             ))}
             {!histories.length && <p className="v-muted">暂无历史会话</p>}
@@ -513,22 +767,32 @@ export function Workspace() {
                 <div>
                   <h1>{task?.name ?? session?.name}</h1>
                   <div className="v-chat-meta">
+                    {task && (
+                      <span>
+                        {assistantScenarioTask
+                          ? "高性能合成橡胶项目 / 配方优化课题"
+                          : `${s.projects.find((project) => project.id === task.projectId)?.name ?? "科研项目"} / ${activeSpace.name}`}
+                      </span>
+                    )}
                     <Badge>
                       {task ? taskLabels[task.status] : "对话中"}
                     </Badge>
-                    <span>{space.name}</span>
+                    <span>更新于 {assistantView?.updatedAt ?? "10:42"}</span>
                   </div>
                 </div>
               </header>
 
               <div className="v-chat-scroll">
                 <div className="v-conversation">
-                  {session?.messages.map((message) => (
+                  {(assistantView
+                    ? session?.messages.filter((message) => message.role === "user").slice(0, 1)
+                    : session?.messages
+                  )?.map((message) => (
                     <article
                       className={`v-message ${message.role}`}
                       key={message.id}
                     >
-                      <span className="v-message-avatar" aria-hidden="true">
+                      <span className={`v-message-avatar ${message.role}-avatar`} aria-hidden="true">
                         {message.role === "user" ? p.name[0] : <Bot size={17} />}
                       </span>
                       <div>
@@ -541,14 +805,48 @@ export function Workspace() {
                     </article>
                   ))}
 
-                  {task && (
+                  {assistantView && (
+                    <>
+                      <article className="v-message assistant v-assistant-plan-message">
+                        <span className="v-message-avatar assistant-avatar" aria-hidden="true"><Sparkles size={17} /></span>
+                        <div>
+                          <strong>Research Agent</strong>
+                          <p>我将为你开展系统性的科研任务，并按以下步骤推进：</p>
+                          <ol>
+                            {assistantView.stages.map((stage, index) => (
+                              <li key={stage.id}><span>{index + 1}</span>{stage.summary}</li>
+                            ))}
+                          </ol>
+                          <time>{session?.messages.find((message) => message.role === "assistant")?.at.replace("T", " ").slice(0, 16) ?? "2026-09-24 09:11"}</time>
+                        </div>
+                      </article>
+                      <section className="v-research-progress-card" aria-label="科研任务执行进度">
+                        <header>
+                          <span className="v-progress-signal"><Activity size={18} /></span>
+                          <div><strong>{task?.status === "COMPLETED" ? "研究已完成" : "研究进行中"}</strong><small>{task?.status === "COMPLETED" ? "全部研究阶段已经完成" : "AI 正在多源检索和分析，请稍候…"}</small></div>
+                          <span className="v-progress-runtime">已运行 12 分钟</span>
+                        </header>
+                        <ol>
+                          {assistantView.stages.map((stage, index) => (
+                            <li className={stage.status} key={stage.id}>
+                              <span className="v-progress-state">{stage.status === "completed" ? <CheckCircle2 size={17} /> : stage.status === "running" ? <CirclePlay size={17} /> : <Circle size={17} />}</span>
+                              <strong>{stage.label}</strong>
+                              <span>{stage.summary}</span>
+                              <i>{stage.status === "completed" ? `09:${String(37 + index * 3).padStart(2, "0")}` : stage.status === "running" ? "65%" : "等待执行"}</i>
+                            </li>
+                          ))}
+                        </ol>
+                        <footer><span>已处理：126 篇文献 · 43 项专利 · 4 项标准</span><button type="button" onClick={() => setAssistantTab("process")}>查看执行过程 <ChevronRight size={14} /></button></footer>
+                      </section>
+                    </>
+                  )}
+
+                  {!assistantView && task && task.status === "PLANNING" && (
                     <section className="v-agent-run-card" aria-label="Agent执行进度">
                       <header>
                         <span><Bot size={18} /></span>
                         <div>
-                          <strong>
-                            Agent {task.status === "COMPLETED" ? "已完成" : "正在执行"}
-                          </strong>
+                          <strong>Agent 正在规划</strong>
                           <small>{task.next || "持续推进科研任务"}</small>
                         </div>
                         <Badge>{taskLabels[task.status]}</Badge>
@@ -606,7 +904,7 @@ export function Workspace() {
                     </section>
                   )}
 
-                  {task && (
+                  {!assistantView && task && (
                     <>
                 {task.status === "PLANNING" && (
                   <div className="v-chat-note">
@@ -648,49 +946,6 @@ export function Workspace() {
                     </div>
                   </div>
                 )}
-                {task.status === "WAITING_HUMAN" &&
-                  s.decisions
-                    .filter(
-                      (d) => d.taskId === task.id && d.status === "pending",
-                    )
-                    .map((d) => (
-                      <section className="v-decision-card" key={d.id}>
-                        <div>
-                          <strong>需要你的确认</strong>
-                          <p>{d.question}</p>
-                          <small>{d.recommendation}</small>
-                        </div>
-                        <div>
-                          <Button
-                            primary
-                            disabled={d.assignee !== p.id}
-                            onClick={() => decide(d)}
-                          >
-                            查看并处理
-                          </Button>
-                        </div>
-                      </section>
-                    ))}
-                {editable &&
-                  !["COMPLETED", "CANCELLED"].includes(task.status) && (
-                    <div className="v-chat-task-actions">
-                      {task.status === "RUNNING" && (
-                        <Button onClick={() => act("pause")}>暂停任务</Button>
-                      )}
-                      <Confirm
-                        title="取消科研任务"
-                        description="任务将停止执行，已有会话、步骤与产出保留。"
-                        onConfirm={() => act("cancel")}
-                      >
-                        取消任务
-                      </Confirm>
-                      {task.status === "RUNNING" && (
-                        <span className="v-muted">
-                          任务将在本地后台继续，刷新后可恢复。
-                        </span>
-                      )}
-                    </div>
-                  )}
                     </>
                   )}
                 </div>
@@ -703,69 +958,178 @@ export function Workspace() {
                 : editable) && <div className="v-chat-composer">{input}</div>}
             </section>
 
-            <aside className="v-chat-files" aria-label="聊天文件">
-              <header>
-                <div>
-                  <h2>聊天文件</h2>
-                  <span>{chatFiles.outputs.length + chatFiles.referenceIds.length}</span>
-                </div>
-              </header>
-              <div className="v-chat-file-tabs" role="tablist">
-                {(["产出", "引用资料"] as const).map((tab) => (
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={fileTab === tab}
-                    className={fileTab === tab ? "selected" : ""}
-                    onClick={() => setFileTab(tab)}
-                    key={tab}
-                  >
-                    {tab}
-                    <span>
-                      {tab === "产出"
-                        ? chatFiles.outputs.length
-                        : chatFiles.referenceIds.length}
-                    </span>
-                  </button>
-                ))}
+            <aside className="v-chat-files v-assistant-side" aria-label="研究任务上下文">
+              <div className="v-assistant-side-tabs" role="tablist">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={assistantTab === "process"}
+                  className={assistantTab === "process" ? "selected" : ""}
+                  onClick={() => setAssistantTab("process")}
+                >
+                  研究过程
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={assistantTab === "outputs"}
+                  className={assistantTab === "outputs" ? "selected" : ""}
+                  onClick={() => setAssistantTab("outputs")}
+                >
+                  科研产出
+                </button>
               </div>
-              <div className="v-chat-file-list">
-                {fileTab === "产出" ? (
-                  chatFiles.outputs.length ? (
-                    chatFiles.outputs.map((artifact) => (
+
+              {assistantTab === "process" && assistantView ? (
+                <div className="v-process-panel">
+                  <ol className="v-process-stages">
+                    {assistantView.stages.map((stage, index) => (
+                      <li className={stage.status} key={stage.id}>
+                        <button
+                          type="button"
+                          className="v-process-stage-title"
+                          aria-expanded={expandedAssistantStages.includes(stage.id)}
+                          onClick={() => setExpandedAssistantStages((value) =>
+                            value.includes(stage.id)
+                              ? []
+                              : [stage.id])}
+                        >
+                          <span>{String(index + 1).padStart(2, "0")}</span>
+                          <strong>{stage.label}</strong>
+                          <i>{stage.status === "completed" ? "已完成" : stage.status === "running" ? "进行中" : "未开始"}</i>
+                          {expandedAssistantStages.includes(stage.id)
+                            ? <ChevronDown size={14} />
+                            : <ChevronRight size={14} />}
+                        </button>
+                        {expandedAssistantStages.includes(stage.id) && (
+                          <div className="v-agent-execution">
+                            <p className="v-process-stage-summary">{stage.summary}</p>
+                            <ol>
+                              {stage.events.map((event) => (
+                                <li className={event.status} key={event.id}>
+                                  <span className={`v-execution-kind ${event.kind}`}>
+                                    {event.kind === "dispatch"
+                                      ? "编排"
+                                      : event.kind === "agent"
+                                        ? "Agent"
+                                        : event.kind === "tool"
+                                          ? "工具"
+                                          : "结果"}
+                                  </span>
+                                  <div>
+                                    <strong>{event.title}</strong>
+                                    <p>{event.detail}</p>
+                                  </div>
+                                  <i>{event.status === "completed" ? "完成" : event.status === "running" ? "运行中" : "等待"}</i>
+                                </li>
+                              ))}
+                            </ol>
+                          </div>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              ) : assistantView ? (
+                <div className="v-output-panel-side">
+                  <header>
+                    <strong>当前任务产出</strong>
+                    <span>共 {assistantView.outputs.length} 项成果</span>
+                  </header>
+                  <div className="v-output-filter-tabs" role="tablist">
+                    {assistantView.outputFilters.map((filter) => (
                       <button
                         type="button"
-                        className="v-chat-file-card"
-                        onClick={() => setOutput(artifact)}
-                        key={artifact.id}
+                        role="tab"
+                        aria-selected={assistantOutputFilter === filter}
+                        className={assistantOutputFilter === filter ? "selected" : ""}
+                        onClick={() => setAssistantOutputFilter(filter)}
+                        key={filter}
                       >
-                        <span className="v-chat-file-icon"><FileText size={20} /></span>
-                        <div>
-                          <strong>{artifact.name}</strong>
-                          <small>
-                            {artifact.type} · {artifact.version} · {artifact.status}
-                          </small>
-                          <p>{artifact.content}</p>
-                        </div>
+                        {filter}
                       </button>
-                    ))
-                  ) : (
-                    <Empty>当前对话还没有形成科研产出。</Empty>
-                  )
-                ) : chatFiles.referenceIds.length ? (
-                  chatFiles.referenceIds.map((id) => (
-                    <div className="v-chat-reference" key={id}>
-                      <BookOpen size={18} />
-                      <div>
-                        <strong>{resourceName(id)}</strong>
-                        <small>已加入当前科研上下文</small>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <Empty>当前对话还没有引用资料。</Empty>
-                )}
-              </div>
+                    ))}
+                  </div>
+                  <div className="v-assistant-output-list">
+                    {assistantOutputs.map((item) => (
+                      <article className="v-assistant-output-row" key={item.id}>
+                        <span className="v-output-star">{item.core ? <Star size={14} fill="currentColor" /> : null}</span>
+                        <span><strong>{item.name}</strong><small>{item.type} · {item.version}</small></span>
+                        <Badge>{publishedAssistantOutputs.includes(item.id) || s.assets.some((asset) => asset.sourceAssetId === item.id) ? "已发布" : item.status}</Badge>
+                        <div className="v-output-more">
+                          <button
+                            type="button"
+                            aria-label={`${item.name} 更多操作`}
+                            aria-expanded={assistantOutputMenu === item.id}
+                            onClick={() => setAssistantOutputMenu((value) => value === item.id ? "" : item.id)}
+                          >
+                            <MoreHorizontal size={15} />
+                          </button>
+                          {assistantOutputMenu === item.id && (
+                            <div className="v-output-menu" role="menu">
+                              <button
+                                type="button"
+                                role="menuitem"
+                                onClick={() => {
+                                  setAssistantOutputMenu("");
+                                  download(
+                                    `${item.name}.txt`,
+                                    `${item.name}\n类型：${item.type}\n版本：${item.version}\n状态：${item.status}\n来源：${item.source}\n引用：${item.references}\n`,
+                                  );
+                                  notify(`已下载“${item.name}”。`);
+                                }}
+                              >
+                                下载
+                              </button>
+                              <button
+                                type="button"
+                                role="menuitem"
+                                disabled={
+                                  ["草稿", "生成中", "已废弃"].includes(item.status) ||
+                                  publishedAssistantOutputs.includes(item.id) ||
+                                  s.assets.some((asset) => asset.sourceAssetId === item.id)
+                                }
+                                onClick={() => {
+                                  setAssistantOutputMenu("");
+                                  if (!task) return;
+                                  const ok = mutate("已发布为科研资产", item.id, (draft, user) => {
+                                    if (draft.assets.some((asset) => asset.sourceAssetId === item.id))
+                                      return;
+                                    const templateAsset = draft.assets.find((asset) => asset.id === "template-rubber-experiment") ?? draft.assets[0];
+                                    if (!templateAsset) throw new Error("缺少可复用的资产模板。");
+                                    draft.assets.unshift({
+                                      ...structuredClone(templateAsset),
+                                      id: uid("asset"),
+                                      name: item.name,
+                                      ownerId: user.id,
+                                      projectId: task.projectId,
+                                      spaceId: task.spaceId,
+                                      visibility: "SPACE",
+                                      shares: [],
+                                      updatedAt: now(),
+                                      type: item.type === "数据" ? "数据集" : "方案模板",
+                                      description: `${item.source}形成的${item.type}，版本 ${item.version}。`,
+                                      version: item.version,
+                                      publishStatus: "已发布",
+                                      sourceAssetId: item.id,
+                                    });
+                                  });
+                                  if (ok)
+                                    setPublishedAssistantOutputs((value) => value.includes(item.id) ? value : [...value, item.id]);
+                                }}
+                              >
+                                发布为资产
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <Empty>当前会话尚未形成持续科研任务。</Empty>
+              )}
             </aside>
           </>
         ) : view === "history" ? (
@@ -774,7 +1138,7 @@ export function Workspace() {
             {histories.map((h) => (
               <Link
                 className="v-list-line"
-                href={"/workspace?session=" + h.id}
+                href={assistantBase + "?session=" + h.id}
                 key={h.id}
               >
                 {h.name}
@@ -784,12 +1148,251 @@ export function Workspace() {
           </>
         ) : (
           <>
-            <section className="v-agent-home">
-              <span className="v-kicker">UNIFIED RESEARCH AGENT</span>
-              <h1>今天想推进什么科研任务？</h1>
+            <section className={`v-agent-home ${assistant ? "v-assistant-launch-home" : ""}`}>
+              <span className="v-kicker">{assistant ? "AI FOR SCIENCE" : "UNIFIED RESEARCH AGENT"}</span>
+              <h1>{assistant ? "从一个科研任务开始" : "今天想推进什么科研任务？"}</h1>
+              {assistant && <>
+                <p className="v-assistant-launch-lead">描述你的研究目标、问题或材料，AI 将规划并推进后续工作</p>
+                <div className="v-assistant-launch-choices">
+                <div className="v-assistant-mode-grid" role="tablist" aria-label="科研任务模式">
+                  {(Object.entries(assistantLaunchModes) as [keyof typeof assistantLaunchModes, (typeof assistantLaunchModes)[keyof typeof assistantLaunchModes]][]).map(([mode, config]) => {
+                    const ModeIcon = config.icon;
+                    return <button
+                      type="button"
+                      role="tab"
+                      aria-selected={assistantLaunchMode === mode}
+                      className={assistantLaunchMode === mode ? "selected" : ""}
+                      onClick={() => setAssistantLaunchMode(mode)}
+                      key={mode}
+                    >
+                      <span><ModeIcon size={17} /></span>
+                      <strong>{mode} · {config.title}</strong>
+                      <small>{config.description}</small>
+                    </button>;
+                  })}
+                </div>
+                <div className="v-assistant-skill-options" aria-label={`${assistantLaunchMode}类科研 Skill`}>
+                  {assistantLaunchModes[assistantLaunchMode].skills.map((skill) => (
+                    <button
+                      type="button"
+                      className={assistantSkillTags.includes(skill) ? "selected" : ""}
+                      aria-pressed={assistantSkillTags.includes(skill)}
+                      onClick={() => setAssistantSkillTags((value) => value.includes(skill) ? value.filter((item) => item !== skill) : [...value, skill])}
+                      key={skill}
+                    >
+                      <Sparkles size={13} />{skill}
+                    </button>
+                  ))}
+                </div>
+                </div>
+              </>}
               {input}
             </section>
-            {(view === "home" || view === "pending") && (
+            {view === "home" && !assistant && (
+              <>
+                <section className="v-workbench-quick" aria-labelledby="quick-task-title">
+                  <div className="v-workbench-inline-head">
+                    <div>
+                      <h2 id="quick-task-title">常用科研任务</h2>
+                    </div>
+                  </div>
+                  <div className="v-quick-task-list">
+                    {quickResearchTasks.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <button
+                          type="button"
+                          key={item.label}
+                          onClick={() =>
+                            mutate("", item.label, (state) => {
+                              state.drafts[key] = item.prompt;
+                            })
+                          }
+                        >
+                          <span><Icon size={17} /></span>
+                          <strong>{item.label}</strong>
+                          <small>{item.group}</small>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+
+                <div className="v-workbench-grid v-workbench-overview-grid">
+                  <section className="v-workbench-card v-recommendation-card" aria-labelledby="recommendation-title">
+                    <div className="v-workbench-card-head">
+                    <h2 id="recommendation-title"><Sparkles size={19} />AI 为你推荐</h2>
+                      <Link href="/workspace?view=pending" className="v-link">查看全部 <ChevronRight size={14} /></Link>
+                    </div>
+                    <div className="v-workbench-tabs" role="tablist" aria-label="推荐类型">
+                      {["全部", "仅需知悉", "需要决策", "建议操作"].map((filter) => {
+                        const count = filter === "全部"
+                          ? workbenchHome.recommendations.length
+                          : workbenchHome.recommendations.filter((item) => item.category === filter).length;
+                        return (
+                          <button
+                            type="button"
+                            role="tab"
+                            aria-selected={recommendationFilter === filter}
+                            className={recommendationFilter === filter ? "selected" : ""}
+                            onClick={() => setRecommendationFilter(filter)}
+                            key={filter}
+                          >
+                            {filter} <span>({count})</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="v-recommendation-list">
+                      {visibleRecommendations.map((item) => (
+                        <article className="v-recommendation-item" key={item.id}>
+                          <span className={`v-recommendation-icon ${item.kind}`} aria-hidden="true">
+                            {item.kind === "decision" ? <FlaskConical size={19} /> : item.kind === "task" ? <Cpu size={19} /> : <BookOpen size={19} />}
+                          </span>
+                          <div>
+                            <div className="v-recommendation-title-line">
+                              <strong>{item.title}</strong>
+                              <Badge>{item.category}</Badge>
+                            </div>
+                            <p>{item.description}</p>
+                          </div>
+                          <time>{item.time}</time>
+                          <Button
+                            onClick={() => {
+                              if (item.kind === "decision") {
+                                const pending = s.decisions.find((decisionItem) => decisionItem.id === item.targetId);
+                                if (pending) decide(pending);
+                              } else if (item.kind === "task") {
+                                router.push(`/workspace?task=${item.targetId}`);
+                              } else {
+                                router.push(`/knowledge?detail=${item.targetId}`);
+                              }
+                            }}
+                          >
+                            {item.action}
+                          </Button>
+                        </article>
+                      ))}
+                      {!visibleRecommendations.length && <Empty>当前筛选下没有推荐事项。</Empty>}
+                    </div>
+                  </section>
+
+                  <section className="v-workbench-card v-activity-card" id="activity" aria-labelledby="activity-title">
+                    <div className="v-workbench-card-head">
+                    <h2 id="activity-title"><Activity size={19} />科研活动</h2>
+                      <Link href="/workspace?view=tasks" className="v-link">查看全部 <ChevronRight size={14} /></Link>
+                    </div>
+                    <div className="v-workbench-tabs" role="tablist" aria-label="科研活动类型">
+                      {["项目动态", "实验动态", "计算动态", "成果动态"].map((filter) => (
+                        <button
+                          type="button"
+                          role="tab"
+                          aria-selected={activityFilter === filter}
+                          className={activityFilter === filter ? "selected" : ""}
+                          onClick={() => setActivityFilter(filter)}
+                          key={filter}
+                        >
+                          {filter}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="v-activity-list">
+                      {visibleActivities.map((item) => (
+                        <button
+                          type="button"
+                          className="v-activity-item"
+                          onClick={() => {
+                            if (item.category === "成果动态") {
+                              const artifact = s.artifacts.find((entry) => entry.id === item.targetId);
+                              if (artifact) setOutput(artifact);
+                            } else if (item.category === "实验动态" || item.id === "mock-data-sync" || item.id === "mock-reservation") {
+                              router.push("/lab?tab=实验任务");
+                            } else if (item.id === "mock-knowledge-added") {
+                              router.push(`/knowledge?detail=${item.targetId}`);
+                            } else {
+                              router.push(`/workspace?task=${item.targetId}`);
+                            }
+                          }}
+                          key={item.id}
+                        >
+                          <time>{item.time}</time>
+                          <span className="v-activity-dot" aria-hidden="true" />
+                          <span className="v-activity-symbol" aria-hidden="true">
+                            {item.category === "实验动态" ? <FlaskConical size={17} /> : item.category === "计算动态" ? <Cpu size={17} /> : item.category === "成果动态" ? <FileStack size={17} /> : <Activity size={17} />}
+                          </span>
+                          <span className="v-activity-copy"><strong>{item.title}</strong><small>{item.description}</small></span>
+                          <Badge>{item.status}</Badge>
+                        </button>
+                      ))}
+                      {!visibleActivities.length && <Empty>当前暂无{activityFilter}。</Empty>}
+                    </div>
+                  </section>
+                </div>
+
+                <div className="v-workbench-grid v-recent-grid">
+                  <section className="v-workbench-card" aria-labelledby="recent-task-title">
+                    <div className="v-workbench-card-head">
+                      <h2 id="recent-task-title"><CirclePlay size={18} />最近科研任务</h2>
+                      <Link href="/workspace?view=tasks" className="v-link">查看全部 <ChevronRight size={14} /></Link>
+                    </div>
+                    <div className="v-recent-task-list">
+                      {workbenchHome.recentTasks.map((item) => (
+                        <button type="button" onClick={() => openTask(item)} key={item.id}>
+                          <span className={`v-task-state ${item.status.toLowerCase()}`} aria-hidden="true" />
+                          <span><strong>{item.name}</strong><small>{item.type} · {space.name}</small></span>
+                          <Badge>{taskLabels[item.status]}</Badge>
+                          <span className="v-recent-action">{item.status === "COMPLETED" ? "查看" : "继续"}<ChevronRight size={14} /></span>
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section className="v-workbench-card" aria-labelledby="recent-output-title">
+                    <div className="v-workbench-card-head">
+                      <h2 id="recent-output-title"><FileStack size={18} />最近科研产出</h2>
+                      <Link href="/assets?view=我的资产" className="v-link">查看全部 <ChevronRight size={14} /></Link>
+                    </div>
+                    <div className="v-recent-output-list">
+                      {workbenchHome.recentArtifacts.map((item) => (
+                        <button type="button" onClick={() => setOutput(item)} key={item.id}>
+                          <span><strong>{item.name}</strong><small>{item.type} · {item.version}</small></span>
+                          <Badge>{item.status}</Badge>
+                          <ChevronRight size={15} />
+                        </button>
+                      ))}
+                      {!workbenchHome.recentArtifacts.length && <Empty>当前空间尚未形成科研产出。</Empty>}
+                    </div>
+                  </section>
+                </div>
+
+                <section className="v-workbench-card v-frontier-card" aria-labelledby="frontier-title">
+                  <div className="v-workbench-card-head">
+                    <h2 id="frontier-title"><BookOpen size={18} />科研前沿</h2>
+                    <Link href="/knowledge" className="v-link">查看全部 <ChevronRight size={14} /></Link>
+                  </div>
+                  <div className="v-frontier-filters">
+                    <div><span>学科领域：</span>{["全部", "地球科学", "材料科学", "合成生物", "化学化工"].map((item) => <button type="button" className={frontierDiscipline === item ? "selected" : ""} onClick={() => setFrontierDiscipline(item)} key={item}>{item}</button>)}</div>
+                    <div><span>资源类型：</span>{["全部", "文献", "专利", "标准", "科研资讯"].map((item) => <button type="button" className={frontierType === item ? "selected" : ""} onClick={() => setFrontierType(item)} key={item}>{item}</button>)}</div>
+                  </div>
+                  <div className="v-frontier-list">
+                    {visibleFrontier.map((item) => (
+                      <Link
+                        href={item.id.startsWith("frontier-")
+                          ? `/knowledge?query=${encodeURIComponent(item.name)}`
+                          : `/knowledge?detail=${item.id}`}
+                        key={item.id}
+                      >
+                        <Badge>{item.type}</Badge>
+                        <span><strong>{item.name}</strong><small>{item.organization} · {item.date} · {item.description}</small></span>
+                        <ChevronRight size={16} />
+                      </Link>
+                    ))}
+                    {!visibleFrontier.length && <Empty>当前筛选下暂无科研资源，请调整学科或资源类型。</Empty>}
+                  </div>
+                </section>
+              </>
+            )}
+            {view === "pending" && (
               <section className="v-section v-workbench-panel v-pending-panel">
                 <div className="v-section-head">
                   <h2>
@@ -846,7 +1449,7 @@ export function Workspace() {
                 )}
               </section>
             )}
-            {(view === "home" || view === "tasks") && (
+            {view === "tasks" && (
               <section className="v-section v-workbench-panel v-research-panel">
                 <div className="v-section-head">
                   <h2>
@@ -880,7 +1483,7 @@ export function Workspace() {
                         taskFilter === "全部" ||
                         taskLabels[t.status] === taskFilter,
                     )
-                    .slice(0, view === "home" ? 3 : 99)
+                    .slice(0, 99)
                     .map((t) => (
                       <div className="v-data-row" key={t.id}>
                         <div>
@@ -924,7 +1527,7 @@ export function Workspace() {
                 </div>
               </section>
             )}
-            {(view === "home" || view === "outputs") && (
+            {view === "outputs" && (
               <section className="v-section v-workbench-panel v-output-panel">
                 <div className="v-section-head">
                   <h2>
@@ -945,7 +1548,7 @@ export function Workspace() {
                     <span>更新时间</span>
                     <span>操作</span>
                   </div>
-                  {artifacts.slice(0, view === "home" ? 3 : 99).map((a) => (
+                  {artifacts.slice(0, 99).map((a) => (
                     <div className="v-data-row" key={a.id}>
                       <div>
                         <button
@@ -999,95 +1602,59 @@ export function Workspace() {
         <Files value={files} onChange={setFiles} />
         <p className="v-muted">本地原型保留附件信息，未上传至服务器。</p>
       </Modal>
-      <Modal
-        title="需要你确认"
-        open={!!decision}
-        bottom
-        onClose={() => setDecisionId("")}
-        footer={
-          <>
-            <Button onClick={() => setDecisionId("")}>暂不处理</Button>
-            <Button
-              primary
-              disabled={!choice || (choice === "自定义" && !custom.trim())}
-              onClick={() => {
-                if (!decision) return;
-                if (
-                  mutate("已记录人工决策", decision.id, (d, u) => {
-                    const item = d.decisions.find((x) => x.id === decision.id)!;
-                    if (item.assignee !== u.id || item.status !== "pending")
-                      throw new Error("当前不能处理此决策。");
-                    item.status = "decided";
-                    item.choice = choice === "自定义" ? custom : choice;
-                    item.by = u.id;
-                    item.at = now();
-                    if (item.experimentId) {
-                      const e = d.experiments.find(
-                        (x) => x.id === item.experimentId,
-                      );
-                      if (e) {
-                        e.status = "待执行";
-                        e.exception = "";
-                        e.records.push(now() + " 人工决策：" + item.choice);
-                      }
-                    }
-                    const t = d.tasks.find((x) => x.id === item.taskId)!;
-                    t.status = item.experimentId
-                      ? "WAITING_RESOURCE"
-                      : "RUNNING";
-                    t.runAt = item.experimentId ? undefined : Date.now() + 8000;
-                    if (item.experimentId)
-                      t.reason = "等待实验重新执行与结果确认。";
-                    const st = t.steps.find((x) => x.id === item.stepId);
-                    if (st) st.status = "running";
-                    const ss = d.sessions.find((x) => x.id === t.sessionIds[0]);
-                    ss?.messages.push({
-                      id: uid("m"),
-                      role: "user",
-                      text: "人工决策：" + item.choice,
-                      at: now(),
-                    });
-                  })
-                )
-                  setDecisionId("");
-              }}
-            >
-              确认并继续
-            </Button>
-          </>
-        }
-      >
-        {decision && (
-          <>
-            <h3>{decision.question}</h3>
-            <Details
-              values={{
-                "Agent 建议": decision.recommendation,
-                建议原因: decision.reason,
-              }}
-            />
-            {decision.options.map((o) => (
-              <label className="v-check-line" key={o}>
-                <input
-                  type="radio"
-                  name="decision"
-                  checked={choice === o}
-                  onChange={() => setChoice(o)}
-                />
-                {o}
-              </label>
-            ))}
-            {choice === "自定义" && (
-              <Field label="自定义方案">
-                <textarea
-                  value={custom}
-                  onChange={(e) => setCustom(e.target.value)}
-                />
-              </Field>
-            )}
-          </>
-        )}
-      </Modal>
+      {decision && (
+        <div className="v-decision-sheet-layer">
+          <section
+            className="v-decision-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="decision-sheet-title"
+          >
+            <header>
+              <div>
+                <span>需要你确认</span>
+                <h2 id="decision-sheet-title">{decision.question}</h2>
+              </div>
+              <button type="button" aria-label="关闭确认问题" onClick={closeDecision}>×</button>
+            </header>
+            <div className="v-decision-sheet-content">
+              <div className="v-decision-advice">
+                <strong>Agent 建议</strong>
+                <p>{decision.recommendation}</p>
+                <small>{decision.reason}</small>
+              </div>
+              <div className="v-decision-options">
+                {decision.options.map((option) => (
+                  <label className={effectiveChoice === option ? "selected" : ""} key={option}>
+                    <input
+                      type="radio"
+                      name="decision"
+                      checked={effectiveChoice === option}
+                      onChange={() => setChoice(option)}
+                    />
+                    <span>{option}</span>
+                  </label>
+                ))}
+              </div>
+              {effectiveChoice === "自定义" && (
+                <Field label="自定义方案">
+                  <textarea value={custom} onChange={(e) => setCustom(e.target.value)} />
+                </Field>
+              )}
+            </div>
+            <footer>
+              <Button onClick={closeDecision}>暂不处理</Button>
+              <Button
+                primary
+                disabled={!effectiveChoice || (effectiveChoice === "自定义" && !custom.trim())}
+                onClick={confirmDecision}
+              >
+                确认并继续
+              </Button>
+            </footer>
+          </section>
+        </div>
+      )}
       <Modal
         title={panel === "plan" ? "修改研究计划" : "添加研究约束"}
         open={panel === "plan" || panel === "constraint"}
@@ -1152,7 +1719,7 @@ export function Workspace() {
               <Button
                 onClick={() => {
                   setOutput(null);
-                  router.push("/workspace?task=" + output.taskId);
+                  router.push(assistantBase + "?task=" + output.taskId);
                 }}
               >
                 查看来源任务
@@ -1206,13 +1773,13 @@ export function Workspace() {
         />
       )}
       <Modal
-        title="会话操作"
-        open={!!editSession}
-        onClose={() => setEditSession(null)}
+        title={sessionDialog === "share" ? "分享科研任务" : "重命名科研任务"}
+        open={!!editSession && !!sessionDialog}
+        onClose={() => { setEditSession(null); setSessionDialog(""); }}
       >
         {editSession && (
           <>
-            <Field label="会话名称">
+            {sessionDialog === "rename" && <><Field label="任务名称">
               <input
                 value={rename}
                 onChange={(e) => setRename(e.target.value)}
@@ -1222,57 +1789,19 @@ export function Workspace() {
               <Button
                 onClick={() => {
                   if (!rename.trim()) return;
-                  mutate("已重命名会话", editSession.id, (d) => {
+                  mutate("已重命名科研任务", editSession.id, (d) => {
                     d.sessions.find((x) => x.id === editSession.id)!.name =
                       rename;
                   });
                   setEditSession(null);
+                  setSessionDialog("");
                 }}
               >
-                重命名
+                保存名称
               </Button>
-              <Button
-                onClick={() => {
-                  mutate("已更新会话收藏", editSession.id, (d) => {
-                    const x = d.sessions.find((x) => x.id === editSession.id)!;
-                    x.favorite = !x.favorite;
-                  });
-                  setEditSession(null);
-                }}
-              >
-                {editSession.favorite ? "取消收藏" : "收藏"}
-              </Button>
-              <Confirm
-                title="归档会话"
-                description="会话从最近列表移除，原任务与产出保留。"
-                onConfirm={() => {
-                  mutate("已归档会话", editSession.id, (d) => {
-                    d.sessions.find((x) => x.id === editSession.id)!.archived =
-                      true;
-                  });
-                  setEditSession(null);
-                }}
-              >
-                归档
-              </Confirm>
-              <Confirm
-                title="删除会话"
-                description="删除本地会话记录，关联任务与正式产出保留。"
-                onConfirm={() => {
-                  mutate("已删除会话", editSession.id, (d) => {
-                    d.sessions = d.sessions.filter(
-                      (x) => x.id !== editSession.id,
-                    );
-                  });
-                  setEditSession(null);
-                  router.push("/workspace");
-                }}
-              >
-                删除
-              </Confirm>
             </div>
-            <div className="v-divider" />
-            <Field label="分享给指定成员">
+            </>}
+            {sessionDialog === "share" && <><Field label="分享给指定成员">
               <select
                 value={shareUser}
                 onChange={(e) => setShareUser(e.target.value)}
@@ -1308,10 +1837,12 @@ export function Workspace() {
                   });
                 });
                 setEditSession(null);
+                setSessionDialog("");
               }}
             >
               分享
             </Button>
+            </>}
           </>
         )}
       </Modal>

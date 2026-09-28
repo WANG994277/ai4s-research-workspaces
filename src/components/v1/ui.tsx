@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   Search,
@@ -68,32 +68,52 @@ export function SearchBox({
   onChange,
   placeholder = "搜索",
   onSubmit,
+  formId,
+  label = placeholder,
 }: {
   value: string;
   onChange: (s: string) => void;
   placeholder?: string;
   onSubmit?: () => void;
+  formId?: string;
+  label?: string;
 }) {
+  const inputRef = useRef<HTMLInputElement>(null);
   return (
     <form
+      id={formId}
       className="v-search"
+      role="search"
+      onMouseDown={(event) => {
+        const target = event.target as HTMLElement;
+        if (target !== inputRef.current && !target.closest("button")) {
+          event.preventDefault();
+          inputRef.current?.focus();
+        }
+      }}
       onSubmit={(e) => {
         e.preventDefault();
         onSubmit?.();
       }}
     >
-      <Search size={17} />
-      <input
-        aria-label={placeholder}
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
+      <label className="v-search-field">
+        <Search size={17} aria-hidden="true" />
+        <input
+          ref={inputRef}
+          aria-label={label}
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      </label>
       {value && (
         <button
           type="button"
           aria-label="清空搜索"
-          onClick={() => onChange("")}
+          onClick={() => {
+            onChange("");
+            inputRef.current?.focus();
+          }}
         >
           <X size={15} />
         </button>

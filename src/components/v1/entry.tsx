@@ -38,6 +38,10 @@ export function BaselinePage({ module }: { module: string }) {
   switch (module) {
     case "workspace":
       return <Workspace />;
+    case "assistant":
+      return <Workspace assistant />;
+    case "task-history":
+      return <Workspace assistant initialView="history" />;
     case "knowledge":
       return <Knowledge />;
     case "skills":

@@ -90,3 +90,143 @@ test("only active spaces can be selected as the current workspace", async () => 
   assert.equal(view.isSpaceSwitchable!(active), true);
   assert.equal(view.isSpaceSwitchable!(suspended), false);
 });
+
+test("workbench home model combines recommendations, activity, recent work and frontier knowledge", async () => {
+  const view = (await import("./workspace-view")) as unknown as {
+    buildWorkbenchHome?: typeof import("./workspace-view")["buildWorkbenchHome"];
+  };
+  assert.equal(typeof view.buildWorkbenchHome, "function");
+
+  const state = createSeed();
+  const model = view.buildWorkbenchHome!(state, "topic-a", "lin");
+
+  assert.equal(model.recommendations[0]?.kind, "decision");
+  assert.equal(model.recommendations[0]?.action, "查看详情");
+  assert.ok(model.activities.some((item) => item.category === "实验动态"));
+  assert.ok(model.activities.some((item) => item.category === "计算动态"));
+  assert.equal(model.recentTasks.length, 3);
+  assert.equal(model.recentArtifacts[0]?.id, "artifact-shale");
+  assert.ok(model.frontier.length >= 9);
+  assert.deepEqual(
+    [...new Set(model.frontier.map((item) => item.type))],
+    ["文献", "专利", "标准", "科研资讯"],
+  );
+  assert.ok(model.frontier.some((item) => item.discipline === "材料科学"));
+  assert.ok(model.frontier.some((item) => item.discipline === "合成生物"));
+  assert.ok(model.frontier.some((item) => item.discipline === "化学化工"));
+});
+
+test("workbench uses the previous project mock density and default model", async () => {
+  const view = (await import("./workspace-view")) as unknown as {
+    DEFAULT_WORKBENCH_MODEL?: string;
+    buildWorkbenchHome?: typeof import("./workspace-view")["buildWorkbenchHome"];
+  };
+
+  assert.equal(view.DEFAULT_WORKBENCH_MODEL, "deepseekV4Pro");
+  const model = view.buildWorkbenchHome!(createSeed(), "topic-a", "lin");
+  assert.equal(model.recommendations.length, 5);
+  assert.deepEqual(
+    model.recommendations.map((item) => item.title),
+    [
+      "实验结果异动提醒",
+      "计算任务已完成",
+      "相关文献推荐",
+      "课题里程碑即将到期",
+      "智能体建议：优化实验方案",
+    ],
+  );
+  assert.equal(model.activities.length, 5);
+  assert.deepEqual(
+    model.activities.map((item) => item.title),
+    [
+      "实验数据已同步",
+      "计算任务开始运行",
+      "新文献已加入知识库",
+      "课题进展更新",
+      "实验预约成功",
+    ],
+  );
+});
+
+test("research assistant view exposes plan trace changes and categorized outputs", async () => {
+  const view = (await import("./workspace-view")) as unknown as {
+    buildResearchAssistantView?: typeof import("./workspace-view")["buildResearchAssistantView"];
+  };
+  assert.equal(typeof view.buildResearchAssistantView, "function");
+
+  const state = createSeed();
+  const task = state.tasks.find((item) => item.id === "task-shale")!;
+  const session = state.sessions.find((item) => item.id === "task-shale-session")!;
+  const model = view.buildResearchAssistantView!(state, task, session);
+
+  assert.equal(model.planVersion, "V4");
+  assert.deepEqual(model.stages.map((stage) => stage.label), [
+    "文献调研",
+    "指标分析",
+    "计算模拟",
+    "方案设计",
+  ]);
+  assert.ok(model.stages.every((stage) => stage.summary.length > 0));
+  assert.deepEqual(
+    [...new Set(model.stages.flatMap((stage) => stage.events.map((event) => event.kind)))],
+    ["dispatch", "agent", "tool", "result"],
+  );
+  assert.ok(model.stages.some((stage) => stage.events.filter((event) => event.kind === "agent").length > 1));
+  assert.ok(model.stages.some((stage) => stage.events.filter((event) => event.kind === "tool").length > 1));
+  assert.ok(model.changes.length >= 2);
+  assert.deepEqual(model.outputFilters, ["全部", "报告", "数据", "图表", "文件"]);
+  assert.ok(model.outputs.some((output) => output.type === "报告" && output.core));
+  assert.ok(model.outputs.some((output) => output.status === "生成中"));
+});
+
+test("seed provides realistic read calculate and experiment assistant tasks", () => {
+  const state = createSeed();
+  const assistantTasks = ["task-read", "task-calculate", "task-experiment"].map(
+    (id) => state.tasks.find((task) => task.id === id),
+  );
+  assert.ok(assistantTasks.every(Boolean));
+  assert.deepEqual(
+    assistantTasks.map((task) => task?.name),
+    [
+      "新能源汽车轮胎用柔性丁苯橡胶文献调研",
+      "柔性丁苯橡胶配方参数计算",
+      "推荐配方实验验证方案",
+    ],
+  );
+  assert.equal(state.projects.find((project) => project.id === "p-rubber")?.name, "高性能合成橡胶项目");
+  assert.equal(state.spaces.find((space) => space.id === "topic-rubber")?.name, "配方优化课题");
+  assert.ok(assistantTasks.every((task) => task?.spaceId === "topic-rubber"));
+  assert.ok(assistantTasks[1]?.contextIds.includes("artifact-read-report"));
+  assert.ok(assistantTasks[2]?.contextIds.includes("artifact-calc-recommendation"));
+  assert.ok(state.artifacts.some((artifact) => artifact.id === "artifact-read-report"));
+  assert.ok(state.artifacts.some((artifact) => artifact.id === "artifact-calc-recommendation"));
+  for (const task of assistantTasks) {
+    const session = state.sessions.find((item) => item.taskId === task?.id);
+    assert.ok(session && session.messages.length >= 4);
+    assert.equal(session?.messages[0]?.role, "user");
+    assert.ok(session?.messages.some((message) => message.text.includes("Agent")));
+    assert.ok(session?.messages.some((message) => message.text.includes("工具")));
+  }
+});
+
+test("assistant demo migration repairs legacy task context without losing decisions", async () => {
+  const { ensureAssistantDemoState } = await import("./seed");
+  const state = createSeed();
+  const task = state.tasks.find((item) => item.id === "task-experiment")!;
+  task.spaceId = "topic-a";
+  task.projectId = "p1";
+  task.contextIds = ["dataset-shale"];
+  task.steps[0].resources = ["template"];
+  const decision = state.decisions.find((item) => item.id === "decision-experiment-slot")!;
+  decision.status = "decided";
+  decision.choice = "采用两个推荐时段";
+
+  ensureAssistantDemoState(state);
+
+  assert.equal(task.spaceId, "topic-rubber");
+  assert.equal(task.projectId, "p-rubber");
+  assert.ok(task.contextIds.includes("artifact-calc-recommendation"));
+  assert.deepEqual(task.steps[0].resources, ["template-rubber-experiment"]);
+  assert.equal(decision.status, "decided");
+  assert.equal(decision.choice, "采用两个推荐时段");
+});

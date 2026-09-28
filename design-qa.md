@@ -1,47 +1,48 @@
-# AI4S 科研空间树与三栏 Agent 会话 Design QA
+# Research Models Design QA
 
-## 对比对象
+- Source visual truth: `http://localhost:3000/skills` (current research-skills marketplace, captured in the Codex in-app browser).
+- Implementation: `http://localhost:3000/models` (captured in the same in-app browser session).
+- Implementation screenshot path: in-app browser capture emitted inline; this browser surface does not expose a persistent filesystem path.
+- Viewport: 754 x 1100 CSS px, device scale inherited from the in-app browser.
+- Source pixels: 754 x 1100 visible capture.
+- Implementation pixels: 754 x 1100 visible capture.
+- Density normalization: same browser, viewport, theme, profile, and capture method; no resampling applied.
+- State: default marketplace view, no query or filters, grid view selected; additional card-region captures taken after one-page scroll.
 
-- 会话源设计：`/var/folders/ny/0gm5yz7x0657nj80bs2wzrp00000gp/T/codex-clipboard-81410f07-4c78-4175-ad27-c9e884c3f11d.png`，1672×941。
-- 空间切换源设计：`/var/folders/ny/0gm5yz7x0657nj80bs2wzrp00000gp/T/codex-clipboard-eed690ec-7b71-4fd7-9eb3-2f8227fc9186.png`，838×780。
-- 会话实现截图：`docs/ui-design/workspace-agent-v2/03-running-conversation-1440.png`、`06-human-decision-inline.png`，1440×900 CSS视口，浏览器截图密度1。
-- 空间切换实现截图：`docs/ui-design/workspace-agent-v2/02-space-tree-1440.png`，1440×900 CSS视口。
-- 合并对比：`docs/ui-design/workspace-agent-v2/comparison-pass1.png`、`comparison-pass2.png`、`comparison-space-switcher.png`。
-- 补充视口：1280×900、1920×1080。
+## Full-view comparison evidence
 
-## 全视图对比
+The models page now follows the same page hierarchy as the skills source: two-line hero copy with paired import/create actions, bordered search surface, horizontal pill filters, underlined catalog tabs, right-aligned count/sort/view controls, featured recommendations, and reusable catalog cards. The additional third filter row is intentional because model selection requires both model type and application task.
 
-用户最终指令优先于早期参考图中的全局模块导航与“返回工作台”：激活对话后仅保留左侧会话导航、中间主会话区、右侧聊天文件。实现保持参考图的三栏比例、顶部对话标题、会话时间线、内嵌Agent执行、内嵌人工确认、底部Composer和右侧产出/引用结构。
+## Focused region comparison evidence
 
-## 局部对比
+Focused card-region captures show the same icon scale, card radius, border, action alignment, metadata rhythm, and vertical density. Model cards intentionally replace skill update metadata with provider, version, and validation state, and replace the primary action label with `在线体验`.
 
-- 空间切换器：搜索、个人空间、项目分组、项目/课题子空间、当前项浅蓝选中和勾选均与参考结构一致；实现额外保留项目空间本身可选择和空间状态，这是现有产品对象要求。
-- Agent执行卡：使用现有Task步骤和状态，不制造参考图中的虚假过程数据；层级、图标、边框和状态位置一致。
-- 聊天文件：右侧固定显示真实Artifact和引用对象；数量由当前数据决定，因此卡片数量与参考图不同。
+## Required fidelity surfaces
 
-## 必检视觉面
+- Fonts and typography: shared application font stack, title scale, label weight, body line height, and truncation behavior match the skills page.
+- Spacing and layout rhythm: hero, search, filters, tabs, toolbar, featured block, and cards reuse the established marketplace classes. The model-specific third filter row is the only material vertical expansion.
+- Colors and visual tokens: blue primary, pale-blue surfaces, neutral borders, green availability/validation status, and focus states use the existing catalog tokens.
+- Image quality and asset fidelity: no new raster imagery was required; existing product iconography and marketplace visual treatment are reused. The hero decoration is the existing shared marketplace treatment.
+- Copy and content: model-specific labels cover discipline, model type, application task, version, provider, validation, details, and online trial.
 
-- 字体：继续使用平台中文系统字体；会话正文14px/1.75，标题16px，辅助信息10–12px，层级清晰，无异常换行。
-- 布局与间距：1440下会话导航248px、文件区372px；1280下为220px和320px；主会话保持弹性宽度。三个滚动区互不遮挡，底部Composer固定在主会话区。
-- 颜色：沿用AI4S蓝白语义色；运行、等待、完成状态继续使用带文字的绿/黄状态，不依赖颜色单独表达。
-- 图片与图标：使用现有AI4S正式Logo与Lucide图标；没有CSS绘图、手工SVG、emoji或伪造文件缩略图。
-- 文案与内容：使用“新建对话、聊天文件、产出、引用资料”等通用Agent文案；不再出现任务详情二级页签和“返回工作台”。
+## Interaction checks
 
-## 交互与可访问性
+- Machine-learning-model filter: 10 items to 6 items.
+- Image-analysis task combined with machine-learning filter: 1 item.
+- List view and grid view: both selectable; grid restored as default.
+- Detail and online-trial controls retain existing catalog behavior.
+- Browser console: no errors observed during the model-page inspection.
 
-- 已验证新建对话、最近会话切换、运行任务、等待人工确认、产出/引用页签、文件详情弹窗。
-- 空间项目按钮使用`aria-expanded`；聊天文件使用标准tab语义；主会话和右栏使用可识别区域标签。
-- 1280与1920均无页面级水平溢出；浏览器控制台无error/warn。
+## Comparison history
 
-## 比较历史
+### Pass 1
 
-- Pass 1：三栏结构已成立；与参考图的主要差异来自当前会话只有一条用户消息和一个真实产出，属于数据状态差异，不是布局缺口。
-- Pass 2：切换到等待人工确认会话，确认Agent执行卡、Human Decision、Composer和右侧文件同时可见；无P0/P1/P2结构问题。
-- 空间切换：完整视图和局部视图均确认项目—空间层级、选中态和搜索结构可用。
+- Earlier P0/P1/P2 findings: none after implementation capture.
+- Intentional differences: third filter row and model-specific validation metadata.
+- Post-fix evidence: default and card-region captures show consistent structure with the skills marketplace.
 
-## 剩余P3
+## Follow-up polish
 
-- 参考图包含图表、表格和词云缩略图；当前数据没有对应可渲染文件，因此实现使用真实文件类型图标和文本摘要。
-- 参考图的会话数量、时间和消息密度与本地数据不同，布局能够随真实数据滚动扩展。
+- P3: a future iteration could add genuine benchmark metrics when a source of validated model-evaluation data is available.
 
 final result: passed

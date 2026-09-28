@@ -86,8 +86,16 @@
   flex: 2 1 270px;
   position: relative;
 }
+.search:focus-within {
+  color: #1268e8;
+}
 .search input {
   padding-left: 33px;
+}
+.search input:focus-visible {
+  outline: none;
+  border-color: #1268e8;
+  box-shadow: 0 0 0 3px #c9dfff;
 }
 .search svg {
   position: absolute;

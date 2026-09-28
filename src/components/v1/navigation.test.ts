@@ -14,22 +14,26 @@ const moduleIds = (profile: keyof typeof profiles) =>
 const expectedModules = {
   researcher: [
     "workspace",
+    "assistant",
     "knowledge",
     "skills",
     "models",
     "tools",
     "lab",
     "assets",
+    "task-history",
   ],
-  analyst: ["workspace", "knowledge", "tools", "lab", "assets"],
+  analyst: ["workspace", "assistant", "knowledge", "tools", "lab", "assets", "task-history"],
   leader: [
     "workspace",
+    "assistant",
     "knowledge",
     "skills",
     "models",
     "tools",
     "lab",
     "assets",
+    "task-history",
     "project-management-external",
   ],
   manager: [
@@ -57,10 +61,36 @@ const expectedModules = {
 
 test("workspace and knowledge have no second-level navigation", () => {
   assert.deepEqual(labels("workspace"), []);
+  assert.deepEqual(labels("assistant"), []);
   assert.deepEqual(labels("knowledge"), []);
 });
 
-test("research toolbox has the user-confirmed three second-level functions", () => {
+test("research assistant is an independent first-level module", () => {
+  const assistant = modules.find((module) => module.id === "assistant");
+  assert.equal(assistant?.name, "科研超级中枢");
+  assert.equal(assistant?.href, "/assistant");
+});
+
+test("researcher navigation matches the confirmed sidebar grouping and order", () => {
+  const researcherModules = visibleModules(profiles.researcher);
+  assert.deepEqual(
+    researcherModules.map((module) => [module.name, module.group]),
+    [
+      ["科研工作台", "核心入口"],
+      ["科研超级中枢", "超级中枢"],
+      ["知识中心", "科研广场"],
+      ["科研技能", "科研广场"],
+      ["科研模型", "科研广场"],
+      ["科研工具箱", "科研广场"],
+      ["云上实验室", "实验空间"],
+      ["科研资产", "资产空间"],
+      ["历史任务", "历史任务入口"],
+    ],
+  );
+  assert.equal(modules.find((module) => module.id === "task-history")?.href, "/task-history");
+});
+
+test("research toolbox exposes tools, software and MCP", () => {
   assert.deepEqual(labels("tools"), ["科研工具", "科研软件", "MCP"]);
 });
 

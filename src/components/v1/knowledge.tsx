@@ -3,9 +3,18 @@ import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   BookOpen,
+  BookOpenCheck,
   ArrowLeft,
   ArrowRight,
+  Clock3,
+  Database,
+  FileText,
+  FolderOpen,
+  Layers3,
   Search,
+  ShieldCheck,
+  SlidersHorizontal,
+  Sparkles,
   Star,
   Network,
   Plus,
@@ -34,8 +43,24 @@ import { ContextActions } from "./actions";
 import { findGraphPath, graphNeighborhood } from "../knowledge/graph-utils";
 import { advancedMatch, parseConditions } from "./search";
 import type { GraphRelation } from "../knowledge/model";
+import "./knowledge-home.css";
 const modes = ["智能检索", "关键词检索", "高级检索", "结构式检索"];
 const types = ["全部", "文献", "专利", "标准", "内部资料", "数据集"];
+const quickTypes = [
+  { label: "文献", type: "文献", icon: FileText, tone: "blue" },
+  { label: "专利", type: "专利", icon: ShieldCheck, tone: "red" },
+  { label: "标准", type: "标准", icon: BookOpenCheck, tone: "purple" },
+  { label: "数据集", type: "数据集", icon: Database, tone: "teal" },
+  { label: "内部知识", type: "内部资料", icon: FolderOpen, tone: "blue" },
+  { label: "知识库", tab: "知识库", icon: Layers3, tone: "blue" },
+  { label: "知识图谱", tab: "知识图谱", icon: Network, tone: "green" },
+] as const;
+
+const fallbackHistory = [
+  { query: "新能源汽车电池用了哪些新的关键性能指标", time: "10 分钟前" },
+  { query: "高性能钨钙矿太阳能电池相关专利", time: "昨天 14:20" },
+  { query: "白光耦合量对退耦性能影响", time: "09-24 10:36" },
+];
 function matchesBoolean(text: string, q: string) {
   if (!q.trim()) return true;
   return q.split(/\s+OR\s+/i).some((group) => {
@@ -99,12 +124,23 @@ export function KnowledgeCenter() {
   function params(values: Record<string, string>) {
     const next = new URLSearchParams(query.toString());
     for (const [k, v] of Object.entries(values)) {
-      v ? next.set(k, v) : next.delete(k);
+      if (v) next.set(k, v);
+      else next.delete(k);
     }
     if (!("page" in values)) next.delete("page");
     router.replace("/knowledge?" + next);
   }
   const visible = s.knowledge.filter((o) => canRead(o, p, space.id, s));
+  const isHome = tab === "一站式检索" && !id && !query.has("searched");
+  const storedSearches = (s.history[p.id] ?? []).filter((entry) =>
+    entry.query.trim(),
+  );
+  const recentSearches = storedSearches.length
+    ? storedSearches.slice(0, 3).map((entry, index) => ({
+        ...entry,
+        time: ["10 分钟前", "昨天 14:20", "09-24 10:36"][index] ?? "近期",
+      }))
+    : fallbackHistory.map((entry) => ({ ...entry, mode: "智能检索" }));
   const item = visible.find((o) => o.id === id);
   const favoriteIds = s.favorites[p.id] ?? [];
   const results = visible
@@ -163,6 +199,7 @@ export function KnowledgeCenter() {
         .filter((x) => x.value.trim())
         .map((x, i) => (i ? " " + x.operator + " " : "") + '"' + x.value + '"')
         .join("");
+    if (!value.trim() || loading) return;
     setLoading(true);
     mutate("已保存检索条件", "knowledge", (d, u) => {
       d.history[u.id] = [
@@ -406,6 +443,7 @@ export function KnowledgeCenter() {
         <>
           <div className="v-toolbar">
             <SearchBox
+              formId="knowledge-graph-search"
               value={entity}
               onChange={setEntity}
               placeholder="搜索科研实体"
@@ -415,11 +453,9 @@ export function KnowledgeCenter() {
               }}
             />
             <Button
+              type="submit"
+              form="knowledge-graph-search"
               primary
-              onClick={() => {
-                const n = graphNodes.find((x) => x.name.includes(entity));
-                setActiveEntity(n?.id ?? "");
-              }}
             >
               查询关系
             </Button>
@@ -524,16 +560,71 @@ export function KnowledgeCenter() {
         </>
       ) : (
         <>
+          {isHome && (
+            <nav
+              className="v-knowledge-home-tabs"
+              aria-label="知识中心视图"
+            >
+              <button type="button" className="selected" aria-current="page">
+                知识发现
+              </button>
+              <button
+                type="button"
+                onClick={() => params({ tab: "知识库", mode: "", q: "" })}
+              >
+                知识资产
+              </button>
+            </nav>
+          )}
           <section
-            className={`v-knowledge-search ${query.has("searched") ? "compact" : ""}`}
+            className={`v-knowledge-search ${query.has("searched") ? "compact" : ""} ${isHome ? "v-knowledge-home-hero" : ""}`}
           >
-            <span className="v-kicker">KNOWLEDGE & EVIDENCE</span>
-            <h1>一站式科研知识检索</h1>
-            <Tabs
-              items={modes}
-              value={mode}
-              onChange={(v) => params({ mode: v })}
-            />
+            {isHome ? (
+              <>
+                <h1>发现和理解科研知识</h1>
+                <p className="v-knowledge-home-intro">
+                  跨论文、专利、标准、数据等企业内部知识统一检索
+                  <br />
+                  让科学知识触手可及，加速科研创新
+                </p>
+                <div
+                  className="v-knowledge-mode-switch"
+                  role="tablist"
+                  aria-label="检索模式"
+                >
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={mode === "智能检索"}
+                    className={mode === "智能检索" ? "selected" : ""}
+                    onClick={() => params({ mode: "智能检索" })}
+                  >
+                    <Sparkles size={18} />
+                    智能检索
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={mode === "高级检索"}
+                    className={mode === "高级检索" ? "selected" : ""}
+                    onClick={() => params({ mode: "高级检索" })}
+                  >
+                    <SlidersHorizontal size={18} />
+                    高级检索
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <span className="v-kicker">KNOWLEDGE & EVIDENCE</span>
+                <h1>一站式科研知识检索</h1>
+                <Tabs
+                  items={modes}
+                  value={mode}
+                  onChange={(v) => params({ mode: v })}
+                />
+              </>
+            )}
             {mode === "高级检索" ? (
               <div className="v-advanced">
                 {advanced.map((row, i) => (
@@ -687,14 +778,24 @@ export function KnowledgeCenter() {
             ) : (
               <div className="v-knowledge-query-row">
                 <SearchBox
+                  formId="knowledge-home-search"
                   value={input}
                   onChange={setInput}
-                  placeholder="输入科研问题、关键词或检索表达式"
+                  placeholder={
+                    isHome
+                      ? "输入科研问题、关键词或分子结构式，支持自然语言、关键词和分子结构检索"
+                      : "输入科研问题、关键词或检索表达式"
+                  }
                   onSubmit={search}
                 />
-                <Button primary onClick={search}>
-                  <Search size={16} />
-                  检索
+                <Button
+                  type="submit"
+                  form="knowledge-home-search"
+                  primary
+                  disabled={loading || !input.trim()}
+                >
+                  {!loading && <Search size={16} />}
+                  {loading ? "检索中…" : "检索"}
                 </Button>
               </div>
             )}
@@ -704,6 +805,31 @@ export function KnowledgeCenter() {
                   <Search size={16} />
                   检索
                 </Button>
+              </div>
+            )}
+            {isHome && (
+              <div
+                className="v-knowledge-quick-types"
+                aria-label="知识类型快捷入口"
+              >
+                {quickTypes.map((entry) => {
+                  const Icon = entry.icon;
+                  return (
+                    <button
+                      type="button"
+                      className={`tone-${entry.tone}`}
+                      key={entry.label}
+                      onClick={() =>
+                        "tab" in entry
+                          ? params({ tab: entry.tab, type: "", q: "" })
+                          : params({ type: entry.type, searched: "1" })
+                      }
+                    >
+                      <Icon size={19} />
+                      <span>{entry.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </section>
@@ -929,57 +1055,91 @@ export function KnowledgeCenter() {
               )}
             </>
           ) : (
-            <>
-              <div className="v-knowledge-types">
-                {types.slice(1).map((t) => (
+            <div className="v-knowledge-home-grid">
+              <section
+                className="v-knowledge-home-panel"
+                aria-labelledby="recent-searches-title"
+              >
+                <header>
+                  <h2 id="recent-searches-title">
+                    <Clock3 size={24} />
+                    最近搜索
+                  </h2>
                   <button
-                    key={t}
-                    onClick={() => params({ type: t, searched: "1" })}
+                    type="button"
+                    onClick={() => params({ searched: "1" })}
                   >
-                    {t}
-                    <ArrowRight size={14} />
+                    查看全部
+                    <ArrowRight size={16} />
                   </button>
-                ))}
-                <button onClick={() => params({ tab: "知识库" })}>
-                  知识库
-                  <ArrowRight size={14} />
-                </button>
-                <button onClick={() => params({ tab: "知识图谱" })}>
-                  知识图谱
-                  <ArrowRight size={14} />
-                </button>
-              </div>
-              {(s.history[p.id] ?? []).length > 0 && (
-                <div className="v-section">
-                  <div className="v-section-head">
-                    <h2>最近搜索</h2>
-                    <Button
-                      onClick={() =>
-                        mutate("已清除搜索历史", "knowledge", (d) => {
-                          d.history[p.id] = [];
-                        })
-                      }
+                </header>
+                <div className="v-knowledge-recent-list">
+                  {recentSearches.map((entry, index) => (
+                    <button
+                      type="button"
+                      key={`${entry.query}-${index}`}
+                      onClick={() => {
+                        setInput(entry.query);
+                        params({
+                          q: entry.query,
+                          mode: entry.mode,
+                          searched: "1",
+                        });
+                      }}
                     >
-                      清除历史
-                    </Button>
-                  </div>
-                  <div className="v-actions">
-                    {s.history[p.id].map((h, i) => (
-                      <button
-                        key={i}
-                        className="v-chip"
-                        onClick={() => {
-                          setInput(h.query);
-                          params({ q: h.query, mode: h.mode, searched: "1" });
-                        }}
-                      >
-                        {h.query || "全部知识"} · {h.mode}
-                      </button>
-                    ))}
-                  </div>
+                      <Search size={17} />
+                      <span>{entry.query || "全部知识"}</span>
+                      <time>{entry.time}</time>
+                    </button>
+                  ))}
                 </div>
-              )}
-            </>
+              </section>
+
+              <section
+                className="v-knowledge-home-panel"
+                aria-labelledby="recommended-knowledge-title"
+              >
+                <header>
+                  <h2 id="recommended-knowledge-title">
+                    <Star size={24} />
+                    推荐知识
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={() => params({ searched: "1" })}
+                  >
+                    查看更多
+                    <ArrowRight size={16} />
+                  </button>
+                </header>
+                <div className="v-knowledge-recommend-list">
+                  {visible.slice(0, 2).map((resource) => (
+                    <article key={resource.id}>
+                      <Badge>{resource.type}</Badge>
+                      <button
+                        type="button"
+                        className="v-knowledge-recommend-copy"
+                        onClick={() => params({ id: resource.id })}
+                      >
+                        <strong>{resource.name}</strong>
+                        <span>{resource.description}</span>
+                        <small>
+                          {resource.source} · {resource.date}
+                        </small>
+                      </button>
+                      <button
+                        type="button"
+                        className="v-knowledge-recommend-open"
+                        aria-label={`查看${resource.name}`}
+                        onClick={() => params({ id: resource.id })}
+                      >
+                        <ArrowRight size={21} />
+                      </button>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            </div>
           )}
         </>
       )}
