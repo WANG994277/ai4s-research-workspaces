@@ -16,6 +16,10 @@ const Knowledge = dynamic(
 const Catalog = dynamic(() => import("./catalog").then((m) => m.Catalog), {
   loading,
 });
+const DatasetMarketplace = dynamic(
+  () => import("./datasets").then((m) => m.DatasetMarketplace),
+  { loading },
+);
 const Assets = dynamic(() => import("./assets").then((m) => m.Assets), {
   loading,
 });
@@ -38,8 +42,14 @@ export function BaselinePage({ module }: { module: string }) {
   switch (module) {
     case "workspace":
       return <Workspace />;
+    case "assistant":
+      return <Workspace assistant />;
+    case "task-history":
+      return <Workspace assistant initialView="history" />;
     case "knowledge":
       return <Knowledge />;
+    case "datasets":
+      return <DatasetMarketplace />;
     case "skills":
     case "models":
     case "tools":

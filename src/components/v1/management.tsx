@@ -334,7 +334,7 @@ export function Management({ decision = false }: { decision?: boolean }) {
         </div>,
         <Button
           key="a"
-          onClick={() => router.push("/assets?view=项目资产&id=" + a.id)}
+          onClick={() => router.push("/research-spaces/current/assets/" + a.id)}
         >
           查看资产
         </Button>,
@@ -887,7 +887,7 @@ export function Management({ decision = false }: { decision?: boolean }) {
                             r.id,
                         );
                       else if (r.type === "数据集")
-                        router.push("/assets?id=" + r.id);
+                        router.push("/research-spaces/current/assets/" + r.id);
                       else if (r.type === "仪器")
                         router.push("/lab?id=" + r.id);
                       else

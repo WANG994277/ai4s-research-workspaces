@@ -315,6 +315,13 @@
   width: 100%;
   font-size: 12px;
 }
+.do-search:focus-within {
+  border-color: #1268e8;
+  box-shadow: 0 0 0 3px #c9dfff;
+}
+.do-search input:focus-visible {
+  outline: none !important;
+}
 .do-filter {
   display: flex;
   gap: 10px;

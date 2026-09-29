@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Artifact, Asset, AssetType, Scoped } from "./types";
+import { promotableAssetTypes } from "./research-space-domain";
 import { useResearch, addContext } from "./store";
 import {
   canEdit,
@@ -14,7 +15,7 @@ import {
   uid,
   writable,
 } from "./domain";
-import { assetTypes, disciplines, userName } from "./seed";
+import { disciplines, userName } from "./seed";
 import {
   pickerResources,
   type ResourcePickerMode,
@@ -110,14 +111,15 @@ export function SaveAsset({
   onClose: () => void;
 }) {
   const { s, p, space, mutate } = useResearch();
+  const allowedTypes = promotableAssetTypes(artifact);
   const [name, setName] = useState(artifact.name);
-  const [type, setType] = useState<AssetType>("方案模板");
-  const [target, setTarget] = useState("我的资产");
+  const [type, setType] = useState<AssetType>(allowedTypes[0] ?? "方案模板");
+  const [target, setTarget] = useState("当前科研空间");
   const [description, setDescription] = useState(artifact.content);
   const [error, setError] = useState("");
   return (
     <Modal
-      title="保存为科研资产"
+      title="保存到科研空间"
       open={open}
       onClose={onClose}
       footer={
@@ -130,13 +132,17 @@ export function SaveAsset({
                 setError("请输入资产名称。");
                 return;
               }
-              const ok = mutate("已保存为科研资产", artifact.id, (d, u) => {
+              if (!allowedTypes.includes(type)) {
+                setError("当前科研产出不符合已有资产类型，请继续保留在科研产出中。");
+                return;
+              }
+              const ok = mutate("已保存到科研空间", artifact.id, (d, u) => {
                 if (!canEdit(artifact, u, space.id, d))
                   throw new Error("当前没有保存此产出的权限。");
                 if (artifact.assetId) throw new Error("该产出已沉淀为资产。");
-                if (target === "项目公共资产" && !hasRole(u, "leader"))
+                if (target === "项目公共区" && !hasRole(u, "leader"))
                   throw new Error("没有项目公共资产发布权限。");
-                if (target !== "我的资产" && !space.projectId)
+                if (!space.projectId && artifact.projectId)
                   throw new Error("请在项目或课题空间中保存。");
                 const id = uid("asset");
                 const version = {
@@ -156,12 +162,7 @@ export function SaveAsset({
                   ownerId: u.id,
                   projectId: artifact.projectId,
                   spaceId: artifact.spaceId,
-                  visibility:
-                    target === "我的资产"
-                      ? "PRIVATE"
-                      : target === "项目公共资产"
-                        ? "PROJECT"
-                        : "SPACE",
+                  visibility: target === "项目公共区" ? "PROJECT" : "SPACE",
                   shares: [],
                   updatedAt: now(),
                   source: "Research Agent",
@@ -213,20 +214,24 @@ export function SaveAsset({
           value={type}
           onChange={(e) => setType(e.target.value as AssetType)}
         >
-          {assetTypes.map((x) => (
+          {allowedTypes.map((x) => (
             <option key={x}>{x}</option>
           ))}
         </select>
       </Field>
       <Field label="保存位置">
         <select value={target} onChange={(e) => setTarget(e.target.value)}>
-          <option>我的资产</option>
-          <option disabled={space.type !== "TOPIC"}>当前课题资产</option>
+          <option>当前科研空间</option>
           <option disabled={!hasRole(p, "leader") || !space.projectId}>
-            项目公共资产
+            项目公共区
           </option>
         </select>
       </Field>
+      {!allowedTypes.length && (
+        <Alert>
+          当前科研产出不能直接转换为智能体、Skill、模型、数据集或方案模板；请继续保留在科研产出中。
+        </Alert>
+      )}
       <Field label="简介">
         <textarea
           value={description}
@@ -469,13 +474,13 @@ export function ExternalJump({
             s.projects.find((x) => x.id === space.projectId)?.name ?? "无",
           当前空间: space.name,
           返回位置:
-            kind === "科研项目管理系统" ? "当前页面" : "科研资产 · 我的资产",
+            kind === "科研项目管理系统" ? "当前页面" : "科研空间 · 科研资产",
           连接状态: "未配置",
         }}
       />
       {status && <Alert>{status}</Alert>}
       <p className="v-muted">
-        创建与开发在 AI 中台完成，返回后登记到科研资产。
+        创建与开发在 AI 中台完成，返回后登记到科研空间。
       </p>
     </Modal>
   );

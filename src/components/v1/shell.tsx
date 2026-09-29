@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   Bell,
   BookOpen,
@@ -15,12 +15,15 @@ import {
   ChevronRight,
   CircleHelp,
   ClipboardList,
+  Database,
   FileText,
   FlaskConical,
   FolderArchive,
   Home,
+  History,
   Layers3,
   Network,
+  Orbit,
   PanelLeftClose,
   PanelLeftOpen,
   Search,
@@ -43,13 +46,15 @@ import "./v1.css";
 
 const iconByModule = {
   workspace: Home,
+  assistant: Orbit,
   knowledge: BookOpen,
+  datasets: Database,
   skills: Layers3,
   models: Box,
   tools: Wrench,
   lab: FlaskConical,
-  assets: FolderArchive,
-  "space-management": Network,
+  "research-spaces": FolderArchive,
+  "task-history": History,
   "research-management": ClipboardList,
   "research-decision": ChartNoAxesCombined,
   "project-management-external": BriefcaseBusiness,
@@ -57,7 +62,12 @@ const iconByModule = {
 } as const;
 
 const groups = [
-  "科研执行",
+  "核心入口",
+  "超级中枢",
+  "科研广场",
+  "实验空间",
+  "资产空间",
+  "历史任务入口",
   "科研协同与管理",
   "科研决策",
   "科研项目管理",
@@ -72,7 +82,13 @@ export function BaselineShell({ children }: { children: ReactNode }) {
   const current = moduleForPath(pathname);
   const allowedModules = visibleModules(p);
   const firstAllowed = allowedModules[0];
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => pathname === "/assistant");
+  const assistantHome =
+    pathname === "/assistant" &&
+    !searchParams.has("task") &&
+    !searchParams.has("session");
+  const lastPathname = useRef(pathname);
+  const lastAssistantHome = useRef(assistantHome);
   const [panel, setPanel] = useState("");
   const [spaceQuery, setSpaceQuery] = useState("");
   const [pendingSpace, setPendingSpace] = useState("");
@@ -85,14 +101,30 @@ export function BaselineShell({ children }: { children: ReactNode }) {
   const queryString = searchParams.toString();
   const currentUrl = `${pathname}${queryString ? `?${queryString}` : ""}`;
   const activeWorkspace =
-    pathname === "/workspace" &&
-    (searchParams.has("session") || searchParams.has("task"));
+    pathname === "/assistant" ||
+    (pathname === "/workspace" &&
+      (searchParams.has("session") || searchParams.has("task")));
+  const assistantTaskId = searchParams.get("task") ??
+    s.sessions.find((item) => item.id === searchParams.get("session"))?.taskId;
+  const assistantTask = pathname === "/assistant"
+    ? s.tasks.find((item) => item.id === assistantTaskId)
+    : undefined;
+  const displayedSpace = assistantTask
+    ? s.spaces.find((item) => item.id === assistantTask.spaceId) ?? space
+    : space;
   const hasCurrentAccess = !current || visibleModule(current.id, p);
 
   useEffect(() => {
     if (loaded && !hasCurrentAccess && firstAllowed)
       router.replace(firstAllowed.href);
   }, [firstAllowed, hasCurrentAccess, loaded, router]);
+  useEffect(() => {
+    const enteredAssistantHome = assistantHome && !lastAssistantHome.current;
+    if (lastPathname.current === pathname && !enteredAssistantHome) return;
+    lastPathname.current = pathname;
+    lastAssistantHome.current = assistantHome;
+    setCollapsed(pathname === "/assistant");
+  }, [assistantHome, pathname]);
   const spaces = useMemo(
     () =>
       s.spaces.filter(
@@ -125,6 +157,10 @@ export function BaselineShell({ children }: { children: ReactNode }) {
   }
 
   function isChildActive(href: string) {
+    if (href === "/research-spaces/current/assets")
+      return pathname.startsWith("/research-spaces/") && pathname.includes("/assets");
+    if (href === "/research-spaces/current/manage/basic")
+      return pathname.startsWith("/research-spaces/") && pathname.includes("/manage/");
     return decodeURIComponent(currentUrl) === decodeURIComponent(href);
   }
 
@@ -163,9 +199,20 @@ export function BaselineShell({ children }: { children: ReactNode }) {
               (module) => module.group === group,
             );
             if (!items.length) return null;
+            const showGroupTitle = [
+              "科研广场",
+              "科研协同与管理",
+              "科研决策",
+              "科研项目管理",
+              "系统管理",
+            ].includes(group);
             return (
-              <section className="v-nav-group" key={group} aria-label={group}>
-                {!collapsed && <p>{group}</p>}
+              <section
+                className={`v-nav-group ${showGroupTitle ? "" : "v-nav-section"}`}
+                key={group}
+                aria-label={group}
+              >
+                {!collapsed && showGroupTitle && <p>{group}</p>}
                 {items.map((module) => {
                   const Icon =
                     iconByModule[module.id as keyof typeof iconByModule];
@@ -249,6 +296,15 @@ export function BaselineShell({ children }: { children: ReactNode }) {
       <div className="v-frame">
         <header className="v-topbar">
           <div className="v-top-title">
+            <button
+              type="button"
+              className="v-top-nav-toggle"
+              aria-label={collapsed ? "展开导航" : "收起导航"}
+              aria-expanded={!collapsed}
+              onClick={() => setCollapsed((value) => !value)}
+            >
+              {collapsed ? <PanelLeftOpen size={17} /> : <PanelLeftClose size={17} />}
+            </button>
             <span>当前页面：</span>
             <strong>{current?.name ?? "科研平台"}</strong>
           </div>
@@ -272,8 +328,10 @@ export function BaselineShell({ children }: { children: ReactNode }) {
                 setPanel("space");
               }}
             >
-              <span>当前空间：</span>
-              <strong>{space?.name ?? "个人空间"}</strong>
+              <span>{current?.id === "workspace" ? "工作范围：" : "当前空间："}</span>
+              <strong>
+                {current?.id === "workspace" ? "全部项目" : (displayedSpace?.name ?? "个人空间")}
+              </strong>
               <ChevronDown size={14} />
             </button>
             <button
@@ -338,6 +396,7 @@ export function BaselineShell({ children }: { children: ReactNode }) {
         onClose={() => setPanel("")}
       >
         <SearchBox
+          formId="global-knowledge-search"
           value={globalQuery}
           onChange={setGlobalQuery}
           onSubmit={submitGlobalSearch}
@@ -345,9 +404,10 @@ export function BaselineShell({ children }: { children: ReactNode }) {
         />
         <div className="v-actions v-section">
           <Button
+            type="submit"
+            form="global-knowledge-search"
             primary
             disabled={!globalQuery.trim()}
-            onClick={submitGlobalSearch}
           >
             进入知识中心检索
           </Button>
@@ -433,7 +493,7 @@ export function BaselineShell({ children }: { children: ReactNode }) {
                           <button
                             type="button"
                             key={item.id}
-                          className={`v-space-option ${item.id === space.id ? "selected" : ""}`}
+                          className={`v-space-option ${item.parentSpaceId ? "subtopic" : ""} ${item.id === space.id ? "selected" : ""}`}
                             disabled={!isSpaceSwitchable(item)}
                             onClick={() => {
                               if (
@@ -450,7 +510,7 @@ export function BaselineShell({ children }: { children: ReactNode }) {
                                 {item.type === "PROJECT" ? "项目空间" : item.name}
                               </strong>
                               <small>
-                                {item.type === "PROJECT" ? "项目空间" : "课题空间"}
+                                {item.type === "PROJECT" ? "项目空间" : item.parentSpaceId ? "子课题空间" : "课题空间"}
                                 {" · "}
                                 {spaceLabels[item.status]}
                               </small>

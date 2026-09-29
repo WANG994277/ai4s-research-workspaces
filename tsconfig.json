@@ -36,7 +36,21 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     ".next-read-preview/types/**/*.ts",
-    ".next-read-preview/dev/types/**/*.ts"
+    ".next-read-preview/dev/types/**/*.ts",
+    ".next-v1-prod/types/**/*.ts",
+    ".next-v1-prod/dev/types/**/*.ts",
+    ".next-space-management/types/**/*.ts",
+    ".next-space-management/dev/types/**/*.ts",
+    ".next-space-management-title/types/**/*.ts",
+    ".next-space-management-title/dev/types/**/*.ts",
+    ".next-space-members-add/types/**/*.ts",
+    ".next-space-members-add/dev/types/**/*.ts",
+    ".next-assistant-mode-toggle/types/**/*.ts",
+    ".next-assistant-mode-toggle/dev/types/**/*.ts",
+    ".next-research-assets-blue/types/**/*.ts",
+    ".next-research-assets-blue/dev/types/**/*.ts",
+    ".next-research-assets-clean-detail/types/**/*.ts",
+    ".next-research-assets-clean-detail/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

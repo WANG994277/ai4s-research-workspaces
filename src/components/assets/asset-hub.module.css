@@ -17,9 +17,10 @@
 .primaryButton:disabled, .secondaryButton:disabled { opacity: .45; cursor: not-allowed; }
 
 .searchHero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; border: 1px solid #d9dde3; border-radius: 10px; background: #fff; padding: 18px; }
-.searchBox { display: flex; min-height: 44px; align-items: center; gap: 10px; border: 1px solid #c7ced9; border-radius: 7px; background: #fff; padding: 0 14px; transition: border-color .18s, box-shadow .18s; }
+.searchBox { display: flex; min-height: 44px; align-items: center; gap: 10px; border: 1px solid #c7ced9; border-radius: 7px; background: #fff; padding: 0 14px; cursor: text; transition: border-color .18s, box-shadow .18s; }
 .searchBox:focus-within { border-color: #b4232d; box-shadow: 0 0 0 3px rgba(180,35,45,.11); }
 .searchBox input { min-width: 0; flex: 1; border: 0; outline: 0; background: transparent; color: #1f2329; font-size: 14px; }
+.searchBox input:focus-visible { outline: none; }
 .searchBox svg { flex: none; color: #86909c; }
 
 .quickGrid { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 10px; }
@@ -253,4 +254,27 @@
 
 @media (prefers-reduced-motion: reduce) {
   .primaryButton, .secondaryButton, .quickCard, .recommendCard, .assetCard { transition: none; }
+}
+
+/* Blue AI4S theme used when the mature asset catalog is reused by V1 skills/models/tools. */
+.blueTheme .primaryButton { border-color: #1268e8; background: #1268e8; }
+.blueTheme .primaryButton:hover { border-color: #0756c9; background: #0756c9; }
+.blueTheme .secondaryButton:hover,
+.blueTheme .iconButton:hover,
+.blueTheme .iconButtonActive { border-color: #8bb9f1; background: #eaf3ff; color: #075ecc; }
+.blueTheme .typeTag { background: #eaf3ff; color: #075ecc; }
+.blueTheme .plazaTabActive { color: #075ecc; }
+.blueTheme .plazaTabActive::after { background: #1268e8; }
+.blueTheme .filterOptionActive { border-color: #9fc4f2; background: #eaf3ff; color: #075ecc; }
+.blueTheme .assetCard:hover { border-color: #9fc4f2; background: #fbfdff; }
+.blueTheme .assetTitle:hover { color: #075ecc; }
+.blueTheme button.assetTitle { border: 0; background: transparent; padding: 0; text-align: left; }
+.blueTheme .detailTabActive { color: #075ecc; }
+.blueTheme .detailTabActive::after { background: #1268e8; }
+.blueTheme .plazaLayout { grid-template-columns: 240px minmax(0,1fr); }
+
+@media (max-width: 1120px) {
+  .blueTheme .plazaLayout { grid-template-columns: minmax(0,1fr); }
+  .blueTheme .filterPanel .filterGroup { display: none; }
+  .blueTheme .filterPanel[data-open="true"] .filterGroup { display: block; }
 }

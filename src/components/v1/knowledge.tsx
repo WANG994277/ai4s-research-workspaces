@@ -1,11 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
-  BookOpen,
+  BookOpenCheck,
   ArrowLeft,
   ArrowRight,
+  Clock3,
+  Database,
+  FileText,
+  FolderOpen,
+  Layers3,
   Search,
+  ShieldCheck,
+  SlidersHorizontal,
+  Sparkles,
   Star,
   Network,
   Plus,
@@ -26,16 +34,55 @@ import {
   Pagination,
   SearchBox,
   Select,
-  Table,
   Tabs,
   download,
 } from "./ui";
 import { ContextActions } from "./actions";
-import { findGraphPath, graphNeighborhood } from "../knowledge/graph-utils";
 import { advancedMatch, parseConditions } from "./search";
-import type { GraphRelation } from "../knowledge/model";
+import {
+  KnowledgeGraphDetail,
+  KnowledgeLiteratureDetail,
+} from "./knowledge-reference-views";
+import {
+  KnowledgeAssetTabs,
+  KnowledgeGraphCatalog,
+  KnowledgeLibraryView,
+  knowledgeGraphCatalog,
+  type KnowledgeAssetTab,
+} from "./knowledge-asset-views";
+import "./knowledge-home.css";
+import "./knowledge-results.css";
 const modes = ["智能检索", "关键词检索", "高级检索", "结构式检索"];
 const types = ["全部", "文献", "专利", "标准", "内部资料", "数据集"];
+const quickTypes = [
+  { label: "文献", type: "文献", icon: FileText, tone: "blue", meta: "科研文献" },
+  { label: "专利", type: "专利", icon: ShieldCheck, tone: "red", meta: "知识产权" },
+  { label: "标准", type: "标准", icon: BookOpenCheck, tone: "purple", meta: "规范方法" },
+  { label: "数据集", type: "数据集", icon: Database, tone: "teal", meta: "结构化资源" },
+  { label: "内部知识", type: "内部资料", icon: FolderOpen, tone: "blue", meta: "企业知识" },
+  { label: "知识库", tab: "知识库", icon: Layers3, tone: "blue", meta: "我的知识库" },
+  { label: "知识图谱", tab: "知识图谱", icon: Network, tone: "green", meta: "关联探索" },
+] as const;
+
+const fallbackHistory = [
+  { query: "新能源汽车电池用了哪些新的关键性能指标", time: "10 分钟前" },
+  { query: "高性能钙钛矿太阳能电池相关专利", time: "昨天 14:20" },
+  { query: "白光耦合量对退耦性能影响", time: "09-24 10:36" },
+  { query: "CO₂ 催化转化反应机理", time: "09-23 16:12" },
+  { query: "固态电池电解质材料研究进展", time: "09-21 11:08" },
+];
+
+const suggestedQuestions = [
+  "新能源汽车电池的热稳定性",
+  "高性能钙钛矿太阳能电池",
+  "CO₂ 催化转化的最新进展",
+];
+
+const homeTopics = [
+  "新能源电池", "钙钛矿太阳能电池", "CO₂催化", "高分子材料",
+  "蛋白质结构预测", "固态电池", "氢能", "碳中和", "催化剂设计",
+  "锂电池", "纳米材料", "材料基因工程", "AI 智能科研", "能源存储", "电解质",
+];
 function matchesBoolean(text: string, q: string) {
   if (!q.trim()) return true;
   return q.split(/\s+OR\s+/i).some((group) => {
@@ -63,8 +110,11 @@ export function KnowledgeCenter() {
   const tab = query.get("tab") ?? "一站式检索";
   const mode = query.get("mode") ?? "智能检索";
   const q = query.get("q") ?? "";
+  const conditions = query.get("conditions") ?? "";
   const type = query.get("type") ?? "全部";
   const id = query.get("id");
+  const libraryId = query.get("library") ?? "";
+  const graphId = query.get("graph") ?? "";
   const page = Number(query.get("page") ?? 1);
   const [input, setInput] = useState(q);
   const [selected, setSelected] = useState<string[]>([]);
@@ -87,30 +137,52 @@ export function KnowledgeCenter() {
   const [threshold, setThreshold] = useState("0.8");
   const [atoms, setAtoms] = useState<string[]>([]);
   const [structure, setStructure] = useState("");
-  const [entity, setEntity] = useState("");
-  const [activeEntity, setActiveEntity] = useState("");
-  const [pathEnd, setPathEnd] = useState("");
-  const [depth, setDepth] = useState(1);
-  const [baseOpen, setBaseOpen] = useState(false);
   const [author, setAuthor] = useState("");
   const [organization, setOrganization] = useState("");
   const [language, setLanguage] = useState("全部");
   const [scope, setScope] = useState("全部");
-  function params(values: Record<string, string>) {
+  useEffect(() => {
+    setInput(q);
+  }, [q]);
+  useEffect(() => {
+    const parsed = parseConditions(conditions);
+    if (parsed.length) setAdvanced(parsed);
+  }, [conditions]);
+  function params(values: Record<string, string>, history: "replace" | "push" = "replace") {
     const next = new URLSearchParams(query.toString());
     for (const [k, v] of Object.entries(values)) {
-      v ? next.set(k, v) : next.delete(k);
+      if (v) next.set(k, v);
+      else next.delete(k);
     }
     if (!("page" in values)) next.delete("page");
-    router.replace("/knowledge?" + next);
+    const url = "/knowledge?" + next;
+    if (history === "push") router.push(url);
+    else router.replace(url);
   }
   const visible = s.knowledge.filter((o) => canRead(o, p, space.id, s));
+  const isHome = tab === "一站式检索" && !id && !query.has("searched");
+  const isResults =
+    tab === "一站式检索" && !id && query.has("searched");
+  const isAssetTab = tab === "知识库" || tab === "知识图谱";
+  const storedSearches = (s.history[p.id] ?? []).filter((entry) =>
+    entry.query.trim(),
+  );
+  const recentSearches = [
+    ...storedSearches.map((entry, index) => ({
+      ...entry,
+      time: ["10 分钟前", "昨天 14:20", "09-24 10:36"][index] ?? "近期",
+    })),
+    ...fallbackHistory.map((entry) => ({ ...entry, mode: "智能检索" })),
+  ].filter(
+    (entry, index, values) =>
+      values.findIndex((candidate) => candidate.query === entry.query) === index,
+  ).slice(0, 5);
   const item = visible.find((o) => o.id === id);
+  const selectedGraph = knowledgeGraphCatalog.find((graph) => graph.id === graphId);
   const favoriteIds = s.favorites[p.id] ?? [];
-  const results = visible
+  const matchedResults = visible
     .filter(
       (o) =>
-        (type === "全部" || o.type === type) &&
         (mode === "结构式检索"
           ? ["文献", "专利", "数据集"].includes(o.type) &&
             (!q || q === "CCO" || q === "C2H6O" || q === "InChI=1S/C2H6O")
@@ -152,6 +224,31 @@ export function KnowledgeCenter() {
           ? b.citationCount - a.citationCount
           : 0,
     );
+  const results = matchedResults.filter(
+    (o) => type === "全部" || o.type === type,
+  );
+  const typeCounts = Object.fromEntries(
+    types.map((value) => [
+      value,
+      value === "全部"
+        ? matchedResults.length
+        : matchedResults.filter((result) => result.type === value).length,
+    ]),
+  ) as Record<string, number>;
+  const maxTypeCount = Math.max(1, ...types.slice(1).map((value) => typeCounts[value]));
+  const sourceCounts = Array.from(
+    matchedResults.reduce((counts, result) => {
+      counts.set(result.source, (counts.get(result.source) ?? 0) + 1);
+      return counts;
+    }, new Map<string, number>()),
+  ).sort((a, b) => b[1] - a[1]);
+  const relatedTopics = [
+    ...new Set(matchedResults.flatMap((result) => result.keywords)),
+  ].slice(0, 10);
+  const resultYears = [
+    ...new Set(matchedResults.map((result) => result.date.slice(0, 4))),
+  ].sort();
+  const summaryTopics = relatedTopics.slice(0, 3);
   const validSelected = selected.filter((id) =>
     results.some((o) => o.id === id),
   );
@@ -163,6 +260,7 @@ export function KnowledgeCenter() {
         .filter((x) => x.value.trim())
         .map((x, i) => (i ? " " + x.operator + " " : "") + '"' + x.value + '"')
         .join("");
+    if (!value.trim() || loading) return;
     setLoading(true);
     mutate("已保存检索条件", "knowledge", (d, u) => {
       d.history[u.id] = [
@@ -188,59 +286,57 @@ export function KnowledgeCenter() {
           : [...new Set([...old, ...ids])];
     });
   }
-  const graphNodes = [
-    { id: "shale", name: "页岩气", resource: "k-paper" },
-    { id: "reservoir", name: "储层评价", resource: "k-patent" },
-    { id: "porosity", name: "孔隙度", resource: "k-standard" },
-    { id: "dataset", name: "实验数据", resource: "k-dataset" },
-  ].filter((n) => visible.some((o) => o.id === n.resource));
-  const edges: GraphRelation[] = [
-    ["shale", "reservoir", "研究方法"],
-    ["reservoir", "porosity", "评价参数"],
-    ["porosity", "dataset", "数据依据"],
-  ]
-    .filter(
-      ([a, b]) =>
-        graphNodes.some((x) => x.id === a) &&
-        graphNodes.some((x) => x.id === b),
-    )
-    .map(([a, b, name], i) => ({
-      id: "edge-" + i,
-      sourceEntityId: a,
-      targetEntityId: b,
-      relationType: name,
-      evidenceIds: ["k-paper"],
-      confirmed: true,
-      extractedAt: "2026-09-24",
-      extractionMethod: "示例资料关系",
-    }));
-  const neighborhood = activeEntity
-    ? graphNeighborhood(activeEntity, edges, depth)
-    : new Set<string>();
-  const path =
-    activeEntity && pathEnd
-      ? findGraphPath(activeEntity, pathEnd, edges)
-      : null;
   return (
     <>
-      <PageTitle
-        title={tab === "一站式检索" ? "知识中心" : `知识中心 · ${tab}`}
-        action={
-          tab !== "一站式检索" ? (
-            <Button
-              onClick={() =>
-                params({ tab: "一站式检索", id: "", q: "", searched: "" })
-              }
-            >
-              <ArrowLeft size={15} />
-              返回一站式检索
-            </Button>
-          ) : undefined
-        }
-      />
+      {isResults ? (
+        <header className="v-knowledge-results-title">
+          <h1>{mode}结果</h1>
+          <p>基于当前空间与权限范围，统一检索可读科研知识。</p>
+        </header>
+      ) : item?.type === "文献" || isAssetTab ? null : (
+        <PageTitle
+          title={tab === "一站式检索" ? "知识中心" : `知识中心 · ${tab}`}
+          action={
+            tab !== "一站式检索" ? (
+              <Button
+                onClick={() =>
+                  params({ tab: "一站式检索", id: "", q: "", searched: "" })
+                }
+              >
+                <ArrowLeft size={15} />
+                返回一站式检索
+              </Button>
+            ) : undefined
+          }
+        />
+      )}
+      {!id && isAssetTab && (
+        <KnowledgeAssetTabs
+          value={tab as KnowledgeAssetTab}
+          onChange={(value) => params({ tab: value, library: "", graph: "", q: "", searched: "", id: "" }, "push")}
+        />
+      )}
       {id && !item ? (
         <Empty>该知识资源不可访问或不存在。</Empty>
       ) : item ? (
+        item.type === "文献" ? (
+          <KnowledgeLiteratureDetail
+            item={item}
+            favorite={favoriteIds.includes(item.id)}
+            onBack={() => params({ id: "" })}
+            onFavorite={() => favorite([item.id])}
+            onOriginal={() => setPanel("original")}
+            onAddContext={() => {
+              if (addContext([item.id])) router.push("/workspace");
+            }}
+            onExport={() =>
+              download(
+                `${item.name}-引用.txt`,
+                `${item.authors}. ${item.name}. ${item.date}. ${item.source}`,
+              )
+            }
+          />
+        ) : (
         <>
           <Button className="v-back" onClick={() => params({ id: "" })}>
             <ArrowLeft size={15} />
@@ -294,7 +390,7 @@ export function KnowledgeCenter() {
               </>
             )}
             {item.assetId && (
-              <Button onClick={() => router.push("/assets?id=" + item.assetId)}>
+              <Button onClick={() => router.push("/research-spaces/current/assets/" + item.assetId)}>
                 查看资产来源
               </Button>
             )}
@@ -314,226 +410,101 @@ export function KnowledgeCenter() {
             )}
           </article>
         </>
+        )
       ) : tab === "知识库" ? (
-        <>
-          {!baseOpen ? (
-            <div className="v-grid">
-              <article className="v-card">
-                <BookOpen size={26} color="#7a6256" />
-                <h3 className="v-section">页岩气研究知识库</h3>
-                <p>储层评价、实验方法与项目资料。</p>
-                <Details
-                  values={{
-                    学科: "地球科学",
-                    所属组织: "能源研究院",
-                    文档数量: visible.length,
-                    更新时间: "2026-09-24",
-                    权限范围: "公共与当前空间授权",
-                  }}
-                />
-                <Button onClick={() => setBaseOpen(true)}>打开知识库</Button>
-              </article>
-              {s.collections
-                .filter((c) => c.ownerId === p.id && c.spaceId === space.id)
-                .map((c) => (
-                  <article className="v-card" key={c.id}>
-                    <h3>{c.name}</h3>
-                    <p>
-                      {
-                        c.ids.filter((id) => visible.some((o) => o.id === id))
-                          .length
-                      }{" "}
-                      项资料
-                    </p>
-                    {c.ids
-                      .filter((id) => visible.some((o) => o.id === id))
-                      .map((id) => (
-                        <button
-                          key={id}
-                          className="v-list-line v-wide-button"
-                          onClick={() => params({ id })}
-                        >
-                          {visible.find((o) => o.id === id)?.name}
-                        </button>
-                      ))}
-                  </article>
-                ))}
-            </div>
-          ) : (
-            <>
-              <Button className="v-back" onClick={() => setBaseOpen(false)}>
-                返回知识库
-              </Button>
-              <section className="v-card">
-                <h2>页岩气研究知识库</h2>
-                <SearchBox
-                  value={input}
-                  onChange={setInput}
-                  placeholder="搜索库内文档"
-                />
-                {visible
-                  .filter((o) => o.name.includes(input))
-                  .map((o) => (
-                    <button
-                      className="v-list-line v-wide-button"
-                      key={o.id}
-                      onClick={() => params({ id: o.id })}
-                    >
-                      {o.name}
-                      <Badge>{o.type}</Badge>
-                    </button>
-                  ))}
-                <Button
-                  onClick={() => {
-                    if (addContext(visible.map((x) => x.id)))
-                      router.push("/workspace");
-                  }}
-                >
-                  将知识库加入 Research Agent
-                </Button>
-                <details>
-                  <summary>更新记录与权限</summary>
-                  <p className="v-muted">
-                    2026-09-24 初始化示例；每条文档按 Project / Space / ACL
-                    单独校验。
-                  </p>
-                </details>
-              </section>
-            </>
-          )}
-        </>
+        <KnowledgeLibraryView
+          resources={visible}
+          selectedLibraryId={libraryId}
+          onSelectLibrary={(nextLibraryId) => params({ library: nextLibraryId }, "push")}
+          onBack={() => params({ library: "" }, "push")}
+          onOpenResource={(resourceId) => params({ id: resourceId }, "push")}
+          onAddResources={(ids) => {
+            if (addContext(ids)) router.push("/workspace");
+          }}
+        />
       ) : tab === "知识图谱" ? (
-        <>
-          <div className="v-toolbar">
-            <SearchBox
-              value={entity}
-              onChange={setEntity}
-              placeholder="搜索科研实体"
-              onSubmit={() => {
-                const n = graphNodes.find((x) => x.name.includes(entity));
-                setActiveEntity(n?.id ?? "");
-              }}
-            />
-            <Button
-              primary
-              onClick={() => {
-                const n = graphNodes.find((x) => x.name.includes(entity));
-                setActiveEntity(n?.id ?? "");
-              }}
-            >
-              查询关系
-            </Button>
-          </div>
-          {!activeEntity ? (
-            <Empty>搜索实体后查看局部关系。</Empty>
-          ) : (
-            <div className="v-card">
-              <div className="v-toolbar">
-                <Select
-                  label="关系深度"
-                  value={String(depth)}
-                  onChange={(v) => setDepth(Number(v))}
-                  options={["1", "2", "3"]}
-                />
-                <Select
-                  label="路径目标"
-                  value={pathEnd}
-                  onChange={setPathEnd}
-                  options={[
-                    { value: "", label: "选择实体" },
-                    ...graphNodes.map((n) => ({ value: n.id, label: n.name })),
-                  ]}
-                />
-              </div>
-              <div className="v-graph-local">
-                {graphNodes
-                  .filter((n) => neighborhood.has(n.id))
-                  .map((n) => (
-                    <button
-                      className={n.id === activeEntity ? "selected" : ""}
-                      key={n.id}
-                      onClick={() => setActiveEntity(n.id)}
-                    >
-                      <Network size={21} />
-                      {n.name}
-                    </button>
-                  ))}
-              </div>
-              <Table
-                headers={["实体", "关系", "关联实体", "知识来源"]}
-                rows={edges
-                  .filter(
-                    (e) =>
-                      neighborhood.has(e.sourceEntityId) &&
-                      neighborhood.has(e.targetEntityId),
-                  )
-                  .map((e) => [
-                    graphNodes.find((n) => n.id === e.sourceEntityId)?.name,
-                    e.relationType,
-                    graphNodes.find((n) => n.id === e.targetEntityId)?.name,
-                    <button
-                      className="v-link"
-                      key="s"
-                      onClick={() =>
-                        params({
-                          id: graphNodes.find((n) => n.id === e.targetEntityId)!
-                            .resource,
-                        })
-                      }
-                    >
-                      查看依据
-                    </button>,
-                  ])}
-              />
-              {pathEnd && (
-                <p>
-                  路径：
-                  {path
-                    ? path.entityIds
-                        .map((id) => graphNodes.find((x) => x.id === id)?.name)
-                        .join(" → ")
-                    : "当前局部图谱无可达路径"}
-                </p>
-              )}
-              <div className="v-actions">
-                <Button
-                  onClick={() =>
-                    params({
-                      id: graphNodes.find((x) => x.id === activeEntity)!
-                        .resource,
-                    })
-                  }
-                >
-                  节点详情与知识资源
-                </Button>
-                <Button onClick={() => favorite([activeEntity])}>
-                  收藏实体
-                </Button>
-                <Button
-                  primary
-                  onClick={() => {
-                    const n = graphNodes.find((x) => x.id === activeEntity)!;
-                    if (addContext([n.resource])) router.push("/workspace");
-                  }}
-                >
-                  加入 Research Agent 上下文
-                </Button>
-              </div>
-            </div>
-          )}
-        </>
+        selectedGraph ? (
+          <KnowledgeGraphDetail
+            graph={selectedGraph}
+            resources={visible}
+            favoriteIds={favoriteIds}
+            onBack={() => params({ graph: "" }, "push")}
+            onOpenResource={(resourceId) => params({ id: resourceId }, "push")}
+            onFavorite={(resourceId) => favorite([resourceId])}
+          />
+        ) : (
+          <KnowledgeGraphCatalog
+            onOpenGraph={(nextGraphId) => params({ graph: nextGraphId }, "push")}
+            onCreateGraph={() => notify("新建知识图谱功能为原型演示，尚未接入真实构建流程。")}
+          />
+        )
       ) : (
         <>
+          {isHome && (
+            <nav
+              className="v-knowledge-home-tabs"
+              aria-label="知识中心视图"
+            >
+              <button type="button" className="selected" aria-current="page">
+                知识发现
+              </button>
+              <button
+                type="button"
+                onClick={() => params({ tab: "知识库", mode: "", q: "" }, "push")}
+              >
+                知识资产
+              </button>
+            </nav>
+          )}
           <section
-            className={`v-knowledge-search ${query.has("searched") ? "compact" : ""}`}
+            className={`v-knowledge-search ${query.has("searched") ? "compact" : ""} ${isHome ? "v-knowledge-home-hero" : ""} ${isResults ? "v-knowledge-results-search" : ""}`}
           >
-            <span className="v-kicker">KNOWLEDGE & EVIDENCE</span>
-            <h1>一站式科研知识检索</h1>
-            <Tabs
-              items={modes}
-              value={mode}
-              onChange={(v) => params({ mode: v })}
-            />
+            {isResults ? null : isHome ? (
+              <>
+                <h1>发现和理解科研知识</h1>
+                <p className="v-knowledge-home-intro">
+                  跨论文、专利、标准、数据等企业内部知识统一检索
+                  <br />
+                  让科学知识触手可及，加速科研创新
+                </p>
+                <div
+                  className="v-knowledge-mode-switch"
+                  role="tablist"
+                  aria-label="检索模式"
+                >
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={mode === "智能检索"}
+                    className={mode === "智能检索" ? "selected" : ""}
+                    onClick={() => params({ mode: "智能检索" })}
+                  >
+                    <Sparkles size={18} />
+                    智能检索
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={mode === "高级检索"}
+                    className={mode === "高级检索" ? "selected" : ""}
+                    onClick={() => params({ mode: "高级检索" })}
+                  >
+                    <SlidersHorizontal size={18} />
+                    高级检索
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <span className="v-kicker">KNOWLEDGE & EVIDENCE</span>
+                <h1>一站式科研知识检索</h1>
+                <Tabs
+                  items={modes}
+                  value={mode}
+                  onChange={(v) => params({ mode: v })}
+                />
+              </>
+            )}
             {mode === "高级检索" ? (
               <div className="v-advanced">
                 {advanced.map((row, i) => (
@@ -687,15 +658,36 @@ export function KnowledgeCenter() {
             ) : (
               <div className="v-knowledge-query-row">
                 <SearchBox
+                  formId="knowledge-home-search"
                   value={input}
                   onChange={setInput}
-                  placeholder="输入科研问题、关键词或检索表达式"
+                  placeholder={
+                    isHome
+                      ? "输入科研问题、关键词或分子结构式，支持自然语言、关键词和检索表达式"
+                      : "输入科研问题、关键词或检索表达式"
+                  }
                   onSubmit={search}
                 />
-                <Button primary onClick={search}>
-                  <Search size={16} />
-                  检索
+                <Button
+                  type="submit"
+                  form="knowledge-home-search"
+                  primary
+                  disabled={loading || !input.trim()}
+                >
+                  {!loading && <Search size={16} />}
+                  {loading ? "检索中…" : "检索"}
                 </Button>
+              </div>
+            )}
+            {isHome && mode === "智能检索" && (
+              <div className="v-knowledge-home-prompts">
+                <span>试试这些问题：</span>
+                {suggestedQuestions.map((question) => (
+                  <button type="button" onClick={() => setInput(question)} key={question}>
+                    {question}
+                  </button>
+                ))}
+                <button type="button" aria-label="更多推荐问题">…</button>
               </div>
             )}
             {["高级检索", "结构式检索"].includes(mode) && (
@@ -706,6 +698,22 @@ export function KnowledgeCenter() {
                 </Button>
               </div>
             )}
+            {isHome && (
+              <div
+                className="v-knowledge-quick-types v-knowledge-category-cards"
+                aria-label="知识类型卡片"
+              >
+                {quickTypes.map((entry) => {
+                  const Icon = entry.icon;
+                  return (
+                    <div className={`v-knowledge-type-card tone-${entry.tone}`} key={entry.label}>
+                      <i><Icon size={21} /></i>
+                      <span><strong>{entry.label}</strong><small>{entry.meta}</small></span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </section>
           {query.has("searched") ? (
             <>
@@ -714,13 +722,22 @@ export function KnowledgeCenter() {
                   正在理解检索条件并查询本地知识库…
                 </div>
               ) : (
-                <>
-                  <Tabs
-                    items={types}
-                    value={type}
-                    onChange={(v) => params({ type: v })}
-                  />
-                  <div className="v-toolbar">
+                <div className="v-knowledge-results-page">
+                  <nav className="v-knowledge-results-tabs" aria-label="知识类型">
+                    {types.map((value) => (
+                      <button
+                        type="button"
+                        className={type === value ? "selected" : ""}
+                        aria-current={type === value ? "page" : undefined}
+                        onClick={() => params({ type: value })}
+                        key={value}
+                      >
+                        {value}
+                        <span>{typeCounts[value]}</span>
+                      </button>
+                    ))}
+                  </nav>
+                  <div className="v-knowledge-results-filters">
                     <Select
                       label="学科"
                       value={discipline}
@@ -762,38 +779,36 @@ export function KnowledgeCenter() {
                       已收藏
                     </label>
                     <Button onClick={() => setPanel("filters")}>
+                      <SlidersHorizontal size={15} />
                       更多筛选
                     </Button>
                   </div>
-                  {mode === "智能检索" && results.length > 0 && (
-                    <div className="v-search-summary">
-                      <span>检索摘要 · 本地示例</span>
-                      <p>
-                        {results.slice(0, 2).map((r, i) => (
-                          <span key={r.id}>
-                            {r.description}{" "}
-                            <button
-                              className="v-link"
-                              onClick={() => params({ id: r.id })}
-                            >
-                              [{i + 1}]
-                            </button>{" "}
-                          </span>
-                        ))}
+                  {mode === "智能检索" && matchedResults.length > 0 && (
+                    <section className="v-ai-summary" aria-labelledby="ai-summary-title">
+                      <header>
+                        <span><Sparkles size={17} />AI</span>
+                        <h2 id="ai-summary-title">AI检索摘要</h2>
+                        <small>基于 {matchedResults.length} 条可见结果</small>
+                      </header>
+                      <p className="v-ai-summary-copy">
+                        {summaryTopics.length
+                          ? `当前结果主要聚焦${summaryTopics.join("、")}。`
+                          : "已按当前条件完成多源知识检索。"}
+                        {results[0]?.description
+                          ? ` ${results[0].description}`
+                          : " 可调整类型或筛选条件继续缩小范围。"}
                       </p>
-                    </div>
+                    </section>
                   )}
                   {mode === "结构式检索" && (
                     <Alert>
                       结构检索使用本地示例映射（乙醇）；真实相似度与子结构计算尚未接入。
                     </Alert>
                   )}
-                  <div className="v-toolbar">
-                    <span className="v-muted">
-                      已选择 {validSelected.length} 项
-                    </span>
+                  {validSelected.length > 0 && (
+                    <div className="v-results-batch-bar">
+                      <span>已选择 {validSelected.length} 项</span>
                     <Button
-                      disabled={!validSelected.length}
                       onClick={() => favorite(validSelected)}
                     >
                       批量收藏
@@ -847,139 +862,312 @@ export function KnowledgeCenter() {
                       导出引用
                     </Button>
                   </div>
-                  <div className="v-card">
-                    {results.slice((page - 1) * 8, page * 8).map((r) => (
-                      <article className="v-knowledge-result" key={r.id}>
-                        <input
-                          aria-label={"选择 " + r.name}
-                          type="checkbox"
-                          checked={validSelected.includes(r.id)}
-                          onChange={(e) =>
-                            setSelected(
-                              e.target.checked
-                                ? [...selected, r.id]
-                                : selected.filter((x) => x !== r.id),
-                            )
-                          }
-                        />
-                        <div>
-                          <Badge>{r.type}</Badge>
-                          <h3>
-                            <button
-                              className="v-link v-task-link"
-                              onClick={() => params({ id: r.id })}
-                            >
-                              {r.name}
-                            </button>
-                          </h3>
-                          <p className="v-muted">
-                            {r.authors} · {r.date} · {r.source}
-                          </p>
-                          <p>{r.description}</p>
-                          <div className="v-actions">
-                            <Button onClick={() => params({ id: r.id })}>
-                              查看详情
-                            </Button>
-                            <Button onClick={() => favorite([r.id])}>
-                              {favoriteIds.includes(r.id) ? "已收藏" : "收藏"}
-                            </Button>
-                            {hasRole(p, "researcher", "leader") && (
+                  )}
+                  <div className="v-knowledge-results-layout">
+                    <main className="v-knowledge-results-main">
+                      <div className="v-results-count">
+                        共找到 <strong>{results.length}</strong> 条相关结果
+                      </div>
+                      <div className="v-knowledge-result-list">
+                        {results.slice((page - 1) * 8, page * 8).map((r) => {
+                          const typeEntry = quickTypes.find(
+                            (entry) => "type" in entry && entry.type === r.type,
+                          );
+                          const TypeIcon = typeEntry?.icon ?? FileText;
+                          return (
+                            <article className="v-knowledge-result-card" key={r.id}>
+                              <input
+                                aria-label={"选择 " + r.name}
+                                type="checkbox"
+                                checked={validSelected.includes(r.id)}
+                                onChange={(e) =>
+                                  setSelected(
+                                    e.target.checked
+                                      ? [...selected, r.id]
+                                      : selected.filter((x) => x !== r.id),
+                                  )
+                                }
+                              />
+                              <span className={`v-result-type tone-${typeEntry?.tone ?? "blue"}`}>
+                                <TypeIcon size={20} />
+                                {r.type === "内部资料" ? "内部" : r.type}
+                              </span>
+                              <div className="v-result-copy">
+                                <header>
+                                  <h3>
+                                    <button
+                                      className="v-link v-task-link"
+                                      onClick={() => params({ id: r.id })}
+                                    >
+                                      {r.name}
+                                    </button>
+                                  </h3>
+                                  <div className="v-result-actions">
+                                    <button type="button" onClick={() => params({ id: r.id })}>
+                                      查看详情
+                                    </button>
+                                    <button type="button" onClick={() => favorite([r.id])}>
+                                      {favoriteIds.includes(r.id) ? "已收藏" : "收藏"}
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        download(
+                                          `${r.name}-引用.txt`,
+                                          `${r.authors}. ${r.name}. ${r.date}. ${r.source}`,
+                                        )
+                                      }
+                                    >
+                                      导出引用
+                                    </button>
+                                    {hasRole(p, "researcher", "leader") && (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          if (addContext([r.id])) router.push("/workspace");
+                                        }}
+                                      >
+                                        发给 Agent
+                                      </button>
+                                    )}
+                                  </div>
+                                </header>
+                                <p className="v-result-meta">
+                                  {r.authors} · {r.organization} · {r.date} · {r.source}
+                                </p>
+                                <p className="v-result-description">{r.description}</p>
+                                <div className="v-result-keywords">
+                                  {r.keywords.slice(0, 4).map((keyword) => (
+                                    <button
+                                      type="button"
+                                      key={keyword}
+                                      onClick={() => {
+                                        setInput(keyword);
+                                        params({ q: keyword, type: "全部", searched: "1" });
+                                      }}
+                                    >
+                                      {keyword}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            </article>
+                          );
+                        })}
+                        {!results.length && (
+                          <Empty
+                            action={
                               <Button
                                 onClick={() => {
-                                  if (addContext([r.id]))
-                                    router.push("/workspace");
+                                  setDiscipline("全部");
+                                  setYear("全部");
+                                  setFulltext(false);
+                                  setFavorites(false);
+                                  setAuthor("");
+                                  setOrganization("");
+                                  setLanguage("全部");
+                                  setScope("全部");
                                 }}
                               >
-                                发送至 Research Agent
+                                放宽筛选
                               </Button>
-                            )}
+                            }
+                          >
+                            未找到符合条件的科研知识。
+                          </Empty>
+                        )}
+                      </div>
+                      <Pagination
+                        page={page}
+                        total={results.length}
+                        onChange={(v) => params({ page: String(v) })}
+                      />
+                    </main>
+                    <aside className="v-knowledge-results-aside">
+                      <section className="v-search-overview">
+                        <header>检索概览</header>
+                        <div className="v-overview-summary">
+                          <div><strong>{matchedResults.length}</strong><span>相关结果</span></div>
+                          <div>
+                            <strong>
+                              {resultYears.length > 1
+                                ? `${resultYears[0]}-${resultYears.at(-1)}`
+                                : resultYears[0] ?? "暂无"}
+                            </strong>
+                            <span>时间范围</span>
                           </div>
                         </div>
-                      </article>
-                    ))}
-                    {!results.length && (
-                      <Empty
-                        action={
-                          <Button
-                            onClick={() => {
-                              setDiscipline("全部");
-                              setYear("全部");
-                              setFulltext(false);
-                              setFavorites(false);
-                              setAuthor("");
-                              setOrganization("");
-                              setLanguage("全部");
-                              setScope("全部");
-                            }}
-                          >
-                            放宽筛选
-                          </Button>
-                        }
-                      >
-                        未找到符合条件的科研知识。
-                      </Empty>
-                    )}
-                  </div>
-                  <Pagination
-                    page={page}
-                    total={results.length}
-                    onChange={(v) => params({ page: String(v) })}
-                  />
-                </>
-              )}
-            </>
-          ) : (
-            <>
-              <div className="v-knowledge-types">
-                {types.slice(1).map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => params({ type: t, searched: "1" })}
-                  >
-                    {t}
-                    <ArrowRight size={14} />
-                  </button>
-                ))}
-                <button onClick={() => params({ tab: "知识库" })}>
-                  知识库
-                  <ArrowRight size={14} />
-                </button>
-                <button onClick={() => params({ tab: "知识图谱" })}>
-                  知识图谱
-                  <ArrowRight size={14} />
-                </button>
-              </div>
-              {(s.history[p.id] ?? []).length > 0 && (
-                <div className="v-section">
-                  <div className="v-section-head">
-                    <h2>最近搜索</h2>
-                    <Button
-                      onClick={() =>
-                        mutate("已清除搜索历史", "knowledge", (d) => {
-                          d.history[p.id] = [];
-                        })
-                      }
-                    >
-                      清除历史
-                    </Button>
-                  </div>
-                  <div className="v-actions">
-                    {s.history[p.id].map((h, i) => (
-                      <button
-                        key={i}
-                        className="v-chip"
-                        onClick={() => {
-                          setInput(h.query);
-                          params({ q: h.query, mode: h.mode, searched: "1" });
-                        }}
-                      >
-                        {h.query || "全部知识"} · {h.mode}
-                      </button>
-                    ))}
+                        <div className="v-overview-types">
+                          {types.slice(1).map((value) => {
+                            const entry = quickTypes.find(
+                              (candidate) => "type" in candidate && candidate.type === value,
+                            );
+                            const OverviewIcon = entry?.icon ?? FileText;
+                            return (
+                              <div key={value}>
+                                <span><OverviewIcon size={14} />{value}</span>
+                                <i><b style={{ width: `${(typeCounts[value] / maxTypeCount) * 100}%` }} /></i>
+                                <strong>{typeCounts[value]}</strong>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        {sourceCounts.length > 0 && (
+                          <div className="v-overview-sources">
+                            <h3>主要来源</h3>
+                            {sourceCounts.slice(0, 5).map(([source, count]) => (
+                              <div key={source}><span>{source}</span><strong>{count}</strong></div>
+                            ))}
+                          </div>
+                        )}
+                      </section>
+                      <section className="v-related-topics">
+                        <header>相关主题</header>
+                        <div>
+                          {relatedTopics.length ? relatedTopics.map((topic) => (
+                            <button
+                              type="button"
+                              key={topic}
+                              onClick={() => {
+                                setInput(topic);
+                                params({ q: topic, type: "全部", searched: "1" });
+                              }}
+                            >
+                              {topic}
+                            </button>
+                          )) : <span className="v-muted">暂无可推荐主题</span>}
+                        </div>
+                      </section>
+                    </aside>
                   </div>
                 </div>
               )}
             </>
+          ) : (
+            <div className="v-knowledge-home-grid v-knowledge-home-three-col">
+              <section
+                className="v-knowledge-home-panel"
+                aria-labelledby="recent-searches-title"
+              >
+                <header>
+                  <h2 id="recent-searches-title">
+                    <Clock3 size={24} />
+                    最近搜索
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={() => params({ searched: "1" })}
+                  >
+                    查看全部
+                    <ArrowRight size={16} />
+                  </button>
+                </header>
+                <div className="v-knowledge-recent-list">
+                  {recentSearches.map((entry, index) => (
+                    <button
+                      type="button"
+                      key={`${entry.query}-${index}`}
+                      onClick={() => {
+                        setInput(entry.query);
+                        params({
+                          q: entry.query,
+                          mode: entry.mode,
+                          searched: "1",
+                        });
+                      }}
+                    >
+                      <Search size={17} />
+                      <span>{entry.query || "全部知识"}</span>
+                      <time>{entry.time}</time>
+                    </button>
+                  ))}
+                </div>
+              </section>
+
+              <section
+                className="v-knowledge-home-panel"
+                aria-labelledby="recommended-knowledge-title"
+              >
+                <header>
+                  <h2 id="recommended-knowledge-title">
+                    <Star size={24} />
+                    推荐知识
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={() => params({ searched: "1" })}
+                  >
+                    查看更多
+                    <ArrowRight size={16} />
+                  </button>
+                </header>
+                <div className="v-knowledge-recommend-list">
+                  {visible.slice(0, 3).map((resource) => (
+                    <article key={resource.id}>
+                      <Badge>{resource.type}</Badge>
+                      <button
+                        type="button"
+                        className="v-knowledge-recommend-copy"
+                        onClick={() => params({ id: resource.id })}
+                      >
+                        <strong>{resource.name}</strong>
+                        <span>{resource.description}</span>
+                        <small>
+                          {resource.source} · {resource.date}
+                        </small>
+                      </button>
+                      <button
+                        type="button"
+                        className="v-knowledge-recommend-open"
+                        aria-label={`查看${resource.name}`}
+                        onClick={() => params({ id: resource.id })}
+                      >
+                        <ArrowRight size={21} />
+                      </button>
+                    </article>
+                  ))}
+                </div>
+              </section>
+
+              <section
+                className="v-knowledge-home-panel v-hot-topics"
+                aria-labelledby="hot-topics-title"
+              >
+                <header>
+                  <h2 id="hot-topics-title">
+                    <Sparkles size={24} />
+                    热门研究主题
+                  </h2>
+                  <button type="button" onClick={() => params({ searched: "1" })}>
+                    查看更多
+                    <ArrowRight size={16} />
+                  </button>
+                </header>
+                <div className="v-hot-topic-list">
+                  {homeTopics.map((topic) => (
+                    <button
+                      type="button"
+                      key={topic}
+                      onClick={() => {
+                        setInput(topic);
+                        params({ q: topic, type: "全部", searched: "1" });
+                      }}
+                    >
+                      {topic}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  className="v-hot-topics-graph"
+                  onClick={() => params({ tab: "知识图谱", q: "", searched: "" }, "push")}
+                >
+                  <Network size={28} />
+                  <span><strong>探索知识图谱</strong><small>发现领域关键概念与关联关系</small></span>
+                  <ArrowRight size={16} />
+                </button>
+              </section>
+            </div>
           )}
         </>
       )}

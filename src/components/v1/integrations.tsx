@@ -230,8 +230,8 @@ export function Admin() {
         <section className="v-card">
           <h2>Project / Space 全局治理</h2>
           <p>项目空间、成员、空间角色与资源映射。</p>
-          <Button primary onClick={() => router.push("/space-management")}>
-            进入项目空间管理
+          <Button primary onClick={() => router.push("/research-spaces/current/manage/basic")}>
+            进入科研空间管理
           </Button>
         </section>
       ) : tab === "资源与资产治理" ? (

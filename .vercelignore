@@ -1,0 +1,10 @@
+.next*
+node_modules
+output
+coverage
+*.log
+*.tsbuildinfo
+task_plan.md
+findings.md
+progress.md
+design-qa.md

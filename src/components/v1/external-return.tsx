@@ -16,7 +16,7 @@ export function ExternalReturn() {
   const name = query.get("name") ?? "";
   const type = query.get("asset_type") as AssetType;
   const version = query.get("version") ?? "V1.0";
-  const close = () => router.replace("/assets");
+  const close = () => router.replace("/research-spaces/current/assets");
   if (!externalId) return null;
   const existing = s.assets.find((a) => a.externalId === externalId);
   return (

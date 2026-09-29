@@ -3,6 +3,7 @@ const base = process.env.BASE_URL || "http://localhost:3000";
 const routes = [
   "/workspace",
   "/knowledge",
+  "/datasets",
   "/skills",
   "/models",
   ...["科研工具", "科研软件", "MCP"].map(
@@ -11,11 +12,10 @@ const routes = [
   ...["仪器设备纳管", "仪器设备共享", "实验任务管理", "实验试剂耗材管理"].map(
     (tab) => `/lab?tab=${encodeURIComponent(tab)}`,
   ),
-  ...["我的资产", "项目资产"].map(
-    (view) => `/assets?view=${encodeURIComponent(view)}`,
-  ),
-  ...["项目空间", "课题空间", "空间成员", "角色与权限", "空间配置"].map(
-    (tab) => `/space-management?tab=${encodeURIComponent(tab)}`,
+  "/research-spaces/topic-a/assets",
+  "/research-spaces/topic-a/assets/dataset-shale",
+  ...["basic", "members", "roles", "topics", "sharing", "audit"].map(
+    (view) => `/research-spaces/topic-a/manage/${view}`,
   ),
   ...["管理概览", "项目运行", "科研进展", "风险与异常", "科研成果"].map(
     (tab) => `/research-management?tab=${encodeURIComponent(tab)}`,
@@ -53,6 +53,8 @@ for (const route of [
   "/compute-space",
   "/do-space",
   "/research-decision",
+  "/assets",
+  "/space-management",
 ]) {
   const response = await fetch(base + route, { redirect: "manual" });
   const body = await response.text();

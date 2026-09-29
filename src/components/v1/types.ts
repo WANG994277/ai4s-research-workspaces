@@ -61,6 +61,7 @@ export interface Space {
   mapping: string;
   syncStatus: string;
   createdAt: string;
+  parentSpaceId?: string;
 }
 export interface Membership {
   id: string;
@@ -93,6 +94,30 @@ export interface Version {
   by: string;
   status: string;
 }
+export interface DatasetField {
+  name: string;
+  label: string;
+  type: string;
+  unit?: string;
+  description: string;
+}
+export interface DatasetMetadata {
+  version: string;
+  modality: string;
+  purposes: string[];
+  formats: string[];
+  recordCount: number;
+  fileCount: number;
+  size: string;
+  fields: DatasetField[];
+  license: string;
+  accessLevel: string;
+  qualitySummary: string;
+  provenance: string;
+  citation: string;
+  doi?: string;
+  previewRows: Record<string, string | number>[];
+}
 export interface Asset extends Scoped {
   type: AssetType;
   discipline: string;
@@ -123,6 +148,7 @@ export interface Asset extends Scoped {
   }[];
   longRunning?: boolean;
   sourceAssetId?: string;
+  dataset?: DatasetMetadata;
 }
 export interface Tool extends Scoped {
   type: string;
@@ -362,6 +388,9 @@ export interface State {
     objectId: string;
     userId: string;
     at: string;
+    result?: string;
+    requestId?: string;
+    detail?: string;
   }[];
   requests: {
     id: string;
@@ -369,6 +398,24 @@ export interface State {
     userId: string;
     purpose: string;
     status: string;
+    kind?: string;
+    targetVersion?: string;
+    createdAt?: string;
   }[];
   rolePermissions: Record<string, string[]>;
+  spacePolicies?: Record<
+    string,
+    {
+      member: boolean;
+      siblingTopic: boolean;
+      project: boolean;
+      download: boolean;
+      copy: boolean;
+      edit: boolean;
+      approval: string;
+      defaultVisibility: string;
+      validDays: string;
+      revision: number;
+    }
+  >;
 }

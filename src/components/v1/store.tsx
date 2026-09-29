@@ -2,6 +2,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 import {
   createSeed,
+  ensureAssistantDemoState,
   normalizeLegacyDemoState,
   normalizeLegacyRoleState,
   profiles,
@@ -34,7 +35,9 @@ function hydrate() {
         Array.isArray(parsed.assets) &&
         Array.isArray(parsed.members)
       ) {
-        state = normalizeLegacyDemoState(normalizeLegacyRoleState(parsed));
+        state = ensureAssistantDemoState(
+          normalizeLegacyDemoState(normalizeLegacyRoleState(parsed)),
+        );
         localStorage.setItem(key, JSON.stringify(state));
       }
       else message = "旧版数据格式未加载，已使用本地示例。";
@@ -95,7 +98,7 @@ export function currentProfile(s: State): Profile {
       ...new Set([
         ...p.grants,
         ...(s.spaces.some((sp) => canManageSpace(s, merged, sp.id))
-          ? ["space-management"]
+          ? ["research-spaces"]
           : []),
       ]),
     ],
