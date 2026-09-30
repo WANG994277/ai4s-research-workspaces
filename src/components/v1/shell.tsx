@@ -185,10 +185,20 @@ export function BaselineShell({ children }: { children: ReactNode }) {
       <aside className="v-sidebar">
         <Link className="v-logo" href={firstAllowed?.href ?? "/workspace"}>
           <Image
-            src="/v1/ai4s-logo.png"
-            alt="AI4S · AI for Science"
-            width={160}
-            height={70}
+            src="/v1/science-lab-logo.jpg"
+            alt="中国石油 ScienceLab · AI for Science 一体化科研平台"
+            className="v-logo-full"
+            width={2000}
+            height={400}
+            priority
+          />
+          <Image
+            src="/v1/science-lab-symbol.jpg"
+            alt=""
+            aria-hidden="true"
+            className="v-logo-symbol"
+            width={400}
+            height={400}
             priority
           />
         </Link>

@@ -1327,18 +1327,24 @@
 }
 
 .v-logo {
-  height: 58px;
-  flex: 0 0 58px;
-  padding: 6px 18px;
+  height: 72px;
+  flex: 0 0 72px;
+  padding: 6px 12px;
   border-bottom: 1px solid #e7eef7;
+  overflow: hidden;
 }
 
-.v-logo img {
-  width: 154px;
+.v-logo .v-logo-full {
+  width: 100%;
+  max-width: 194px;
   height: auto;
-  max-height: 54px;
+  max-height: 66px;
   object-fit: contain;
   object-position: left center;
+}
+
+.v-logo .v-logo-symbol {
+  display: none;
 }
 
 .v-app.collapsed .v-logo {
@@ -1346,11 +1352,15 @@
   padding-inline: 8px;
 }
 
-.v-app.collapsed .v-logo img {
+.v-app.collapsed .v-logo .v-logo-full {
+  display: none;
+}
+
+.v-app.collapsed .v-logo .v-logo-symbol {
+  display: block;
   width: 44px;
   height: 44px;
-  object-fit: cover;
-  object-position: left center;
+  object-fit: contain;
 }
 
 .v-sidebar nav {

@@ -1,6 +1,7 @@
 import type { Artifact, Project, Session, Space, State, Task } from "./types";
 
 export const DEFAULT_WORKBENCH_MODEL = "deepseekV4Pro";
+export const WORKBENCH_FRONTIER_VISIBLE = false;
 
 export type AssistantLaunchMode = "读" | "算" | "做";
 

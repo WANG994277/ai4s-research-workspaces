@@ -45,12 +45,23 @@ for (const required of [
 }
 
 for (const asset of [
-  "public/v1/ai4s-logo.png",
+  "public/v1/science-lab-logo.jpg",
+  "public/v1/science-lab-symbol.jpg",
   "public/v1/research-agent-banner.png",
   "docs/ui-design/workbench/workbench-direction-a.png",
 ]) {
   if (!existsSync(asset)) throw new Error(`Missing visual asset: ${asset}`);
   console.log(`asset: ${asset}`);
 }
+
+const shell = readFileSync("src/components/v1/shell.tsx", "utf8");
+if (!shell.includes('src="/v1/science-lab-logo.jpg"'))
+  throw new Error("Shell must use the supplied ScienceLab logo");
+if (shell.includes('src="/v1/ai4s-logo.png"'))
+  throw new Error("Legacy AI4S logo remains in the global shell");
+
+const workspace = readFileSync("src/components/v1/workspace.tsx", "utf8");
+if (!workspace.includes("WORKBENCH_FRONTIER_VISIBLE &&"))
+  throw new Error("Workbench research-frontier module is not feature-flagged");
 
 console.log("UI design-system checks passed");

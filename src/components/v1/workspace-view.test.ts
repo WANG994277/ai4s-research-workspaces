@@ -162,6 +162,13 @@ test("workbench uses the previous project mock density and default model", async
   );
 });
 
+test("workbench research frontier is hidden until explicitly enabled", async () => {
+  const view = (await import("./workspace-view")) as unknown as {
+    WORKBENCH_FRONTIER_VISIBLE?: boolean;
+  };
+  assert.equal(view.WORKBENCH_FRONTIER_VISIBLE, false);
+});
+
 test("research assistant view exposes plan trace changes and categorized outputs", async () => {
   const view = (await import("./workspace-view")) as unknown as {
     buildResearchAssistantView?: typeof import("./workspace-view")["buildResearchAssistantView"];

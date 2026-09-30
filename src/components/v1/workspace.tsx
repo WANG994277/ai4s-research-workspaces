@@ -67,6 +67,7 @@ import { ContextActions, ResourcePicker, SaveAsset } from "./actions";
 import type { Artifact, Decision, Session, Task } from "./types";
 import {
   DEFAULT_WORKBENCH_MODEL,
+  WORKBENCH_FRONTIER_VISIBLE,
   buildResearchAssistantView,
   buildWorkbenchHome,
   resolveWorkspaceSession,
@@ -1334,7 +1335,7 @@ export function Workspace({ assistant = false, initialView }: { assistant?: bool
                   </section>
                 </div>
 
-                <section className="v-workbench-card v-frontier-card" aria-labelledby="frontier-title">
+                {WORKBENCH_FRONTIER_VISIBLE && <section className="v-workbench-card v-frontier-card" aria-labelledby="frontier-title">
                   <div className="v-workbench-card-head">
                     <h2 id="frontier-title"><BookOpen size={18} />科研前沿</h2>
                     <Link href="/knowledge" className="v-link">查看全部 <ChevronRight size={14} /></Link>
@@ -1358,7 +1359,7 @@ export function Workspace({ assistant = false, initialView }: { assistant?: bool
                     ))}
                     {!visibleFrontier.length && <Empty>当前筛选下暂无科研资源，请调整学科或资源类型。</Empty>}
                   </div>
-                </section>
+                </section>}
               </>
             )}
             {view === "pending" && (
