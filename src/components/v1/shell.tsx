@@ -42,6 +42,10 @@ import {
 import { canEnter, scopeKey, spaceLabels } from "./domain";
 import { profiles, roleNames } from "./seed";
 import { groupResearchSpaces, isSpaceSwitchable } from "./workspace-view";
+import {
+  collectNavigationWarmupTargets,
+  preloadBaselineModule,
+} from "./module-preload";
 import { Alert, Badge, Button, Empty, Modal, SearchBox } from "./ui";
 import "./v1.css";
 import "./workspace-home.css";
@@ -72,13 +76,37 @@ const groups = [
   "系统管理",
 ];
 
+const warmupRequests = new Map<string, Promise<void>>();
+
+function fetchWarmup(url: string) {
+  const existing = warmupRequests.get(url);
+  if (existing) return existing;
+
+  const request = fetch(url, { credentials: "same-origin" })
+    .then((response) => {
+      if (!response.ok) throw new Error(`预加载失败：${response.status}`);
+      return response.arrayBuffer();
+    })
+    .then(() => undefined)
+    .catch((error) => {
+      warmupRequests.delete(url);
+      throw error;
+    });
+  warmupRequests.set(url, request);
+  return request;
+}
+
 export function BaselineShell({ children }: { children: ReactNode }) {
   const { s, p, space, loaded, toast, mutate } = useResearch();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
   const current = moduleForPath(pathname);
-  const allowedModules = visibleModules(p);
+  const allowedModules = useMemo(() => visibleModules(p), [p]);
+  const navigationWarmupTargets = useMemo(
+    () => collectNavigationWarmupTargets(allowedModules),
+    [allowedModules],
+  );
   const firstAllowed = allowedModules[0];
   const [collapsed, setCollapsed] = useState(false);
   const [panel, setPanel] = useState("");
@@ -95,6 +123,50 @@ export function BaselineShell({ children }: { children: ReactNode }) {
     if (activeId && (activeId === "research-spaces" || activeId === "my-resources"))
       setExpanded((value) => value.includes(activeId) ? value : [...value, activeId]);
   }, [current?.id, current?.parentId]);
+
+  function warmNavigationTarget(moduleId: string, href: string) {
+    const path = href.split(/[?#]/, 1)[0];
+    const resolvedModuleId = moduleForPath(path)?.id ?? moduleId;
+    router.prefetch(href);
+    void preloadBaselineModule(resolvedModuleId).catch(() => undefined);
+    if (process.env.NODE_ENV === "development")
+      void fetchWarmup(path).catch(() => undefined);
+    if (resolvedModuleId === "assistant")
+      void fetchWarmup("/AI4S科研平台原型设计.html").catch(() => undefined);
+  }
+
+  useEffect(() => {
+    let cancelled = false;
+    let timer = 0;
+    let index = 0;
+
+    const preloadNext = async () => {
+      if (cancelled || index >= navigationWarmupTargets.length) return;
+      const target = navigationWarmupTargets[index];
+      index += 1;
+      const resolvedModuleId =
+        moduleForPath(target.path)?.id ?? target.moduleId;
+
+      router.prefetch(target.href);
+      const work: Promise<unknown>[] = [
+        preloadBaselineModule(resolvedModuleId),
+      ];
+      if (process.env.NODE_ENV === "development")
+        work.push(fetchWarmup(target.path));
+      if (resolvedModuleId === "assistant")
+        work.push(fetchWarmup("/AI4S科研平台原型设计.html"));
+
+      await Promise.allSettled(work);
+      if (!cancelled)
+        timer = window.setTimeout(preloadNext, 80);
+    };
+
+    timer = window.setTimeout(preloadNext, 250);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [navigationWarmupTargets, router]);
 
   const queryString = searchParams.toString();
   const currentUrl = `${pathname}${queryString ? `?${queryString}` : ""}`;
@@ -220,6 +292,12 @@ export function BaselineShell({ children }: { children: ReactNode }) {
                           href={module.href}
                           title={module.name}
                           aria-current={current?.id === module.id ? "page" : undefined}
+                          onMouseEnter={() =>
+                            warmNavigationTarget(module.id, module.href)
+                          }
+                          onFocus={() =>
+                            warmNavigationTarget(module.id, module.href)
+                          }
                         >
                           <Icon size={18} />
                           {!collapsed && <span>{module.name}</span>}
@@ -256,6 +334,12 @@ export function BaselineShell({ children }: { children: ReactNode }) {
                                 isChildActive(child.href) ? "active" : ""
                               }
                               aria-current={isChildActive(child.href) ? "page" : undefined}
+                              onMouseEnter={() =>
+                                warmNavigationTarget(module.id, child.href)
+                              }
+                              onFocus={() =>
+                                warmNavigationTarget(module.id, child.href)
+                              }
                             >
                               {child.label}
                             </Link>

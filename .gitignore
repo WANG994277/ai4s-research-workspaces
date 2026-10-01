@@ -16,6 +16,7 @@ __pycache__/
 
 # JS/TS bundlers & build outputs
 .next
+.next-*/
 .next-read-preview/
 .nuxt
 .turbo
@@ -90,6 +91,11 @@ logs/
 
 # Preview files
 .preview
+
+# Local verification artifacts and repository snapshots
+output/
+ai4s-research-workspaces-main/
+ai4s-research-workspaces-main9.28/
 # Dependencies
 node_modules/
 .pnp

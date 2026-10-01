@@ -40,6 +40,7 @@ const eslintConfig = defineConfig([
   globalIgnores([
     // Default ignores of eslint-config-next:
     '.next/**',
+    '.next-*/**',
     '.next-read-preview/**',
     '.next-v1-prod/**',
     'out/**',
@@ -48,6 +49,9 @@ const eslintConfig = defineConfig([
     // Build artifacts:
     'server.js',
     'dist/**',
+    'output/**',
+    'ai4s-research-workspaces-main/**',
+    'ai4s-research-workspaces-main9.28/**',
     // Script files (CommonJS):
     'scripts/**/*.js',
   ]),

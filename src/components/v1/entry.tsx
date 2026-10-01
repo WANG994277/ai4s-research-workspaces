@@ -1,45 +1,46 @@
 "use client";
 import dynamic from "next/dynamic";
+import { baselineModuleLoaders } from "./module-preload";
 const loading = () => (
   <div className="v-loading" role="status">
     正在载入页面…
   </div>
 );
 const Workspace = dynamic(
-  () => import("./workspace").then((m) => m.Workspace),
+  () => baselineModuleLoaders.workspace().then((m) => m.Workspace),
   { loading },
 );
 const AssistantWorkspace = dynamic(
-  () => import("./assistant-workspace").then((m) => m.AssistantWorkspace),
+  () => baselineModuleLoaders.assistant().then((m) => m.AssistantWorkspace),
   { loading },
 );
 const Knowledge = dynamic(
-  () => import("./knowledge").then((m) => m.KnowledgeCenter),
+  () => baselineModuleLoaders.knowledge().then((m) => m.KnowledgeCenter),
   { loading },
 );
 const Datasets = dynamic(
-  () => import("./datasets").then((m) => m.DatasetMarketplace),
+  () => baselineModuleLoaders.datasets().then((m) => m.DatasetMarketplace),
   { loading },
 );
-const Catalog = dynamic(() => import("./catalog").then((m) => m.Catalog), {
+const Catalog = dynamic(() => baselineModuleLoaders.catalog().then((m) => m.Catalog), {
   loading,
 });
-const Assets = dynamic(() => import("./assets").then((m) => m.Assets), {
+const Assets = dynamic(() => baselineModuleLoaders.assets().then((m) => m.Assets), {
   loading,
 });
-const Lab = dynamic(() => import("./lab").then((m) => m.Lab), { loading });
-const Spaces = dynamic(() => import("./spaces").then((m) => m.Spaces), {
+const Lab = dynamic(() => baselineModuleLoaders.lab().then((m) => m.Lab), { loading });
+const Spaces = dynamic(() => baselineModuleLoaders.spaces().then((m) => m.Spaces), {
   loading,
 });
 const Management = dynamic(
-  () => import("./management").then((m) => m.Management),
+  () => baselineModuleLoaders.management().then((m) => m.Management),
   { loading },
 );
 const ExternalProject = dynamic(
-  () => import("./integrations").then((m) => m.ExternalProject),
+  () => baselineModuleLoaders.integrations().then((m) => m.ExternalProject),
   { loading },
 );
-const Admin = dynamic(() => import("./integrations").then((m) => m.Admin), {
+const Admin = dynamic(() => baselineModuleLoaders.integrations().then((m) => m.Admin), {
   loading,
 });
 export function BaselinePage({ module }: { module: string }) {
