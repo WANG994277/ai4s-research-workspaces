@@ -12,6 +12,7 @@ export interface NavigationModule {
   group: string;
   roles: Role[];
   children: NavigationChild[];
+  parentId?: string;
   integrated?: boolean;
 }
 
@@ -26,7 +27,7 @@ export const modules: NavigationModule[] = [
     id: "workspace",
     name: "科研工作台",
     href: "/workspace",
-    group: "核心入口",
+    group: "科研执行",
     roles: ["researcher", "leader", "analyst"],
     children: [],
   },
@@ -34,23 +35,39 @@ export const modules: NavigationModule[] = [
     id: "assistant",
     name: "科研超级中枢",
     href: "/assistant",
-    group: "超级中枢",
+    group: "科研执行",
     roles: ["researcher", "leader", "analyst"],
     children: [],
+  },
+  {
+    id: "my-resources",
+    name: "科研资源中心",
+    href: "/my-resources",
+    group: "科研执行",
+    roles: ["researcher", "analyst", "leader", "manager", "admin"],
+    children: [
+      { label: "知识中心", href: "/knowledge" },
+      { label: "科研数据集", href: "/datasets" },
+      { label: "科研技能", href: "/skills" },
+      { label: "科研模型", href: "/models" },
+      { label: "科研工具箱", href: "/tools?view=" + encodeURIComponent("科研工具") },
+    ],
   },
   {
     id: "knowledge",
     name: "知识中心",
     href: "/knowledge",
-    group: "科研广场",
+    parentId: "my-resources",
+    group: "科研执行",
     roles: ["researcher", "analyst", "leader", "manager"],
     children: [],
   },
   {
     id: "datasets",
-    name: "科研数据",
+    name: "科研数据集",
     href: "/datasets",
-    group: "科研广场",
+    parentId: "my-resources",
+    group: "科研执行",
     roles: ["researcher", "analyst", "leader", "manager", "admin"],
     children: [],
   },
@@ -58,7 +75,8 @@ export const modules: NavigationModule[] = [
     id: "skills",
     name: "科研技能",
     href: "/skills",
-    group: "科研广场",
+    parentId: "my-resources",
+    group: "科研执行",
     roles: ["researcher", "leader", "manager", "admin"],
     children: [],
   },
@@ -66,15 +84,17 @@ export const modules: NavigationModule[] = [
     id: "models",
     name: "科研模型",
     href: "/models",
-    group: "科研广场",
+    parentId: "my-resources",
+    group: "科研执行",
     roles: ["researcher", "leader", "manager", "admin"],
     children: [],
   },
   {
     id: "tools",
     name: "科研工具箱",
-    href: "/tools",
-    group: "科研广场",
+    href: "/tools?view=" + encodeURIComponent("科研工具"),
+    parentId: "my-resources",
+    group: "科研执行",
     roles: ["researcher", "leader", "analyst", "admin"],
     children: queryHref("/tools", "view", ["科研工具", "科研软件", "MCP"]),
   },
@@ -82,7 +102,7 @@ export const modules: NavigationModule[] = [
     id: "lab",
     name: "云上实验室",
     href: "/lab?tab=" + encodeURIComponent("仪器设备纳管"),
-    group: "实验空间",
+    group: "科研执行",
     roles: [
       "researcher",
       "analyst",
@@ -100,21 +120,16 @@ export const modules: NavigationModule[] = [
   {
     id: "research-spaces",
     name: "科研空间",
-    href: "/research-spaces/current/assets",
-    group: "资产空间",
+    href: "/research-spaces/current/overview",
+    group: "科研执行",
     roles: ["researcher", "analyst", "leader", "manager", "admin"],
     children: [
+      { label: "课题概览", href: "/research-spaces/current/overview" },
+      { label: "科研任务", href: "/research-spaces/current/tasks" },
+      { label: "科学计算", href: "/research-spaces/current/computing" },
+      { label: "科研活动", href: "/research-spaces/current/activities" },
       { label: "科研资产", href: "/research-spaces/current/assets" },
-      { label: "空间管理", href: "/research-spaces/current/manage/basic" },
     ],
-  },
-  {
-    id: "task-history",
-    name: "历史任务",
-    href: "/task-history",
-    group: "历史任务入口",
-    roles: ["researcher", "analyst", "leader"],
-    children: [],
   },
   {
     id: "research-management",
@@ -181,7 +196,16 @@ export function visibleModule(id: string, p: Profile) {
 }
 
 export function visibleModules(p: Profile) {
-  return modules.filter((module) => visibleModule(module.id, p));
+  return modules.filter((module) => !module.parentId && visibleModule(module.id, p));
+}
+
+export function visibleChildren(module: NavigationModule, p: Profile) {
+  return module.children.filter((child) => {
+    const childModule = modules.find(
+      (item) => item.parentId === module.id && item.href === child.href,
+    );
+    return !childModule || visibleModule(childModule.id, p);
+  });
 }
 
 export function moduleForPath(pathname: string) {

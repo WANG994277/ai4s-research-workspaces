@@ -1,5 +1,9 @@
 # Design System Master File
 
+> **2026-09-29 用户确认覆盖：** 本文件下方的自动生成推荐仅作检索记录，不作为实现规范。科研空间必须继承 `../ai4s-v1-baseline/MASTER.md` 的蓝白企业科研设计系统；禁止朱丹红主色、橙色 CTA、Bento/营销 Hero 与新字体。主操作、链接、选中态和焦点统一使用 `#1268E8`/`#0756C9`，页面背景 `#F4F8FD`，表面 `#FFFFFF`，边框 `#DBE6F4`，正文 `#102A56`；字体继续使用 PingFang SC / Microsoft YaHei，图标继续使用 Lucide。危险操作仅以语义红表达，并同时带文字。
+
+> **页面模式：** 管理型桌面 Web。信息架构为“科研资产 / 空间管理”；资产页使用工具栏 + 48px 行高表格 + 详情标签，管理页使用同一行局部导航 + 表格/表单。无统计首页、推荐卡、背景大图、卡片/列表切换；每页最多一个主按钮。验收视口仅 1280×900、1440×900、1920×1080。
+
 > **LOGIC:** When building a specific page, first check `design-system/pages/[page-name].md`.
 > If that file exists, its rules **override** this Master file.
 > If not, strictly follow the rules below.
@@ -7,8 +11,8 @@
 ---
 
 **Project:** AI4S Research Space
-**Generated:** 2026-09-29 18:15:05
-**Category:** B2B Service
+**Generated:** 2026-09-29 13:11:40
+**Category:** Calculator & Unit Converter
 
 ---
 
@@ -24,18 +28,18 @@
 | Background | `#F8FAFC` | `--color-background` |
 | Text | `#1E293B` | `--color-text` |
 
-**Color Notes:** Professional blue + deal green
+**Color Notes:** High contrast navy + blue
 
 ### Typography
 
-- **Heading Font:** Exo
-- **Body Font:** Roboto Mono
-- **Mood:** science, technology, research, data, futuristic, precise
-- **Google Fonts:** [Exo + Roboto Mono](https://fonts.google.com/share?selection.family=Exo:wght@300;400;500;600;700|Roboto+Mono:wght@300;400;500;700)
+- **Heading Font:** Crimson Pro
+- **Body Font:** Atkinson Hyperlegible
+- **Mood:** academic, research, scholarly, accessible, readable, educational
+- **Google Fonts:** [Crimson Pro + Atkinson Hyperlegible](https://fonts.google.com/share?selection.family=Atkinson+Hyperlegible:wght@400;700|Crimson+Pro:wght@400;500;600;700)
 
 **CSS Import:**
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Exo:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Crimson+Pro:wght@400;500;600;700&display=swap');
 ```
 
 ### Spacing Variables
@@ -153,29 +157,27 @@
 
 ## Style Guidelines
 
-**Style:** Trust & Authority
+**Style:** Minimalism & Swiss Style
 
-**Keywords:** Certificates/badges displayed, expert credentials, case studies with metrics, before/after comparisons, industry recognition, security badges
+**Keywords:** Clean, simple, spacious, functional, white space, high contrast, geometric, sans-serif, grid-based, essential
 
-**Best For:** Healthcare/medical landing pages, financial services, enterprise software, premium/luxury products, legal services
+**Best For:** Enterprise apps, dashboards, documentation sites, SaaS platforms, professional tools
 
-**Key Effects:** Badge hover effects, metric pulse animations, certificate carousel, smooth stat reveal
+**Key Effects:** Subtle hover (200-250ms), smooth transitions, sharp shadows if any, clear type hierarchy, fast loading
 
 ### Page Pattern
 
-**Pattern Name:** Enterprise Gateway
+**Pattern Name:** Bento Grid Showcase
 
-- **Conversion Strategy:** Path selection (I am a...). Mega menu navigation. Trust signals prominent.
-- **CTA Placement:** Contact Sales (Primary) + Login (Secondary)
-- **Section Order:** 1. Hero (Video/Mission), 2. Solutions by Industry, 3. Solutions by Role, 4. Client Logos, 5. Contact Sales
+- **Conversion Strategy:** Scannable value props. High information density without clutter. Mobile stack.
+- **CTA Placement:** Floating Action Button or Bottom of Grid
+- **Section Order:** 1. Hero, 2. Bento Grid (Key Features), 3. Detail Cards, 4. Tech Specs, 5. CTA
 
 ---
 
 ## Anti-Patterns (Do NOT Use)
 
-- ❌ Playful design
-- ❌ Hidden credentials
-- ❌ AI purple/pink gradients
+- ❌ Excessive decoration
 
 ### Additional Forbidden Patterns
 

@@ -27,12 +27,15 @@ test("space switcher groups project and topic spaces under their project", async
     ["personal-lin", "project-p1", "topic-a", "topic-b"].includes(space.id),
   );
   const result = view.groupResearchSpaces!(spaces, state.projects);
+  const projectGroup = result.projects.find(
+    (group) => group.project.id === "p1",
+  );
 
   assert.deepEqual(result.personal.map((space) => space.id), ["personal-lin"]);
-  assert.equal(result.projects[0]?.project.name, "非常规油气前沿研究");
-  assert.equal(result.projects[0]?.projectSpace?.id, "project-p1");
+  assert.equal(projectGroup?.project.name, "非常规油气前沿研究");
+  assert.equal(projectGroup?.projectSpace?.id, "project-p1");
   assert.deepEqual(
-    result.projects[0]?.topics.map((space) => space.id),
+    projectGroup?.topics.map((space) => space.id),
     ["topic-a", "topic-b"],
   );
 });

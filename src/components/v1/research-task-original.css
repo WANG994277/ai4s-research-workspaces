@@ -1,0 +1,102 @@
+/* Original three-pane task prototype palette, scoped to the task workspace. */
+.rtw-shell {
+  --v-blue: #2563eb;
+  --v-blue-soft: #eff6ff;
+}
+
+.v-app.task-workspace-focus { background: #fff; }
+.v-app.task-workspace-focus .v-frame { min-width: 0; height: 100dvh; }
+.v-app.task-workspace-focus .v-main {
+  min-height: 0;
+  height: calc(100dvh - 58px);
+  overflow: hidden;
+  padding: 0;
+}
+.v-app.task-workspace-focus .rtw-shell {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  grid-template-columns: 232px minmax(0, 1fr) 290px;
+  color: #374151;
+}
+.rtw-shell .rtw-tree,
+.rtw-shell .rtw-right { background: #fff; }
+.rtw-shell .rtw-tree { border-right-color: #e5e7eb; }
+.rtw-shell .rtw-right { border-left-color: #e5e7eb; }
+.rtw-shell .rtw-new {
+  min-height: 40px;
+  border-color: #bbd1fb !important;
+  border-radius: 10px;
+  background: #f5f9ff !important;
+  color: #2563eb !important;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.rtw-shell .rtw-new:hover { background: #eaf2ff !important; border-color: #2563eb !important; }
+.rtw-shell .rtw-tabs { border-bottom-color: #e5e7eb; }
+.rtw-shell .rtw-tabs button.selected { color: #2563eb; border-bottom-color: #2563eb; }
+.rtw-shell .rtw-chat { padding: 28px 40px; background: #f7f9ff; }
+.rtw-shell .rtw-chat article > div {
+  max-width: 78%;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 14px 14px 14px 4px;
+  color: #374151;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.rtw-shell .rtw-chat article.user > div {
+  max-width: 70%;
+  border-color: #2563eb;
+  border-radius: 14px 14px 4px 14px;
+  background: #2563eb;
+  color: #fff;
+  line-height: 1.6;
+}
+.rtw-shell .rtw-bot { background: #eff6ff; color: #2563eb; }
+.rtw-shell .rtw-composer { border-top-color: #e5e7eb; padding: 12px 24px 14px; }
+.rtw-shell .rtw-composer > input {
+  height: 46px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f9fafb;
+  color: #374151;
+  font-size: 13px;
+}
+.rtw-shell .rtw-composer > input:focus { border-color: #2563eb; outline: none; }
+.rtw-shell .rtw-send { background: #2563eb !important; }
+.rtw-shell .rtw-plan > header { padding: 16px 16px 14px; }
+.rtw-shell .rtw-plan > header > span { width: 38px; height: 38px; border-radius: 11px; background: #f0f4fa; }
+.rtw-shell .rtw-plan > header b { color: #1f2937; font-size: 14px; }
+.rtw-shell .rtw-plan > p { margin: 0; padding: 0 16px 10px; color: #9ca3af; font-size: 11px; }
+.rtw-shell .rtw-plan ol { margin: 0; padding: 2px 14px 18px; }
+.rtw-shell .rtw-plan li { grid-template-columns: 26px minmax(0, 1fr) 12px; gap: 12px; margin-bottom: 9px; }
+.rtw-shell .rtw-plan li.current { grid-template-columns: 26px minmax(0, 1fr); }
+.rtw-shell .rtw-plan li > span { width: 26px; height: 26px; font-size: 12px; }
+.rtw-shell .rtw-plan li > button {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  border-color: #edeff4;
+  border-radius: 12px;
+  background: #f8fafd;
+  padding: 10px 12px;
+}
+.rtw-shell .rtw-plan li > button > span { min-width: 0; flex: 1; }
+.rtw-shell .rtw-plan li b { color: #1f2937; font-size: 13px; }
+.rtw-shell .rtw-plan li small { color: #9ca3af; font-size: 11px; }
+.rtw-shell .rtw-plan li.current > button {
+  border: 1.5px solid #2563eb;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, .13);
+}
+.rtw-shell .rtw-plan li.current > button em {
+  flex: none;
+  border-radius: 20px;
+  background: #2563eb;
+  color: #fff;
+  padding: 3px 9px;
+  font-size: 10.5px;
+  font-style: normal;
+  font-weight: 700;
+}
+.rtw-shell .rtw-plan li:not(:last-child)::after { background: #eaeef4; }

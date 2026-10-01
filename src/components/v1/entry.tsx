@@ -9,17 +9,21 @@ const Workspace = dynamic(
   () => import("./workspace").then((m) => m.Workspace),
   { loading },
 );
+const AssistantWorkspace = dynamic(
+  () => import("./assistant-workspace").then((m) => m.AssistantWorkspace),
+  { loading },
+);
 const Knowledge = dynamic(
   () => import("./knowledge").then((m) => m.KnowledgeCenter),
+  { loading },
+);
+const Datasets = dynamic(
+  () => import("./datasets").then((m) => m.DatasetMarketplace),
   { loading },
 );
 const Catalog = dynamic(() => import("./catalog").then((m) => m.Catalog), {
   loading,
 });
-const DatasetMarketplace = dynamic(
-  () => import("./datasets").then((m) => m.DatasetMarketplace),
-  { loading },
-);
 const Assets = dynamic(() => import("./assets").then((m) => m.Assets), {
   loading,
 });
@@ -43,13 +47,11 @@ export function BaselinePage({ module }: { module: string }) {
     case "workspace":
       return <Workspace />;
     case "assistant":
-      return <Workspace assistant />;
-    case "task-history":
-      return <Workspace assistant initialView="history" />;
+      return <AssistantWorkspace assistant />;
     case "knowledge":
       return <Knowledge />;
     case "datasets":
-      return <DatasetMarketplace />;
+      return <Datasets />;
     case "skills":
     case "models":
     case "tools":

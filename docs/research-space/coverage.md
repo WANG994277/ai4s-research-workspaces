@@ -4,14 +4,11 @@
 
 | PRD | 实现路由 / 组件 | 落点 |
 | --- | --- | --- |
-| P01 | `/research-spaces/:contextId/assets` | 项目资产/我的资产双视图、五类页签、名称检索、状态与归属/发布筛选、差异化表格、分页及说明文案 |
-| P02—P06 | `/research-spaces/:contextId/assets/:assetKey` | 参考图式摘要头、概览/版本管理/共享权限/发布记录/使用记录五页签；按智能体/Skill/模型/数据集/方案模板展示字段和动作 |
-| 发布资产 | `assets?view=mine&publish=:assetId` | 基本信息、发布内容、确认提交三步；复用版本、标签、简介、渠道、可见范围与现有发布申请状态 |
+| P01 | `/research-spaces/:contextId/assets` | 五类页签、名称检索、生命周期、来源范围、我创建的、更多筛选、20/50/100分页、个人/项目/课题范围 |
+| P02—P06 | `/research-spaces/:contextId/assets/:assetKey` | 统一详情壳；按智能体/Skill/模型/数据集/方案模板展示字段、动作和标签 |
 | P07 | `/research-spaces/builds/:requestId` | 发起时归属锁定、等待来源、可信回流说明、核验/返回；未接入不伪造成功 |
-| 空间目录 | `/research-spaces/:contextId/manage/spaces` | 全部空间检索、空间类型/状态/租户筛选、成员及子空间统计、进入空间、新建入口与分页 |
-| 新建空间 | `/research-spaces/:contextId/manage/new` | 基本信息、上级空间、负责人/管理员、成员初始化、项目/空间角色、数据范围和协作共享设置 |
 | P08 | `/research-spaces/:contextId/manage/basic` | 基本信息、主数据只读、来源映射、课题生命周期与项目级上提 |
-| P09 | `manage/members` | 参考图式成员目录、项目角色、空间角色、所属课题、数据范围、在线状态、最近登录与筛选 |
+| P09 | `manage/members` | 候选池、成员、角色、有效权限、移除影响检查 |
 | P10 | `manage/roles` | 预置/自定义业务角色、委派上限说明、有效权限 |
 | P11 | `manage/topics` | 项目课题/子课题列表、同项目创建、显式进入上下文 |
 | P12 | `manage/sharing` | 上级策略、动作上限、审批、默认可见性、变更影响说明 |

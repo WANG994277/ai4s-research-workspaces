@@ -1,7 +1,11 @@
 const base = process.env.BASE_URL || "http://localhost:3000";
 
 const routes = [
+  "/",
+  "/research-resources",
   "/workspace",
+  "/assistant",
+  "/my-resources",
   "/knowledge",
   "/datasets",
   "/skills",
@@ -12,6 +16,11 @@ const routes = [
   ...["仪器设备纳管", "仪器设备共享", "实验任务管理", "实验试剂耗材管理"].map(
     (tab) => `/lab?tab=${encodeURIComponent(tab)}`,
   ),
+  "/research-spaces/topic-a/overview",
+  "/research-spaces/topic-a/tasks",
+  "/research-spaces/topic-a/computing",
+  "/research-spaces/topic-a/computing/compute-1",
+  "/research-spaces/topic-a/activities",
   "/research-spaces/topic-a/assets",
   "/research-spaces/topic-a/assets/dataset-shale",
   ...["basic", "members", "roles", "topics", "sharing", "audit"].map(

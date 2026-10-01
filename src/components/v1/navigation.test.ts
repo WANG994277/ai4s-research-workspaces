@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { modules, visibleModules } from "./navigation";
+import { moduleForPath, modules, visibleChildren, visibleModules } from "./navigation";
 import { createSeed, normalizeLegacyRoleState, profiles } from "./seed";
 
 const labels = (id: string) =>
@@ -15,34 +15,21 @@ const expectedModules = {
   researcher: [
     "workspace",
     "assistant",
-    "knowledge",
-    "datasets",
-    "skills",
-    "models",
-    "tools",
+    "my-resources",
     "lab",
     "research-spaces",
-    "task-history",
   ],
-  analyst: ["workspace", "assistant", "knowledge", "datasets", "tools", "lab", "research-spaces", "task-history"],
+  analyst: ["workspace", "assistant", "my-resources", "lab", "research-spaces"],
   leader: [
     "workspace",
     "assistant",
-    "knowledge",
-    "datasets",
-    "skills",
-    "models",
-    "tools",
+    "my-resources",
     "lab",
     "research-spaces",
-    "task-history",
     "project-management-external",
   ],
   manager: [
-    "knowledge",
-    "datasets",
-    "skills",
-    "models",
+    "my-resources",
     "lab",
     "research-spaces",
     "research-management",
@@ -51,10 +38,7 @@ const expectedModules = {
   ],
   decision: ["research-decision", "project-management-external"],
   admin: [
-    "datasets",
-    "skills",
-    "models",
-    "tools",
+    "my-resources",
     "lab",
     "research-spaces",
     "admin",
@@ -63,47 +47,66 @@ const expectedModules = {
 
 test("workspace and knowledge have no second-level navigation", () => {
   assert.deepEqual(labels("workspace"), []);
-  assert.deepEqual(labels("assistant"), []);
   assert.deepEqual(labels("knowledge"), []);
-});
-
-test("research assistant is an independent first-level module", () => {
-  const assistant = modules.find((module) => module.id === "assistant");
-  assert.equal(assistant?.name, "科研超级中枢");
-  assert.equal(assistant?.href, "/assistant");
-});
-
-test("researcher navigation matches the confirmed sidebar grouping and order", () => {
-  const researcherModules = visibleModules(profiles.researcher);
-  assert.deepEqual(
-    researcherModules.map((module) => [module.name, module.group]),
-    [
-      ["科研工作台", "核心入口"],
-      ["科研超级中枢", "超级中枢"],
-      ["知识中心", "科研广场"],
-      ["科研数据", "科研广场"],
-      ["科研技能", "科研广场"],
-      ["科研模型", "科研广场"],
-      ["科研工具箱", "科研广场"],
-      ["云上实验室", "实验空间"],
-      ["科研空间", "资产空间"],
-      ["历史任务", "历史任务入口"],
-    ],
-  );
-  assert.equal(modules.find((module) => module.id === "task-history")?.href, "/task-history");
-  assert.equal(modules.find((module) => module.id === "datasets")?.href, "/datasets");
 });
 
 test("research space replaces the old asset and project-space modules", () => {
   const item = modules.find((module) => module.id === "research-spaces");
   assert.equal(item?.name, "科研空间");
-  assert.equal(item?.href, "/research-spaces/current/assets");
-  assert.deepEqual(labels("research-spaces"), ["科研资产", "空间管理"]);
+  assert.equal(item?.href, "/research-spaces/current/overview");
+  assert.deepEqual(labels("research-spaces"), [
+    "课题概览",
+    "科研任务",
+    "科学计算",
+    "科研活动",
+    "科研资产",
+  ]);
   assert.equal(modules.some((module) => module.id === "assets"), false);
-  assert.equal(modules.some((module) => module.id === "space-management"), false);
+  assert.equal(
+    modules.some((module) => module.id === "space-management"),
+    false,
+  );
 });
 
-test("research toolbox exposes tools, software and MCP", () => {
+test("research resources center contains the five requested second-level routes", () => {
+  const item = modules.find((module) => module.id === "my-resources");
+  assert.equal(item?.name, "科研资源中心");
+  assert.equal(item?.href, "/my-resources");
+  assert.deepEqual(item?.children, [
+    { label: "知识中心", href: "/knowledge" },
+    { label: "科研数据集", href: "/datasets" },
+    { label: "科研技能", href: "/skills" },
+    { label: "科研模型", href: "/models" },
+    { label: "科研工具箱", href: "/tools?view=" + encodeURIComponent("科研工具") },
+  ]);
+  assert.equal(moduleForPath("/datasets")?.parentId, "my-resources");
+});
+
+test("research data keeps its online-synced route and becomes a child module", () => {
+  const item = modules.find((module) => module.id === "datasets");
+  assert.equal(item?.name, "科研数据集");
+  assert.equal(item?.href, "/datasets");
+  assert.equal(item?.parentId, "my-resources");
+  assert.deepEqual(item?.children, []);
+});
+
+test("resource center only shows children available to the current role", () => {
+  const center = modules.find((module) => module.id === "my-resources")!;
+  assert.deepEqual(visibleChildren(center, profiles.analyst).map((item) => item.label), [
+    "知识中心", "科研数据集", "科研工具箱",
+  ]);
+  assert.deepEqual(visibleChildren(center, profiles.admin).map((item) => item.label), [
+    "科研数据集", "科研技能", "科研模型", "科研工具箱",
+  ]);
+});
+
+test("research super hub remains a first-level module", () => {
+  const item = modules.find((module) => module.id === "assistant");
+  assert.equal(item?.name, "科研超级中枢");
+  assert.equal(item?.href, "/assistant");
+});
+
+test("research toolbox has the user-confirmed three second-level functions", () => {
   assert.deepEqual(labels("tools"), ["科研工具", "科研软件", "MCP"]);
 });
 

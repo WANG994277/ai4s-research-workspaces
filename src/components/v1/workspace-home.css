@@ -1,0 +1,168 @@
+/* Workbench home additions; keep the assistant's composer and metrics untouched. */
+.v-workspace.home-dashboard .v-workbench-example-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  min-width: 0;
+}
+.v-workspace.home-dashboard .v-workbench-examples {
+  align-items: start;
+}
+.v-workbench-example-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.v-workbench-example-category {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid #cfe0f5;
+  border-radius: 50%;
+  background: #eaf3ff;
+  color: #1268e8;
+  font-size: 12px;
+  font-weight: 700;
+}
+.v-workspace.home-dashboard .v-workbench-example-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.v-workbench-example-list button {
+  width: 100%;
+  max-width: none;
+  text-align: left;
+}
+.v-workbench-composer textarea {
+  min-height: 100px;
+  padding: 20px 24px;
+}
+.v-workbench-composer textarea::placeholder { color: #91a5bf; }
+.v-workspace.home-dashboard .v-workbench-composer:focus-within {
+  border-color: #8db4ff;
+  box-shadow: 0 0 0 8px rgba(126, 168, 255, 0.12);
+}
+.v-workbench-composer .v-composer-toolbar {
+  gap: 12px;
+  padding: 11px 16px;
+  border-top: 1px solid #e7eef7;
+}
+.v-workbench-composer-start {
+  flex: 1;
+  min-width: 0;
+  gap: 12px;
+}
+.v-workbench-add-wrap { position: relative; flex: none; }
+.v-workbench-composer .v-workbench-add-wrap > button {
+  display: grid;
+  width: 38px;
+  height: 34px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid #d6e3f1;
+  border-radius: 7px;
+  background: #fff;
+  color: #31577f;
+}
+.v-workbench-add-menu {
+  position: absolute;
+  z-index: 20;
+  bottom: calc(100% + 8px);
+  left: 0;
+  display: grid;
+  width: 160px;
+  padding: 5px;
+  border: 1px solid #d6e3f1;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(31, 72, 122, 0.14);
+}
+.v-workbench-add-menu button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 34px;
+  padding: 6px 9px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #31577f;
+  text-align: left;
+  font-size: 12px;
+}
+.v-workbench-add-menu button:hover { background: #eef6ff; color: #1268e8; }
+.v-workbench-composer .v-composer-space-picker {
+  min-height: 34px;
+  padding-left: 10px;
+}
+.v-workbench-composer .v-composer-space-picker select {
+  min-width: 150px;
+  max-width: 210px;
+}
+.v-workbench-model-picker {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 34px;
+  border: 1px solid #d6e3f1;
+  border-radius: 7px;
+  background: #fff;
+}
+.v-workbench-composer .v-workbench-model-picker select {
+  min-width: 154px;
+  max-width: 190px;
+  height: 32px;
+  padding: 0 27px 0 11px;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #173b69;
+  font-size: 12px;
+  font-weight: 600;
+}
+.v-workbench-model-picker > svg {
+  position: absolute;
+  right: 9px;
+  pointer-events: none;
+  color: #537395;
+}
+.v-workbench-composer .v-composer-toolbar > .v-button {
+  flex: none;
+  width: 38px;
+  height: 36px;
+}
+.v-workbench-composer button:focus-visible,
+.v-workbench-composer select:focus-visible {
+  outline: 2px solid #1268e8;
+  outline-offset: 2px;
+}
+.v-workspace.home-dashboard .v-workbench-metrics {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+.v-workspace.home-dashboard .v-workbench-metrics > button {
+  grid-template-columns: 42px minmax(0, 1fr) 15px;
+  gap: 8px;
+  padding: 12px;
+}
+.v-workspace.home-dashboard .v-workbench-metrics > button > span {
+  width: 42px;
+  height: 42px;
+}
+.v-workspace.home-dashboard .v-workbench-metrics small { white-space: nowrap; }
+@media (max-width: 1399px) {
+  .v-workspace.home-dashboard .v-workbench-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 1100px) {
+  .v-workspace.home-dashboard .v-workbench-example-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

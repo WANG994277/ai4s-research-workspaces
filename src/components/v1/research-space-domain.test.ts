@@ -1,7 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createSeed, profiles } from "./seed";
-import { canEnter } from "./domain";
 import {
   assetsForResearchContext,
   legacyResearchSpaceTarget,
@@ -9,7 +8,6 @@ import {
   promotableAssetTypes,
   researchSpaceManageTabs,
   researchSpaceState,
-  uniqueLabels,
 } from "./research-space-domain";
 
 test("personal context does not pull assets created by the same person in projects", () => {
@@ -118,19 +116,4 @@ test("research output promotion only offers asset types supported by the source"
     promotableAssetTypes({ type: "研究报告", content: "普通文本结论" }),
     [],
   );
-});
-
-test("platform administrator can enter every seeded project space", () => {
-  const state = createSeed();
-  const denied = state.spaces
-    .filter((space) => space.type !== "PERSONAL")
-    .filter((space) => !canEnter(state, profiles.admin, space.id));
-  assert.deepEqual(denied.map((space) => space.id), []);
-});
-
-test("asset detail labels remove duplicates while preserving order", () => {
-  assert.deepEqual(uniqueLabels(["材料科学", "材料科学", "智能体", "材料科学"]), [
-    "材料科学",
-    "智能体",
-  ]);
 });

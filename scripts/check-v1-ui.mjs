@@ -60,8 +60,11 @@ if (!shell.includes('src="/v1/science-lab-logo.jpg"'))
 if (shell.includes('src="/v1/ai4s-logo.png"'))
   throw new Error("Legacy AI4S logo remains in the global shell");
 
-const workspace = readFileSync("src/components/v1/workspace.tsx", "utf8");
-if (!workspace.includes("WORKBENCH_FRONTIER_VISIBLE &&"))
+const assistantWorkspace = readFileSync(
+  "src/components/v1/assistant-workspace.tsx",
+  "utf8",
+);
+if (!assistantWorkspace.includes("WORKBENCH_FRONTIER_VISIBLE &&"))
   throw new Error("Workbench research-frontier module is not feature-flagged");
 
 console.log("UI design-system checks passed");

@@ -7,7 +7,7 @@
 ---
 
 **Project:** AI4S Knowledge Center
-**Generated:** 2026-09-29 14:22:25
+**Generated:** 2026-09-28 13:18:40
 **Category:** Knowledge Base/Documentation
 
 ---
@@ -28,14 +28,14 @@
 
 ### Typography
 
-- **Heading Font:** Cormorant Garamond
-- **Body Font:** Crimson Pro
-- **Mood:** academia, library, mahogany, parchment, brass, scholarly, prestige, antique, victorian, leather
-- **Google Fonts:** [Cormorant Garamond + Crimson Pro](https://fonts.google.com/share?selection.family=Cinzel:wght@400;500;600|Cormorant+Garamond:ital,wght@0,300;0,500;0,700;1,300;1,500|Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400)
+- **Heading Font:** Crimson Pro
+- **Body Font:** Atkinson Hyperlegible
+- **Mood:** academic, research, scholarly, accessible, readable, educational
+- **Google Fonts:** [Crimson Pro + Atkinson Hyperlegible](https://fonts.google.com/share?selection.family=Atkinson+Hyperlegible:wght@400;700|Crimson+Pro:wght@400;500;600;700)
 
 **CSS Import:**
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,500;0,700;1,300;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Crimson+Pro:wght@400;500;600;700&display=swap');
 ```
 
 ### Spacing Variables
@@ -153,21 +153,21 @@
 
 ## Style Guidelines
 
-**Style:** Exaggerated Minimalism
+**Style:** Minimalism & Swiss Style
 
-**Keywords:** Bold minimalism, oversized typography, high contrast, negative space, loud minimal, statement design
+**Keywords:** Clean, simple, spacious, functional, white space, high contrast, geometric, sans-serif, grid-based, essential
 
-**Best For:** Fashion, architecture, portfolios, agency landing pages, luxury brands, editorial
+**Best For:** Enterprise apps, dashboards, documentation sites, SaaS platforms, professional tools
 
-**Key Effects:** font-size: clamp(3rem 10vw 12rem), font-weight: 900, letter-spacing: -0.05em, massive whitespace
+**Key Effects:** Subtle hover (200-250ms), smooth transitions, sharp shadows if any, clear type hierarchy, fast loading
 
 ### Page Pattern
 
-**Pattern Name:** FAQ/Documentation Landing
+**Pattern Name:** Enterprise Gateway
 
-- **Conversion Strategy:** Reduce support tickets. Track search analytics. Show related articles. Contact escalation path.
-- **CTA Placement:** Search bar prominent + Contact CTA for unresolved questions
-- **Section Order:** 1. Hero with search bar, 2. Popular categories, 3. FAQ accordion, 4. Contact/support CTA
+- **Conversion Strategy:** Path selection (I am a...). Mega menu navigation. Trust signals prominent.
+- **CTA Placement:** Contact Sales (Primary) + Login (Secondary)
+- **Section Order:** 1. Hero (Video/Mission), 2. Solutions by Industry, 3. Solutions by Role, 4. Client Logos, 5. Contact Sales
 
 ---
 
