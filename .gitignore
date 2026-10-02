@@ -178,3 +178,17 @@ task_plan.md
 progress.md
 findings.md
 design-qa.md
+
+# Design-review and QA screenshots (keep runtime assets under public/)
+docs/ui-design/**/*.png
+docs/ui-design/**/*.jpg
+docs/ui-concepts/**/*.png
+docs/ui-concepts/**/*.jpg
+docs/read-space/qa/*.png
+docs/cockpit/screenshots/*.png
+docs/cockpit/references/*.png
+
+# Generated baseline command output
+docs/v1-baseline/build-results.txt
+docs/v1-baseline/route-results.txt
+docs/v1-baseline/test-results.txt
