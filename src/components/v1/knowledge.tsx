@@ -286,6 +286,28 @@ export function KnowledgeCenter() {
           : [...new Set([...old, ...ids])];
     });
   }
+  function addToKnowledgeBase(id: string) {
+    mutate("已加入知识库", id, (d) => {
+      const existing = d.collections.find(
+        (collection) =>
+          collection.name === "我的知识库" &&
+          collection.ownerId === p.id &&
+          collection.spaceId === space.id,
+      );
+      if (existing) {
+        existing.ids = [...new Set([...existing.ids, id])];
+      } else {
+        d.collections.push({
+          id: uid("collection"),
+          name: "我的知识库",
+          ids: [id],
+          ownerId: p.id,
+          spaceId: space.id,
+        });
+      }
+    });
+    notify("已加入知识库");
+  }
   return (
     <>
       {isResults ? (
@@ -923,11 +945,9 @@ export function KnowledgeCenter() {
                                     {hasRole(p, "researcher", "leader") && (
                                       <button
                                         type="button"
-                                        onClick={() => {
-                                          if (addContext([r.id])) router.push("/workspace");
-                                        }}
+                                        onClick={() => addToKnowledgeBase(r.id)}
                                       >
-                                        发给 Agent
+                                        加入知识库
                                       </button>
                                     )}
                                   </div>

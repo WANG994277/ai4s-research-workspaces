@@ -108,6 +108,82 @@ test("only active spaces can be selected as the current workspace", async () => 
   assert.equal(view.isSpaceSwitchable!(suspended), false);
 });
 
+test("workspace home prefers the shale gas topic before project and global fallbacks", async () => {
+  const view = (await import("./workspace-view")) as unknown as {
+    chooseDefaultWorkspaceTopic?: (
+      topics: ReturnType<typeof createSeed>["spaces"],
+      projectId: string,
+    ) => ReturnType<typeof createSeed>["spaces"][number] | undefined;
+  };
+  assert.equal(typeof view.chooseDefaultWorkspaceTopic, "function");
+
+  const state = createSeed();
+  const topics = state.spaces.filter((space) => space.type === "TOPIC");
+  assert.equal(
+    view.chooseDefaultWorkspaceTopic!(topics, "p-rubber")?.name,
+    "页岩气储层评价课题",
+  );
+
+  const withoutShale = topics.filter((space) => space.name !== "页岩气储层评价课题");
+  assert.equal(
+    view.chooseDefaultWorkspaceTopic!(withoutShale, "p-rubber")?.projectId,
+    "p-rubber",
+  );
+  assert.equal(
+    view.chooseDefaultWorkspaceTopic!(withoutShale, "missing-project")?.id,
+    withoutShale[0]?.id,
+  );
+});
+
+test("workspace task examples match the shale gas read calculate and design brief", async () => {
+  const view = (await import("./workspace-view")) as unknown as {
+    WORKSPACE_TASK_EXAMPLES?: Record<string, { title: string; suggestions: string[] }>;
+  };
+  assert.deepEqual(view.WORKSPACE_TASK_EXAMPLES, {
+    读: {
+      title: "研读文献，洞察前沿",
+      suggestions: [
+        "梳理页岩气储层评价指标与技术路线",
+        "总结储层甜点评价方法与研究进展",
+      ],
+    },
+    算: {
+      title: "计算模拟，分析验证",
+      suggestions: [
+        "分析页岩气储层关键参数及主控因素",
+        "构建储层综合评价模型并识别有利区",
+      ],
+    },
+    做: {
+      title: "设计方案，开展研究",
+      suggestions: [
+        "生成页岩气储层综合评价与测试方案",
+        "制定甜点区优选及下一步研究方案",
+      ],
+    },
+  });
+});
+
+test("workspace output trend runs from January through December", async () => {
+  const view = (await import("./workspace-view")) as unknown as {
+    REFERENCE_OUTPUT_TREND?: { month: string; value: number }[];
+  };
+  assert.deepEqual(
+    view.REFERENCE_OUTPUT_TREND?.map((item) => item.month),
+    ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+  );
+});
+
+test("recent research task actions open the rubber-formula task conversation", async () => {
+  const view = (await import("./workspace-view")) as unknown as {
+    RECENT_TASKS_HREF?: string;
+  };
+  assert.equal(
+    view.RECENT_TASKS_HREF,
+    "/research-spaces/current/tasks?session=rubber-formula",
+  );
+});
+
 test("workbench home model combines recommendations, activity, recent work and frontier knowledge", async () => {
   const view = (await import("./workspace-view")) as unknown as {
     buildWorkbenchHome?: typeof import("./workspace-view")["buildWorkbenchHome"];

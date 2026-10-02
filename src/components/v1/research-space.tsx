@@ -146,6 +146,7 @@ export function ResearchSpace() {
   const { s, p, space, loaded, mutate } = useResearch();
   const params = useParams<Record<string, string | string[]>>();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const routeContext = valueOf(params.contextId);
   const requestId = valueOf(params.requestId);
@@ -205,6 +206,7 @@ export function ResearchSpace() {
           state={s}
           context={context}
           assetKey={decodeURIComponent(assetKey)}
+          returnTo={searchParams.get("returnTo")}
           router={router}
         />
       ) : (
@@ -499,11 +501,13 @@ function AssetDetail({
   state,
   context,
   assetKey,
+  returnTo,
   router,
 }: {
   state: State;
   context: Space;
   assetKey: string;
+  returnTo: string | null;
   router: Router;
 }) {
   const { p, mutate } = useResearch();
@@ -696,7 +700,7 @@ function AssetDetail({
 
   return (
     <>
-      <Button className="v-back" onClick={() => router.push(contextPath(context.id))}><ArrowLeft size={15} />返回资产列表</Button>
+      <Button className="v-back" onClick={() => router.push(returnTo || contextPath(context.id))}><ArrowLeft size={15} />返回资产列表</Button>
       <section className="v-card rs-asset-header">
         <div className="rs-page-head">
           <div>

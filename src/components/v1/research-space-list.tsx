@@ -14,21 +14,22 @@ import {
   Clock3,
   Database,
   FileText,
-  Info,
-  MoreHorizontal,
   Network,
   Plus,
   Search,
-  Share2,
+  X,
 } from "lucide-react";
 import { canEnter, now, uid } from "./domain";
 import {
   assetsForResearchContext,
-  researchAssetActions,
-  researchSpaceState,
+  researchAssetPublicationApprovalFlow,
+  researchAssetDisplayActions,
+  researchAssetDisplayStatus,
+  researchAssetPublishChannel,
 } from "./research-space-domain";
+import type { ResearchAssetPublicationVisibility } from "./research-space-domain";
 import { assetTypes, userName } from "./seed";
-import { notify, useResearch } from "./store";
+import { useResearch } from "./store";
 import type { Asset, AssetType, Space, State } from "./types";
 import { Alert, Button, Details, Field, Modal } from "./ui";
 
@@ -43,19 +44,12 @@ const typeVisual: Record<
   方案模板: { Icon: FileText, className: "template", label: "方案模板" },
 };
 
-function lifecycleMeta(asset: Asset) {
-  const lifecycle = researchSpaceState(asset).lifecycle;
-  if (lifecycle === "DRAFT") return { label: "草稿", tone: "draft", Icon: CircleDot };
-  if (lifecycle === "ARCHIVED") return { label: "已归档", tone: "archived", Icon: CircleDot };
-  return { label: "有效", tone: "published", Icon: CheckCircle2 };
-}
-
-function publishingMeta(asset: Asset) {
-  if (!["Skill", "模型"].includes(asset.type)) return { label: "不适用", tone: "neutral", Icon: CircleDot };
-  if (/已发布|已上架/.test(asset.publishStatus)) return { label: `已上架 ${asset.version || ""}`.trim(), tone: "published", Icon: CheckCircle2 };
-  if (/审核/.test(asset.publishStatus)) return { label: "已提交审核", tone: "review", Icon: Clock3 };
-  if (/待上架/.test(asset.publishStatus)) return { label: "待上架", tone: "review", Icon: Clock3 };
-  return { label: "未发布", tone: "unpublished", Icon: CircleDot };
+function statusMeta(asset: Asset) {
+  const label = researchAssetDisplayStatus(asset);
+  if (label === "已发布") return { label, tone: "published", Icon: CheckCircle2 };
+  if (label === "审核中") return { label, tone: "review", Icon: Clock3 };
+  if (label === "待发布") return { label, tone: "pending", Icon: Clock3 };
+  return { label, tone: "confirm", Icon: CircleDot };
 }
 
 function contextPath(contextId: string, suffix = "assets") {
@@ -65,11 +59,47 @@ function contextPath(contextId: string, suffix = "assets") {
 type PublishDraft = {
   version: string;
   channel: string;
-  visibility: string;
+  visibility: ResearchAssetPublicationVisibility;
   displayName: string;
   description: string;
   notes: string;
+  tags: string[];
+  tagInput: string;
 };
+
+function TableFilter({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  options: { label: string; value: string }[];
+  onChange: (value: string) => void;
+}) {
+  const selected = options.find((option) => option.value === value);
+  return (
+    <details className={`rs-table-filter ${value ? "active" : ""}`}>
+      <summary>{selected?.label ?? label}<ChevronDown size={14} /></summary>
+      <div>
+        {options.map((option) => (
+          <button
+            type="button"
+            className={option.value === value ? "selected" : ""}
+            key={option.value || "all"}
+            onClick={(event) => {
+              onChange(option.value);
+              event.currentTarget.closest("details")?.removeAttribute("open");
+            }}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    </details>
+  );
+}
 
 export function ResearchAssetList({ state, context }: { state: State; context: Space }) {
   const { p, mutate } = useResearch();
@@ -79,17 +109,15 @@ export function ResearchAssetList({ state, context }: { state: State; context: S
   const view = searchParams.get("view") === "mine" ? "mine" : "project";
   const query = searchParams.get("q") ?? "";
   const activeType = searchParams.get("type") ?? "全部";
-  const statusFilter = searchParams.get("status") ?? "全部状态";
-  const rangeFilter = searchParams.get("range") ?? (view === "mine" ? "全部发布" : "全部归属");
+  const statusFilter = searchParams.get("status") ?? "";
   const page = Math.max(1, Number(searchParams.get("page") ?? 1));
   const size = [10, 20, 50].includes(Number(searchParams.get("size"))) ? Number(searchParams.get("size")) : 10;
   const [searchDraft, setSearchDraft] = useState(query);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [createMenu, setCreateMenu] = useState(searchParams.get("create") === "1");
-  const [rowMenu, setRowMenu] = useState("");
+  const [confirmingAsset, setConfirmingAsset] = useState<Asset | null>(null);
   const [publishAsset, setPublishAsset] = useState<Asset | null>(null);
   const [publishStep, setPublishStep] = useState(1);
-  const [publishDraft, setPublishDraft] = useState<PublishDraft>({ version: "", channel: "", visibility: "当前租户", displayName: "", description: "", notes: "" });
+  const [publishDraft, setPublishDraft] = useState<PublishDraft>({ version: "", channel: "", visibility: "项目空间", displayName: "", description: "", notes: "", tags: [], tagInput: "" });
 
   useEffect(() => setSearchDraft(query), [query]);
   useEffect(() => {
@@ -99,7 +127,7 @@ export function ResearchAssetList({ state, context }: { state: State; context: S
     if (!asset) return;
     setPublishAsset(asset);
     setPublishStep(1);
-    setPublishDraft({ version: asset.version, channel: asset.type === "Skill" ? "科研技能广场" : "科研模型广场", visibility: "当前租户", displayName: asset.name, description: asset.description, notes: "" });
+    setPublishDraft({ version: asset.version, channel: researchAssetPublishChannel(asset.type), visibility: "项目空间", displayName: asset.name, description: asset.description, notes: "", tags: [...asset.tags], tagInput: "" });
   }, [searchParams, state.assets]);
 
   const contextAssets = useMemo(
@@ -110,26 +138,12 @@ export function ResearchAssetList({ state, context }: { state: State; context: S
     () => view === "mine" ? state.assets.filter((asset) => asset.ownerId === p.id && canEnter(state, p, asset.spaceId)) : contextAssets,
     [contextAssets, p, state, view],
   );
-  const counts = useMemo(
-    () => Object.fromEntries(["全部", ...assetTypes].map((item) => [item, item === "全部" ? scopedAssets.length : scopedAssets.filter((asset) => asset.type === item).length])),
-    [scopedAssets],
-  );
   const filtered = scopedAssets
     .filter((asset) => {
-      const lifecycle = lifecycleMeta(asset).label;
-      const publishing = publishingMeta(asset).label;
-      const assetSpace = state.spaces.find((item) => item.id === asset.spaceId);
-      const rangeMatches = view === "mine"
-        ? rangeFilter === "全部发布" || publishing.startsWith(rangeFilter)
-        : rangeFilter === "全部归属" ||
-          (rangeFilter === "当前空间" && asset.spaceId === context.id) ||
-          (rangeFilter === "项目空间" && assetSpace?.type === "PROJECT") ||
-          (rangeFilter === "课题空间" && assetSpace?.type === "TOPIC") ||
-          (rangeFilter === "共享进入" && asset.spaceId !== context.id);
+      const status = researchAssetDisplayStatus(asset);
       return (
         (activeType === "全部" || asset.type === activeType) &&
-        (statusFilter === "全部状态" || lifecycle === statusFilter) &&
-        rangeMatches &&
+        (!statusFilter || status === statusFilter) &&
         (!query || `${asset.name} ${asset.description} ${userName(asset.ownerId)}`.toLowerCase().includes(query.toLowerCase()))
       );
     })
@@ -138,7 +152,7 @@ export function ResearchAssetList({ state, context }: { state: State; context: S
   const currentPage = Math.min(page, pageCount);
   const rows = filtered.slice((currentPage - 1) * size, currentPage * size);
   const allSelected = rows.length > 0 && rows.every((asset) => selectedIds.includes(asset.id));
-  const canCreate = context.status === "ACTIVE" && canEnter(state, p, context.id);
+  const listReturnTo = `${pathname}${searchParams.toString() ? `?${searchParams}` : ""}`;
 
   function update(values: Record<string, string>) {
     const next = new URLSearchParams(searchParams.toString());
@@ -151,8 +165,21 @@ export function ResearchAssetList({ state, context }: { state: State; context: S
   }
 
   function changeView(nextView: "project" | "mine") {
-    update({ view: nextView === "mine" ? "mine" : "", type: "", status: "", range: "", page: "1" });
+    update({ view: nextView === "mine" ? "mine" : "", type: "", status: "", page: "1" });
     setSelectedIds([]);
+  }
+
+  function confirmAsset() {
+    if (!confirmingAsset) return;
+    const asset = confirmingAsset;
+    mutate("已确认科研资产", asset.id, (draft) => {
+      const item = draft.assets.find((candidate) => candidate.id === asset.id);
+      if (!item) throw new Error("资产不存在或已失效。");
+      item.lifecycle = "有效";
+      item.publishStatus = "待发布";
+      item.updatedAt = now();
+    });
+    setConfirmingAsset(null);
   }
 
   function openPublish(asset: Asset) {
@@ -160,12 +187,27 @@ export function ResearchAssetList({ state, context }: { state: State; context: S
     setPublishStep(1);
     setPublishDraft({
       version: asset.version,
-      channel: asset.type === "Skill" ? "科研技能广场" : "科研模型广场",
-      visibility: "当前租户",
+      channel: researchAssetPublishChannel(asset.type),
+      visibility: "项目空间",
       displayName: asset.name,
       description: asset.description,
       notes: "",
+      tags: [...asset.tags],
+      tagInput: "",
     });
+  }
+
+  function addPublishTag() {
+    const tag = publishDraft.tagInput.trim();
+    if (!tag || publishDraft.tags.includes(tag) || publishDraft.tags.length >= 10) {
+      setPublishDraft({ ...publishDraft, tagInput: "" });
+      return;
+    }
+    setPublishDraft({ ...publishDraft, tags: [...publishDraft.tags, tag], tagInput: "" });
+  }
+
+  function removePublishTag(tag: string) {
+    setPublishDraft({ ...publishDraft, tags: publishDraft.tags.filter((item) => item !== tag) });
   }
 
   function submitPublish() {
@@ -174,8 +216,8 @@ export function ResearchAssetList({ state, context }: { state: State; context: S
     const ok = mutate("已提交发布申请", assetId, (draft, actor) => {
       const item = draft.assets.find((asset) => asset.id === assetId);
       if (!item) throw new Error("资产不存在或已失效。");
-      if (!researchAssetActions(draft, actor, item.spaceId, item).includes("publish.submit")) throw new Error("当前版本或来源状态不允许发布。");
       item.publishStatus = "审核中";
+      item.tags = [...publishDraft.tags];
       item.updatedAt = now();
       draft.requests.unshift({ id: uid("publish"), objectId: item.id, userId: actor.id, purpose: publishDraft.notes.trim() || `发布${item.type} ${publishDraft.version}`, status: "待审核", kind: "PUBLICATION", targetVersion: publishDraft.version, createdAt: now() });
     });
@@ -190,54 +232,29 @@ export function ResearchAssetList({ state, context }: { state: State; context: S
     {publishStep > 1 && <Button onClick={() => setPublishStep((step) => step - 1)}>上一步</Button>}
     {publishStep < 3 ? <Button primary onClick={() => setPublishStep((step) => step + 1)}>下一步</Button> : <Button primary onClick={submitPublish}>确认提交</Button>}
   </> : undefined;
+  const publicationApprovalFlow = publishAsset
+    ? researchAssetPublicationApprovalFlow(state, publishAsset, publishDraft.visibility)
+    : [];
 
   return (
     <div className="rs-reference-list rs-assets-blue">
+      <header className="rs-assets-title">
+        <h1>科研资产</h1>
+        <p>查看和管理当前科研空间沉淀的数据集、模型、报告、方案及其他科研成果。</p>
+      </header>
       <div className="rs-asset-scope-tabs" role="tablist" aria-label="科研资产范围">
         <button type="button" role="tab" aria-selected={view === "project"} className={view === "project" ? "selected" : ""} onClick={() => changeView("project")}>项目资产</button>
         <button type="button" role="tab" aria-selected={view === "mine"} className={view === "mine" ? "selected" : ""} onClick={() => changeView("mine")}>我的资产</button>
       </div>
 
       <div className="rs-assets-controlbar">
-        <div className="rs-category-tabs" role="tablist" aria-label="科研资产类型">
-          {["全部", ...assetTypes].map((item) => (
-            <button type="button" role="tab" aria-selected={activeType === item} className={`rs-category-tab ${activeType === item ? "selected" : ""}`} key={item} onClick={() => update({ type: item === "全部" ? "" : item })}>
-              {item} <span>({counts[item] ?? 0})</span>
-            </button>
-          ))}
-        </div>
         <div className="rs-list-actions">
           <form className="rs-asset-search" onSubmit={(event) => { event.preventDefault(); update({ q: searchDraft.trim() }); }}>
             <Search size={18} />
             <input value={searchDraft} onChange={(event) => setSearchDraft(event.target.value)} placeholder="搜索资产名称、描述、创建人…" aria-label="搜索科研资产" />
           </form>
-          <select className="rs-inline-filter" aria-label="资产状态" value={statusFilter} onChange={(event) => update({ status: event.target.value === "全部状态" ? "" : event.target.value })}>
-            <option>全部状态</option><option>有效</option><option>草稿</option><option>已归档</option>
-          </select>
-          {view === "project" ? (
-            <select className="rs-inline-filter" aria-label="归属范围" value={rangeFilter} onChange={(event) => update({ range: event.target.value === "全部归属" ? "" : event.target.value })}>
-              <option>全部归属</option><option>当前空间</option><option>项目空间</option><option>课题空间</option><option>共享进入</option>
-            </select>
-          ) : (
-            <select className="rs-inline-filter" aria-label="发布情况" value={rangeFilter} onChange={(event) => update({ range: event.target.value === "全部发布" ? "" : event.target.value })}>
-              <option>全部发布</option><option>未发布</option><option>已提交审核</option><option>已上架</option><option>不适用</option>
-            </select>
-          )}
-          {canCreate && (
-            <div className="rs-create-wrap">
-              <button type="button" className="rs-create-trigger" onClick={() => setCreateMenu((value) => !value)} aria-expanded={createMenu}>
-                <Plus size={18} /> 新建 <ChevronDown size={16} />
-              </button>
-              {createMenu && (
-                <div className="rs-create-dropdown">
-                  {assetTypes.map((item) => {
-                    const { Icon, className } = typeVisual[item];
-                    return <button type="button" key={item} aria-disabled="true"><span className={`rs-menu-icon ${className}`}><Icon size={18} /></span>新建{item}</button>;
-                  })}
-                </div>
-              )}
-            </div>
-          )}
+          <button type="button" className="v-button primary" onClick={() => update({ q: searchDraft.trim() })}>搜索</button>
+          <button type="button" className="v-button" onClick={() => { setSearchDraft(""); update({ q: "", type: "", status: "", page: "1" }); }}>重置</button>
         </div>
       </div>
 
@@ -245,42 +262,41 @@ export function ResearchAssetList({ state, context }: { state: State; context: S
         <table className={`rs-assets-table ${view === "mine" ? "mine" : "project"}`}>
           <thead>
             {view === "project" ? (
-              <tr><th className="select"><input type="checkbox" aria-label="选择本页全部资产" checked={allSelected} onChange={(event) => setSelectedIds(event.target.checked ? [...new Set([...selectedIds, ...rows.map((asset) => asset.id)])] : selectedIds.filter((id) => !rows.some((asset) => asset.id === id)))} /></th><th>名称</th><th>类型</th><th>实际归属</th><th>版本</th><th>状态</th><th>创建人</th><th>更新时间</th><th className="operation">操作</th></tr>
+              <tr><th className="select"><input type="checkbox" aria-label="选择本页全部资产" checked={allSelected} onChange={(event) => setSelectedIds(event.target.checked ? [...new Set([...selectedIds, ...rows.map((asset) => asset.id)])] : selectedIds.filter((id) => !rows.some((asset) => asset.id === id)))} /></th><th>名称</th><th><TableFilter label="类型" value={activeType === "全部" ? "" : activeType} options={[{ label: "全部类型", value: "" }, ...assetTypes.map((item) => ({ label: item, value: item }))]} onChange={(value) => update({ type: value })} /></th><th>实际归属</th><th>版本</th><th><TableFilter label="状态" value={statusFilter} options={[{ label: "全部状态", value: "" }, ...["待确认", "审核中", "待发布", "已发布"].map((item) => ({ label: item, value: item }))]} onChange={(value) => update({ status: value })} /></th><th>创建人</th><th>更新时间</th><th className="operation">操作</th></tr>
             ) : (
-              <tr><th className="select"><input type="checkbox" aria-label="选择本页全部资产" checked={allSelected} onChange={(event) => setSelectedIds(event.target.checked ? [...new Set([...selectedIds, ...rows.map((asset) => asset.id)])] : selectedIds.filter((id) => !rows.some((asset) => asset.id === id)))} /></th><th>名称</th><th>类型</th><th>版本</th><th>状态</th><th>发布情况</th><th>创建时间</th><th className="operation">操作</th></tr>
+              <tr><th className="select"><input type="checkbox" aria-label="选择本页全部资产" checked={allSelected} onChange={(event) => setSelectedIds(event.target.checked ? [...new Set([...selectedIds, ...rows.map((asset) => asset.id)])] : selectedIds.filter((id) => !rows.some((asset) => asset.id === id)))} /></th><th>名称</th><th><TableFilter label="类型" value={activeType === "全部" ? "" : activeType} options={[{ label: "全部类型", value: "" }, ...assetTypes.map((item) => ({ label: item, value: item }))]} onChange={(value) => update({ type: value })} /></th><th>版本</th><th><TableFilter label="状态" value={statusFilter} options={[{ label: "全部状态", value: "" }, ...["待确认", "审核中", "待发布", "已发布"].map((item) => ({ label: item, value: item }))]} onChange={(value) => update({ status: value })} /></th><th>创建时间</th><th className="operation">操作</th></tr>
             )}
           </thead>
           <tbody>
             {rows.map((asset) => {
               const visual = typeVisual[asset.type];
-              const lifecycle = lifecycleMeta(asset);
-              const publish = publishingMeta(asset);
+              const status = statusMeta(asset);
               const assetContextId = view === "mine" ? asset.spaceId : context.id;
-              const canPublish = researchAssetActions(state, p, assetContextId, asset).includes("publish.submit") && !/审核/.test(asset.publishStatus);
+              const displayActions = researchAssetDisplayActions(status.label, view);
               return (
                 <tr key={asset.id}>
                   <td className="select"><input type="checkbox" aria-label={`选择${asset.name}`} checked={selectedIds.includes(asset.id)} onChange={(event) => setSelectedIds(event.target.checked ? [...selectedIds, asset.id] : selectedIds.filter((id) => id !== asset.id))} /></td>
-                  <td><div className="rs-asset-name-cell"><span className={`rs-type-icon ${visual.className}`}><visual.Icon size={23} /></span><Link href={`${contextPath(assetContextId)}/${encodeURIComponent(asset.id)}?tab=overview`}><strong>{asset.name}</strong><small>{asset.description}</small></Link></div></td>
+                  <td><div className="rs-asset-name-cell"><span className={`rs-type-icon ${visual.className}`}><visual.Icon size={23} /></span><Link href={`${contextPath(assetContextId)}/${encodeURIComponent(asset.id)}?tab=overview&returnTo=${encodeURIComponent(listReturnTo)}`}><strong>{asset.name}</strong><small>{asset.description}</small></Link></div></td>
                   <td><span className={`rs-type-badge ${visual.className}`}>{visual.label}</span></td>
                   {view === "project" ? <>
                     <td><span className="rs-space-name">{state.spaces.find((item) => item.id === asset.spaceId)?.name ?? "个人空间"}</span></td>
                     <td className="version">{asset.version || "—"}</td>
-                    <td><span className={`rs-status-pill ${lifecycle.tone}`}><lifecycle.Icon size={14} />{lifecycle.label}</span></td>
+                    <td><span className={`rs-status-pill ${status.tone}`}><status.Icon size={14} />{status.label}</span></td>
                     <td>{userName(asset.ownerId)}</td>
                     <td className="date">{asset.updatedAt.slice(0, 16).replace("T", " ")}</td>
                   </> : <>
                     <td className="version">{asset.version || "—"}</td>
-                    <td><span className={`rs-status-pill ${lifecycle.tone}`}><lifecycle.Icon size={14} />{lifecycle.label}</span></td>
-                    <td><span className={`rs-status-pill ${publish.tone}`}><publish.Icon size={14} />{publish.label}</span></td>
+                    <td><span className={`rs-status-pill ${status.tone}`}><status.Icon size={14} />{status.label}</span></td>
                     <td className="date">{asset.updatedAt.slice(0, 16).replace("T", " ")}</td>
                   </>}
                   <td className="operation">
                     <div className="rs-row-actions">
-                      <Link href={`${contextPath(assetContextId)}/${encodeURIComponent(asset.id)}`}>查看</Link>
-                      {view === "mine" && canPublish && <button type="button" onClick={() => openPublish(asset)}>{/已发布|已上架/.test(asset.publishStatus) ? "发布新版" : "发布"}</button>}
-                      <button type="button" className="rs-more" aria-label={`${asset.name}更多操作`} onClick={() => setRowMenu(rowMenu === asset.id ? "" : asset.id)}><MoreHorizontal size={20} /></button>
+                      {displayActions.map((action) => action === "查看" ? (
+                        <Link href={`${contextPath(assetContextId)}/${encodeURIComponent(asset.id)}?returnTo=${encodeURIComponent(listReturnTo)}`} key={action}>{action}</Link>
+                      ) : (
+                        <button type="button" key={action} onClick={() => action === "确认" ? setConfirmingAsset(asset) : openPublish(asset)}>{action}</button>
+                      ))}
                     </div>
-                    {rowMenu === asset.id && <div className="rs-row-menu"><Link href={`${contextPath(assetContextId)}/${encodeURIComponent(asset.id)}`}>查看详情</Link><button type="button" onClick={() => { setRowMenu(""); notify(`已选择${asset.name}`); }}>选择资产</button></div>}
                   </td>
                 </tr>
               );
@@ -290,7 +306,6 @@ export function ResearchAssetList({ state, context }: { state: State; context: S
         {!rows.length && <div className="rs-list-empty"><Database size={30} /><strong>没有符合条件的科研资产</strong><p>请调整搜索或筛选条件。</p><button type="button" onClick={() => router.replace(pathname)}>重置条件</button></div>}
       </div>
 
-      <div className="rs-assets-note"><Info size={16} />{view === "mine" ? "我的资产展示当前用户拥有的资产；发布后仍保留在我的资产中。" : "项目资产展示当前项目、课题拥有及授权共享进入的资产；共享不改变实际归属。"}</div>
       <div className="rs-list-footer">
         <span>共 {filtered.length} 条</span>
         <div className="rs-page-controls">
@@ -303,6 +318,15 @@ export function ResearchAssetList({ state, context }: { state: State; context: S
         </div>
       </div>
 
+      <Modal
+        title="确认科研资产"
+        open={!!confirmingAsset}
+        onClose={() => setConfirmingAsset(null)}
+        footer={<><Button onClick={() => setConfirmingAsset(null)}>取消</Button><Button primary onClick={confirmAsset}>确认</Button></>}
+      >
+        <p>是否将当前资产转为待发布状态？</p>
+      </Modal>
+
       <Modal title="发布资产" open={!!publishAsset} onClose={() => setPublishAsset(null)} footer={publishFooter} wide>
         {publishAsset && <div className="rs-publish-flow">
           <div className="rs-publish-steps" aria-label="发布进度">
@@ -313,14 +337,14 @@ export function ResearchAssetList({ state, context }: { state: State; context: S
               <Field label="资产名称"><input value={publishAsset.name} readOnly /></Field>
               <Field label="资产类型"><span className={`rs-type-badge ${typeVisual[publishAsset.type].className}`}>{publishAsset.type}</span></Field>
               <Field label="版本选择" required><select value={publishDraft.version} onChange={(event) => setPublishDraft({ ...publishDraft, version: event.target.value })}>{publishAsset.versions.map((version) => <option value={version.number} key={version.id}>{version.number}（{version.at.slice(0, 10)}）</option>)}</select></Field>
-              <Field label="发布渠道" required><select value={publishDraft.channel} onChange={(event) => setPublishDraft({ ...publishDraft, channel: event.target.value })}><option>科研技能广场</option><option>科研模型广场</option></select></Field>
-              <Field label="可见范围" required><div className="rs-radio-row"><label><input type="radio" checked={publishDraft.visibility === "当前租户"} onChange={() => setPublishDraft({ ...publishDraft, visibility: "当前租户" })} />当前租户</label><label><input type="radio" checked={publishDraft.visibility === "全集团（需审核）"} onChange={() => setPublishDraft({ ...publishDraft, visibility: "全集团（需审核）" })} />全集团（需审核）</label></div></Field>
+              <Field label="发布渠道" required><div className="rs-publish-channel">{publishDraft.channel}</div></Field>
+              <Field label="可见范围" required><div className="rs-radio-row"><label><input type="radio" checked={publishDraft.visibility === "项目空间"} onChange={() => setPublishDraft({ ...publishDraft, visibility: "项目空间" })} />项目空间</label><label><input type="radio" checked={publishDraft.visibility === "集团资源中心"} onChange={() => setPublishDraft({ ...publishDraft, visibility: "集团资源中心" })} />集团资源中心</label></div></Field>
               <Field label="展示名称" required><input value={publishDraft.displayName} onChange={(event) => setPublishDraft({ ...publishDraft, displayName: event.target.value })} /></Field>
               <Field label="简介" required><textarea maxLength={200} value={publishDraft.description} onChange={(event) => setPublishDraft({ ...publishDraft, description: event.target.value })} /></Field>
-              <Field label="标签"><div className="rs-publish-tags">{publishAsset.tags.map((tag) => <span key={tag}>{tag}</span>)}</div></Field>
+              <Field label="标签"><div className="rs-publish-tag-editor"><div className="rs-publish-tags">{publishDraft.tags.map((tag) => <span key={tag}>{tag}<button type="button" aria-label={`删除标签${tag}`} onClick={() => removePublishTag(tag)}><X size={12} /></button></span>)}</div><div className="rs-publish-tag-input"><input maxLength={20} value={publishDraft.tagInput} onChange={(event) => setPublishDraft({ ...publishDraft, tagInput: event.target.value })} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); addPublishTag(); } }} placeholder="输入标签" /><button type="button" onClick={addPublishTag} disabled={!publishDraft.tagInput.trim() || publishDraft.tags.length >= 10}><Plus size={14} />添加</button></div><small>最多 10 个标签，每个不超过 20 个字符。</small></div></Field>
             </div>
-            <aside className="rs-publish-notice"><h3>发布须知</h3><ul><li>发布后将在科研技能广场展示，供有权限的用户使用。</li><li>发布内容需符合相关管理规定，不得包含涉密信息。</li><li>提交后将进入审核流程，审核通过后自动上架。</li><li>发布后仍保留在“我的资产”中。</li></ul></aside>
-          </div> : publishStep === 2 ? <div className="rs-publish-content"><Details values={{ 资产: publishDraft.displayName, 版本: publishDraft.version, 发布渠道: publishDraft.channel, 可见范围: publishDraft.visibility, 标签: publishAsset.tags.join("、") || "—" }} /><Field label="发布说明" required><textarea value={publishDraft.notes} onChange={(event) => setPublishDraft({ ...publishDraft, notes: event.target.value })} placeholder="请说明本次发布内容、适用场景和版本变化…" /></Field><Alert>发布内容将沿用当前版本的能力说明、输入输出约束与使用限制。</Alert></div> : <div className="rs-publish-confirm"><CheckCircle2 size={42} /><h3>确认提交发布申请</h3><p>提交后将进入审核流程；审核通过才会正式上架。</p><Details values={{ 资产名称: publishDraft.displayName, 资产类型: publishAsset.type, 发布版本: publishDraft.version, 发布渠道: publishDraft.channel, 可见范围: publishDraft.visibility }} /></div>}
+            <aside className="rs-publish-notice"><h3>发布须知</h3><ul><li>发布后将在“{publishDraft.channel}”展示。</li><li>{publishDraft.visibility === "项目空间" ? "仅当前项目及相关课题成员可见。" : "提交后进入集团审核流程，审核通过后面向有权限的集团用户展示。"}</li><li>发布内容需符合相关管理规定，不得包含涉密信息。</li><li>发布后仍保留在“我的资产”中。</li></ul></aside>
+          </div> : publishStep === 2 ? <div className="rs-publish-content"><Details values={{ 资产: publishDraft.displayName, 版本: publishDraft.version, 发布渠道: publishDraft.channel, 可见范围: publishDraft.visibility, 标签: publishDraft.tags.join("、") || "—" }} /><Field label="发布说明" required><textarea value={publishDraft.notes} onChange={(event) => setPublishDraft({ ...publishDraft, notes: event.target.value })} placeholder="请说明本次发布内容、适用场景和版本变化…" /></Field><Alert>发布内容将沿用当前版本的能力说明、输入输出约束与使用限制。</Alert></div> : <div className="rs-publish-confirm"><CheckCircle2 size={42} /><h3>确认提交发布申请</h3><p>提交后将按以下顺序审批；全部通过后才会正式上架。</p><section className="rs-publish-approval" aria-label="发布审批流程"><h4>审批流程</h4><ol>{publicationApprovalFlow.map((node, index) => <li className={node.kind} key={`${node.role}-${node.name}`}><span className="rs-approval-index">{index + 1}</span><div><strong>{node.name}</strong><small>{node.role}</small></div><em>{node.status}</em></li>)}</ol></section><Details values={{ 资产名称: publishDraft.displayName, 资产类型: publishAsset.type, 发布版本: publishDraft.version, 发布渠道: publishDraft.channel, 可见范围: publishDraft.visibility, 标签: publishDraft.tags.join("、") || "—" }} /></div>}
         </div>}
       </Modal>
     </div>

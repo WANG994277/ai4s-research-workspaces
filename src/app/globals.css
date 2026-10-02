@@ -1,5 +1,5 @@
 @import 'tailwindcss' source(none);
-@source "..";
+@source '..';
 @import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
@@ -165,7 +165,7 @@
   body {
     @apply bg-background text-foreground;
   }
-  button, a, input, select, textarea {
+  button, a {
     &:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
   }
   button { cursor: pointer; }

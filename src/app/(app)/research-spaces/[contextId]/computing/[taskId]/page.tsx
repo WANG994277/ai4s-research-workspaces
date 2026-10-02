@@ -1,5 +1,6 @@
-import { ScientificComputing } from "@/components/v1/scientific-computing";
+import { redirect } from "next/navigation";
 
-export default function Page() {
-  return <ScientificComputing />;
+export default async function Page({ params }: { params: Promise<{ contextId: string; taskId: string }> }) {
+  const { contextId, taskId } = await params;
+  redirect(`/research-spaces/${encodeURIComponent(contextId)}/activities/computing/${encodeURIComponent(taskId)}`);
 }

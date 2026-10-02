@@ -126,7 +126,6 @@ export const modules: NavigationModule[] = [
     children: [
       { label: "课题概览", href: "/research-spaces/current/overview" },
       { label: "科研任务", href: "/research-spaces/current/tasks" },
-      { label: "科学计算", href: "/research-spaces/current/computing" },
       { label: "科研活动", href: "/research-spaces/current/activities" },
       { label: "科研资产", href: "/research-spaces/current/assets" },
     ],
@@ -214,4 +213,67 @@ export function moduleForPath(pathname: string) {
       pathname === module.href.split("?")[0] ||
       pathname.startsWith(`/${module.id}`),
   );
+}
+
+const activityLabels: Record<string, string> = {
+  agents: "智能体",
+  skills: "技能",
+  modelDevelopment: "模型开发",
+  training: "模型训练",
+  inference: "模型推理",
+  datasets: "数据集",
+  tools: "科研工具",
+  computing: "科学计算",
+};
+
+const dashboardLabels: Record<string, string> = {
+  trend: "科技态势分析",
+  strategy: "战略方向研判",
+  resources: "资源统筹配置",
+  projects: "重大项目监管",
+  outcomes: "科技成果展示",
+  "technology-tree": "科技树",
+};
+
+function queryValue(query: string | URLSearchParams, key: string) {
+  return (typeof query === "string" ? new URLSearchParams(query) : query).get(key) ?? "";
+}
+
+export function breadcrumbForRoute(pathname: string, query: string | URLSearchParams): [string, string] {
+  if (pathname === "/workspace") return ["科研工作台", "工作台首页"];
+  if (pathname === "/assistant") return ["科研超级中枢", "智能协作"];
+  if (pathname === "/my-resources") return ["科研资源中心", "我的资源"];
+  if (pathname === "/knowledge" || pathname.startsWith("/knowledge/")) return ["科研资源中心", "知识中心"];
+  if (pathname === "/datasets") return ["科研资源中心", "科研数据集"];
+  if (pathname === "/skills") return ["科研资源中心", "科研技能"];
+  if (pathname === "/models") return ["科研资源中心", "科研模型"];
+  if (pathname === "/tools") return ["科研资源中心", queryValue(query, "view") || "科研工具"];
+  if (pathname === "/lab") return ["云上实验室", queryValue(query, "tab") || "仪器设备纳管"];
+
+  if (pathname.startsWith("/research-spaces/")) {
+    if (/\/activities\/computing\/training-/.test(pathname)) return ["科研空间", "模型训练"];
+    if (/\/activities\/computing\/inference-/.test(pathname)) return ["科研空间", "模型推理"];
+    if (/\/activities\/computing\//.test(pathname) || /\/computing(?:\/|$)/.test(pathname)) return ["科研空间", "科学计算"];
+    if (/\/activities\/agents\/new\/?$/.test(pathname)) return ["科研空间", "新建智能体"];
+    if (/\/activities\/?$/.test(pathname)) return ["科研空间", activityLabels[queryValue(query, "tab")] || "科研活动"];
+    if (/\/assets(?:\/|$)/.test(pathname)) return ["科研空间", "科研资产"];
+    if (/\/tasks\/?$/.test(pathname)) return ["科研空间", "科研任务"];
+    if (/\/overview\/?$/.test(pathname)) return ["科研空间", "课题概览"];
+    if (/\/manage(?:\/|$)/.test(pathname)) return ["科研空间", "空间管理"];
+    if (/\/builds(?:\/|$)/.test(pathname)) return ["科研空间", "空间构建"];
+    return ["科研空间", "课题概览"];
+  }
+
+  if (pathname === "/research-management") return ["科研管理工作台", queryValue(query, "tab") || "管理概览"];
+  if (pathname === "/dashboard" || pathname === "/research-decision") return ["科研驾驶舱", dashboardLabels[queryValue(query, "view")] || "科技态势分析"];
+  if (pathname === "/project-management-external") return ["科研项目管理", queryValue(query, "view") || "立项管理"];
+  if (pathname === "/admin" || pathname.startsWith("/manage/")) return ["平台管理后台", "管理首页"];
+
+  const current = moduleForPath(pathname);
+  if (current?.parentId) {
+    const parent = modules.find((item) => item.id === current.parentId);
+    return [parent?.name ?? current.name, current.name];
+  }
+  if (current) return [current.name, "首页"];
+  return ["科研平台", "首页"];
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,6 +9,7 @@ import {
   BookOpen,
   Box,
   ChartNoAxesColumn,
+  Check,
   CheckCircle2,
   ChevronDown,
   ChevronRight,
@@ -32,6 +33,8 @@ import {
   Cpu,
   FileStack,
   Bot,
+  Grid2X2,
+  Settings2,
 } from "lucide-react";
 import {
   Bar,
@@ -75,7 +78,14 @@ import {
 } from "./ui";
 import { ContextActions, ResourcePicker, SaveAsset } from "./actions";
 import type { Artifact, Decision, Session, Task } from "./types";
-import { collectChatFiles, resolveWorkspaceSession } from "./workspace-view";
+import {
+  chooseDefaultWorkspaceTopic,
+  collectChatFiles,
+  resolveWorkspaceSession,
+  REFERENCE_OUTPUT_TREND,
+  RECENT_TASKS_HREF,
+  WORKSPACE_TASK_EXAMPLES,
+} from "./workspace-view";
 
 const workbenchRecommendations = [
   {
@@ -172,20 +182,6 @@ const referenceOutputTypes = [
   { name: "其他", count: 0, percentage: 4, donutColor: "#8d77df", cardColor: "#8d77df", icon: "other" },
 ] as const;
 
-const referenceOutputTrend = [
-  { month: "11月", value: 1 },
-  { month: "12月", value: 2 },
-  { month: "1月", value: 1 },
-  { month: "2月", value: 3 },
-  { month: "3月", value: 2 },
-  { month: "4月", value: 2 },
-  { month: "5月", value: 1 },
-  { month: "6月", value: 3 },
-  { month: "7月", value: 2 },
-  { month: "8月", value: 3 },
-  { month: "9月", value: 2 },
-  { month: "10月", value: 4 },
-] as const;
 export function Workspace() {
   const { s, p, space, key, loaded, mutate } = useResearch();
   const router = useRouter();
@@ -198,6 +194,8 @@ export function Workspace() {
   const [mode, setMode] = useState("自动");
   const [homeModel, setHomeModel] = useState("科研中枢大模型");
   const [addMenuOpen, setAddMenuOpen] = useState(false);
+  const [topicMenuOpen, setTopicMenuOpen] = useState(false);
+  const topicPickerRef = useRef<HTMLDivElement>(null);
   const [search, setSearch] = useState("");
   const [historyRange, setHistoryRange] = useState("当前空间");
   const [historyCollapsed, setHistoryCollapsed] = useState(false);
@@ -254,11 +252,6 @@ export function Workspace() {
       d.status === "pending" &&
       s.tasks.some((t) => t.id === d.taskId && t.spaceId === space.id),
   );
-  const researchSuggestions = {
-    读: ["梳理当前课题的关键技术路线", "整理近期科研产出并生成摘要"],
-    算: ["分析实验数据中的关键影响因素", "评估当前模型的适用范围与风险"],
-    做: ["生成下一轮对比实验方案", "总结当前研究进展与待办"],
-  };
   const pendingTaskCount = decisions.length;
   const runningExperimentCount = s.experiments.filter(
     (experiment) =>
@@ -273,14 +266,31 @@ export function Workspace() {
     (item) => item.type === "TOPIC" && canEnter(s, p, item.id) && item.status === "ACTIVE",
   );
   const currentTopicId = availableTopics.some((item) => item.id === space.id) ? space.id : "";
+  const currentTopic = availableTopics.find((item) => item.id === currentTopicId);
   useEffect(() => {
     if (!loaded || !homeComposer || currentTopicId || draft || !availableTopics.length) return;
-    const nextTopic = availableTopics.find((item) => item.projectId === space.projectId) ?? availableTopics[0];
+    const nextTopic = chooseDefaultWorkspaceTopic(availableTopics, space.projectId);
+    if (!nextTopic) return;
     mutate("已切换当前课题", nextTopic.id, (draftState) => {
       if (!canEnter(draftState, p, nextTopic.id)) throw new Error("无课题访问权限。");
       draftState.spaceId = nextTopic.id;
     });
   }, [loaded, homeComposer, currentTopicId, draft, availableTopics, space.projectId, mutate, p]);
+  useEffect(() => {
+    if (!topicMenuOpen) return;
+    const closeOnPointerDown = (event: MouseEvent) => {
+      if (!topicPickerRef.current?.contains(event.target as Node)) setTopicMenuOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setTopicMenuOpen(false);
+    };
+    document.addEventListener("mousedown", closeOnPointerDown);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("mousedown", closeOnPointerDown);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [topicMenuOpen]);
   const resourceById = (id: string) =>
     [
       ...s.assets,
@@ -542,24 +552,43 @@ export function Workspace() {
                 </div>
               )}
             </div>
-            <label className="v-composer-space-picker">
-              <MapPin size={15} aria-hidden="true" />
-              <select
+            <div className="v-composer-space-picker" ref={topicPickerRef}>
+              <button
+                type="button"
+                className="v-composer-space-trigger"
                 aria-label="选择当前课题"
-                value={currentTopicId}
-                onChange={(event) => {
-                  const nextSpaceId = event.target.value;
-                  mutate("已切换当前空间", nextSpaceId, (draftState) => {
-                    if (!canEnter(draftState, p, nextSpaceId)) throw new Error("无空间访问权限。");
-                    draftState.spaceId = nextSpaceId;
-                  });
-                }}
+                aria-haspopup="listbox"
+                aria-expanded={topicMenuOpen}
+                onClick={() => setTopicMenuOpen((open) => !open)}
               >
-                {!currentTopicId && <option value="" disabled>选择课题</option>}
-                {availableTopics.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}
-              </select>
-              <ChevronDown size={14} aria-hidden="true" />
-            </label>
+                <MapPin size={15} aria-hidden="true" />
+                <span>{currentTopic?.name ?? "选择课题"}</span>
+                <ChevronDown size={14} aria-hidden="true" />
+              </button>
+              {topicMenuOpen && (
+                <div className="v-composer-space-menu" role="listbox" aria-label="可用课题空间">
+                  {availableTopics.map((item) => (
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={item.id === currentTopicId}
+                      className={item.id === currentTopicId ? "selected" : ""}
+                      onClick={() => {
+                        mutate("已切换当前空间", item.id, (draftState) => {
+                          if (!canEnter(draftState, p, item.id)) throw new Error("无空间访问权限。");
+                          draftState.spaceId = item.id;
+                        });
+                        setTopicMenuOpen(false);
+                      }}
+                      key={item.id}
+                    >
+                      <span>{item.name}</span>
+                      {item.id === currentTopicId && <Check size={15} aria-hidden="true" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           <div className="v-actions">
@@ -998,13 +1027,18 @@ export function Workspace() {
                   <span className="v-kicker">UNIFIED RESEARCH AGENT</span>
                   <h1>今天想推进什么科研任务？</h1>
                   <div className="v-workbench-examples" aria-label="科研任务示例">
-                    <span>任务示例</span>
-                    <div className="v-workbench-example-content">
-                      {(["读", "算", "做"] as const).map((category) => (
-                        <div className="v-workbench-example-row" key={category}>
-                          <span className="v-workbench-example-category">{category}</span>
+                    {(["读", "算", "做"] as const).map((category) => {
+                      const config = WORKSPACE_TASK_EXAMPLES[category];
+                      const CategoryIcon = category === "读" ? BookOpen : category === "算" ? Grid2X2 : Settings2;
+                      return (
+                        <div className={`v-workbench-example-column tone-${category === "读" ? "read" : category === "算" ? "compute" : "design"}`} key={category}>
+                          <div className="v-workbench-example-heading">
+                            <CategoryIcon size={27} aria-hidden="true" />
+                            <strong>{category}</strong>
+                            <span>{config.title}</span>
+                          </div>
                           <div className="v-workbench-example-list" aria-label={`${category}类推荐问题`}>
-                            {researchSuggestions[category].map((suggestion) => (
+                            {config.suggestions.map((suggestion) => (
                               <button
                                 type="button"
                                 key={suggestion}
@@ -1014,13 +1048,15 @@ export function Workspace() {
                                   })
                                 }
                               >
-                                {suggestion}
+                                <FileText size={17} aria-hidden="true" />
+                                <span>{suggestion}</span>
+                                <ChevronRight size={16} aria-hidden="true" />
                               </button>
                             ))}
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      );
+                    })}
                   </div>
                   {input}
                 </section>
@@ -1066,7 +1102,7 @@ export function Workspace() {
                     </button>
                     <button type="button" onClick={() => router.push("/lab?tab=" + encodeURIComponent("实验任务管理"))}>
                       <span className="tone-green"><FlaskConical size={22} /></span>
-                      <div><small>进行中试验</small><strong>{runningExperimentCount}</strong></div>
+                      <div><small>进行中实验</small><strong>{runningExperimentCount}</strong></div>
                       <ChevronRight size={17} />
                     </button>
                   </section>
@@ -1183,7 +1219,7 @@ export function Workspace() {
                     <section className="v-workbench-panel v-workbench-current-research">
                       <div className="v-section-head">
                         <h2><CirclePlay size={18} />最近科研任务</h2>
-                        <Link href="/workspace?view=tasks" className="v-link">查看全部</Link>
+                        <Link href={RECENT_TASKS_HREF} className="v-link">查看全部</Link>
                       </div>
                       <div className="v-home-task-table v-reference-task-table">
                         <div className="v-home-task-head">
@@ -1198,7 +1234,7 @@ export function Workspace() {
                               <div><i style={{ width: `${item.progress}%` }} /><small>{item.progress}%</small></div>
                             </div>
                             <span className="reference-topic">{item.topic}</span>
-                            <Button onClick={() => notify("科研任务详情为本地演示。")}>查看</Button>
+                            <Link className="v-button" href={RECENT_TASKS_HREF}>查看</Link>
                           </div>
                         ))}
                       </div>
@@ -1245,7 +1281,7 @@ export function Workspace() {
                           <div className="v-output-trend" role="img" aria-label="近一年科研产出趋势，按月展示">
                             <strong>近一年科研产出趋势</strong>
                             <ResponsiveContainer width="100%" height={142}>
-                              <BarChart data={[...referenceOutputTrend]} margin={{ top: 8, right: 2, left: -28, bottom: 0 }}>
+                              <BarChart data={[...REFERENCE_OUTPUT_TREND]} margin={{ top: 8, right: 2, left: -28, bottom: 0 }}>
                                 <CartesianGrid stroke="#e9f0f8" vertical={false} />
                                 <XAxis dataKey="month" interval={0} axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: "#7186a3" }} />
                                 <YAxis domain={[0, 4]} ticks={[0, 1, 2, 3, 4]} allowDecimals={false} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#7186a3" }} />

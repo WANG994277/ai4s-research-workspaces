@@ -90,7 +90,15 @@
 
 .v-knowledge-results-filters .v-select {
   min-height: 38px;
-  padding: 0 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.v-knowledge-results-filters .v-select select {
+  min-height: 38px;
+  padding: 0 28px 0 10px;
   border: 1px solid #d6e2f0;
   border-radius: 7px;
   background: #fff;
@@ -102,6 +110,26 @@
 
 .v-knowledge-results-filters > .v-button {
   margin-left: auto;
+}
+
+.v-knowledge-results-search .v-search:focus-within {
+  border-color: #d8e4f2;
+  box-shadow: none;
+}
+
+.v-knowledge-results-search input:focus,
+.v-knowledge-results-search input:focus-visible,
+.v-knowledge-results-filters select:focus,
+.v-knowledge-results-filters select:focus-visible,
+.v-knowledge-results-filters input[type="checkbox"]:focus,
+.v-knowledge-results-filters input[type="checkbox"]:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.v-knowledge-results-filters .v-select:focus-within {
+  border-color: transparent;
+  box-shadow: none;
 }
 
 .v-ai-summary {

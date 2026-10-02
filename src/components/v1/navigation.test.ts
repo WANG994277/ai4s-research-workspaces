@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { moduleForPath, modules, visibleChildren, visibleModules } from "./navigation";
+import { breadcrumbForRoute, moduleForPath, modules, visibleChildren, visibleModules } from "./navigation";
 import { createSeed, normalizeLegacyRoleState, profiles } from "./seed";
 
 const labels = (id: string) =>
@@ -57,7 +57,6 @@ test("research space replaces the old asset and project-space modules", () => {
   assert.deepEqual(labels("research-spaces"), [
     "课题概览",
     "科研任务",
-    "科学计算",
     "科研活动",
     "科研资产",
   ]);
@@ -108,6 +107,25 @@ test("research super hub remains a first-level module", () => {
 
 test("research toolbox has the user-confirmed three second-level functions", () => {
   assert.deepEqual(labels("tools"), ["科研工具", "科研软件", "MCP"]);
+});
+
+test("breadcrumbs resolve parent and child modules", () => {
+  assert.deepEqual(breadcrumbForRoute("/models", ""), ["科研资源中心", "科研模型"]);
+  assert.deepEqual(breadcrumbForRoute("/tools", "view=MCP"), ["科研资源中心", "MCP"]);
+  assert.deepEqual(breadcrumbForRoute("/lab", `tab=${encodeURIComponent("实验任务管理")}`), ["云上实验室", "实验任务管理"]);
+});
+
+test("research-space breadcrumbs stay at exactly two levels", () => {
+  assert.deepEqual(breadcrumbForRoute("/research-spaces/topic-a/overview", ""), ["科研空间", "课题概览"]);
+  assert.deepEqual(breadcrumbForRoute("/research-spaces/topic-a/activities", "tab=training"), ["科研空间", "模型训练"]);
+  assert.deepEqual(breadcrumbForRoute("/research-spaces/topic-a/activities/computing/inference-1", ""), ["科研空间", "模型推理"]);
+  assert.deepEqual(breadcrumbForRoute("/research-spaces/topic-a/assets/asset-1", ""), ["科研空间", "科研资产"]);
+});
+
+test("query-driven workbenches expose their selected second-level function", () => {
+  assert.deepEqual(breadcrumbForRoute("/research-management", `tab=${encodeURIComponent("风险与异常")}`), ["科研管理工作台", "风险与异常"]);
+  assert.deepEqual(breadcrumbForRoute("/dashboard", "view=technology-tree"), ["科研驾驶舱", "科技树"]);
+  assert.deepEqual(breadcrumbForRoute("/project-management-external", `view=${encodeURIComponent("成果管理")}`), ["科研项目管理", "成果管理"]);
 });
 
 test("project management has the seven user-confirmed second-level functions", () => {

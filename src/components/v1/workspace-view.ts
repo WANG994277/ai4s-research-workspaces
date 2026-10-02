@@ -2,6 +2,45 @@ import type { Artifact, Project, Session, Space, State, Task } from "./types";
 
 export const DEFAULT_WORKBENCH_MODEL = "deepseekV4Pro";
 export const WORKBENCH_FRONTIER_VISIBLE = false;
+export const RECENT_TASKS_HREF = "/research-spaces/current/tasks?session=rubber-formula";
+export const WORKSPACE_TASK_EXAMPLES = {
+  读: {
+    title: "研读文献，洞察前沿",
+    suggestions: [
+      "梳理页岩气储层评价指标与技术路线",
+      "总结储层甜点评价方法与研究进展",
+    ],
+  },
+  算: {
+    title: "计算模拟，分析验证",
+    suggestions: [
+      "分析页岩气储层关键参数及主控因素",
+      "构建储层综合评价模型并识别有利区",
+    ],
+  },
+  做: {
+    title: "设计方案，开展研究",
+    suggestions: [
+      "生成页岩气储层综合评价与测试方案",
+      "制定甜点区优选及下一步研究方案",
+    ],
+  },
+} as const;
+
+export const REFERENCE_OUTPUT_TREND = [
+  { month: "1月", value: 1 },
+  { month: "2月", value: 3 },
+  { month: "3月", value: 2 },
+  { month: "4月", value: 2 },
+  { month: "5月", value: 1 },
+  { month: "6月", value: 3 },
+  { month: "7月", value: 2 },
+  { month: "8月", value: 3 },
+  { month: "9月", value: 2 },
+  { month: "10月", value: 4 },
+  { month: "11月", value: 1 },
+  { month: "12月", value: 2 },
+] as const;
 
 export type AssistantLaunchMode = "读" | "算" | "做";
 
@@ -504,4 +543,15 @@ export function resolveWorkspaceSession(
 
 export function isSpaceSwitchable(space: Space) {
   return space.status === "ACTIVE";
+}
+
+export function chooseDefaultWorkspaceTopic(
+  topics: Space[],
+  projectId: string,
+) {
+  return (
+    topics.find((space) => space.name === "页岩气储层评价课题") ??
+    topics.find((space) => space.projectId === projectId) ??
+    topics[0]
+  );
 }

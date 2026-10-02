@@ -1,46 +1,46 @@
 "use client";
 import dynamic from "next/dynamic";
-import { baselineModuleLoaders } from "./module-preload";
+import { adminLoader, assistantWorkspaceLoader, assetsLoader, catalogLoader, datasetsLoader, externalProjectLoader, knowledgeLoader, labLoader, managementLoader, spacesLoader, workspaceLoader } from "./module-loaders";
 const loading = () => (
   <div className="v-loading" role="status">
     正在载入页面…
   </div>
 );
 const Workspace = dynamic(
-  () => baselineModuleLoaders.workspace().then((m) => m.Workspace),
+  workspaceLoader,
   { loading },
 );
 const AssistantWorkspace = dynamic(
-  () => baselineModuleLoaders.assistant().then((m) => m.AssistantWorkspace),
+  assistantWorkspaceLoader,
   { loading },
 );
 const Knowledge = dynamic(
-  () => baselineModuleLoaders.knowledge().then((m) => m.KnowledgeCenter),
+  knowledgeLoader,
   { loading },
 );
 const Datasets = dynamic(
-  () => baselineModuleLoaders.datasets().then((m) => m.DatasetMarketplace),
+  datasetsLoader,
   { loading },
 );
-const Catalog = dynamic(() => baselineModuleLoaders.catalog().then((m) => m.Catalog), {
+const Catalog = dynamic(catalogLoader, {
   loading,
 });
-const Assets = dynamic(() => baselineModuleLoaders.assets().then((m) => m.Assets), {
+const Assets = dynamic(assetsLoader, {
   loading,
 });
-const Lab = dynamic(() => baselineModuleLoaders.lab().then((m) => m.Lab), { loading });
-const Spaces = dynamic(() => baselineModuleLoaders.spaces().then((m) => m.Spaces), {
+const Lab = dynamic(labLoader, { loading });
+const Spaces = dynamic(spacesLoader, {
   loading,
 });
 const Management = dynamic(
-  () => baselineModuleLoaders.management().then((m) => m.Management),
+  managementLoader,
   { loading },
 );
 const ExternalProject = dynamic(
-  () => baselineModuleLoaders.integrations().then((m) => m.ExternalProject),
+  externalProjectLoader,
   { loading },
 );
-const Admin = dynamic(() => baselineModuleLoaders.integrations().then((m) => m.Admin), {
+const Admin = dynamic(adminLoader, {
   loading,
 });
 export function BaselinePage({ module }: { module: string }) {

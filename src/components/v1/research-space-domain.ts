@@ -9,6 +9,7 @@ import {
   spacePermission,
 } from "./domain";
 import type { Asset, Profile, Space, State } from "./types";
+import { userName } from "./seed";
 
 export type ResearchAssetAction =
   | "read"
@@ -35,6 +36,78 @@ export interface ResearchSpaceStateView {
     | "LISTED"
     | "DELISTED"
     | "FAILED";
+}
+
+export type ResearchAssetDisplayStatus = "待确认" | "审核中" | "待发布" | "已发布";
+export type ResearchAssetDisplayAction = "查看" | "确认" | "发布";
+
+export function researchAssetDisplayStatus(asset: Asset): ResearchAssetDisplayStatus {
+  if (/已发布|已上架/.test(asset.publishStatus)) return "已发布";
+  if (/审核/.test(asset.publishStatus)) return "审核中";
+  if (/待发布|待上架/.test(asset.publishStatus)) return "待发布";
+  return "待确认";
+}
+
+export function researchAssetDisplayActions(
+  status: ResearchAssetDisplayStatus,
+  view: "project" | "mine",
+): ResearchAssetDisplayAction[] {
+  if (view === "project") return ["查看"];
+  if (status === "待确认") return ["查看", "确认"];
+  if (status === "待发布") return ["查看", "发布"];
+  return ["查看"];
+}
+
+export function researchAssetPublishChannel(type: Asset["type"]) {
+  if (type === "智能体") return "科研智能体";
+  if (type === "Skill") return "科研技能";
+  if (type === "模型") return "科研模型";
+  if (type === "数据集") return "科研数据集";
+  return "科研资产目录";
+}
+
+export type ResearchAssetPublicationVisibility = "项目空间" | "集团资源中心";
+
+export interface ResearchAssetPublicationApprovalNode {
+  kind: "applicant" | "approver";
+  userId?: string;
+  name: string;
+  role: "申请人" | "项目负责人" | "平台管理员";
+  status: "发起" | "待审批";
+}
+
+export function researchAssetPublicationApprovalFlow(
+  state: State,
+  asset: Asset,
+  visibility: ResearchAssetPublicationVisibility,
+): ResearchAssetPublicationApprovalNode[] {
+  const owningSpace = state.spaces.find((space) => space.id === asset.spaceId);
+  const projectId = owningSpace?.projectId || asset.projectId;
+  const owningProject = state.projects.find((project) => project.id === projectId);
+  const flow: ResearchAssetPublicationApprovalNode[] = [
+    {
+      kind: "applicant",
+      userId: asset.ownerId,
+      name: userName(asset.ownerId),
+      role: "申请人",
+      status: "发起",
+    },
+    {
+      kind: "approver",
+      name: owningProject?.owner || "未配置项目负责人",
+      role: "项目负责人",
+      status: "待审批",
+    },
+  ];
+  if (visibility === "集团资源中心") {
+    flow.push({
+      kind: "approver",
+      name: "平台管理员",
+      role: "平台管理员",
+      status: "待审批",
+    });
+  }
+  return flow;
 }
 
 export const researchSpaceManageItems = [

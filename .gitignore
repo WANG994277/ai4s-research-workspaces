@@ -16,7 +16,6 @@ __pycache__/
 
 # JS/TS bundlers & build outputs
 .next
-.next-*/
 .next-read-preview/
 .nuxt
 .turbo
@@ -91,11 +90,6 @@ logs/
 
 # Preview files
 .preview
-
-# Local verification artifacts and repository snapshots
-output/
-ai4s-research-workspaces-main/
-ai4s-research-workspaces-main9.28/
 # Dependencies
 node_modules/
 .pnp
@@ -172,3 +166,15 @@ Desktop.ini
 
 # Isolated V1 production verification
 .next-v1-prod/
+
+# Local performance/build audits
+.next-perf-audit/
+
+# Generated browser verification artifacts
+output/
+
+# Local agent working notes and transient review reports
+task_plan.md
+progress.md
+findings.md
+design-qa.md

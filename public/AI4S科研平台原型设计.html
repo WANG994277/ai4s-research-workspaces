@@ -1519,9 +1519,9 @@
             </div>
           </div>
           <div class="cmp-bar">
-            <button class="cmp-btn sq" title="上传材料" onclick="hubAttachFile()"><svg class="svg-ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><button class="cmp-btn" id="hb2-link-btn" title="关联到「我的科研任务」中的子任务；不选则默认新建任务" onclick="hubToggleTaskMenu(event)"><svg class="svg-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span id="hb2-link-label">关联子任务</span><svg class="svg-ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+            <button class="cmp-btn sq" title="上传材料" onclick="hubAttachFile()"><svg class="svg-ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><button class="cmp-btn active" id="hb2-link-btn" title="已关联子任务：橡胶配方与性能预测（点击可切换/取消）" onclick="hubToggleTaskMenu(event)"><svg class="svg-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span id="hb2-link-label">橡胶配方与性能预测</span><svg class="svg-ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
             <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
-              <select class="cmp-select"><option>deepseekV4Pro</option><option>Claude Sonnet</option><option>GPT-4o</option></select>
+              <select class="cmp-select"><option>科研中枢大模型</option><option>deepseekV4Pro</option><option>Claude Sonnet</option><option>GPT-4o</option></select>
               <button class="cmp-send" id="hb2-send" onclick="cmpSend('hb2')" title="发送（⌘/Ctrl + Enter）"><svg class="svg-ic " width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
             </div>
           </div>
@@ -19668,7 +19668,7 @@ function hubAskToTask(text) {
 }
 
 // ── 中枢对话「关联子任务」选择器（子任务 = 我的科研任务里的任务） ──
-var hubLinkedTask = null;
+var hubLinkedTask = '橡胶配方与性能预测';
 
 // 从左侧任务树动态收集「课题 → 子任务」，保持与新建任务同步
 function hubCollectTasks() {

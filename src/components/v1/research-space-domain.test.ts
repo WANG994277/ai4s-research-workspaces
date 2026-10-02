@@ -1,14 +1,82 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createSeed, profiles } from "./seed";
+import { createSeed, profiles, userName } from "./seed";
 import {
   assetsForResearchContext,
   legacyResearchSpaceTarget,
   researchAssetActions,
+  researchAssetDisplayActions,
+  researchAssetDisplayStatus,
+  researchAssetPublishChannel,
+  researchAssetPublicationApprovalFlow,
   promotableAssetTypes,
   researchSpaceManageTabs,
   researchSpaceState,
 } from "./research-space-domain";
+
+test("publication approval follows the asset owning project", () => {
+  const state = createSeed();
+  const asset = state.assets.find((item) => item.id === "shared-b")!;
+  asset.spaceId = "topic-ccus";
+  asset.projectId = "p2";
+
+  assert.deepEqual(
+    researchAssetPublicationApprovalFlow(state, asset, "项目空间"),
+    [
+      { kind: "applicant", userId: asset.ownerId, name: userName(asset.ownerId), role: "申请人", status: "发起" },
+      { kind: "approver", name: "王敏", role: "项目负责人", status: "待审批" },
+    ],
+  );
+});
+
+test("group publication appends the platform administrator approval", () => {
+  const state = createSeed();
+  const asset = state.assets.find((item) => item.id === "shared-b")!;
+  asset.spaceId = "topic-ccus";
+  asset.projectId = "p2";
+
+  assert.deepEqual(
+    researchAssetPublicationApprovalFlow(state, asset, "集团资源中心"),
+    [
+      { kind: "applicant", userId: asset.ownerId, name: userName(asset.ownerId), role: "申请人", status: "发起" },
+      { kind: "approver", name: "王敏", role: "项目负责人", status: "待审批" },
+      { kind: "approver", name: "平台管理员", role: "平台管理员", status: "待审批" },
+    ],
+  );
+});
+
+test("research assets use the four requested display states", () => {
+  const state = createSeed();
+  const asset = state.assets[0];
+  asset.publishStatus = "未发布";
+  asset.lifecycle = "草稿";
+  assert.equal(researchAssetDisplayStatus(asset), "待确认");
+  asset.publishStatus = "审核中";
+  assert.equal(researchAssetDisplayStatus(asset), "审核中");
+  asset.publishStatus = "待发布";
+  assert.equal(researchAssetDisplayStatus(asset), "待发布");
+  asset.publishStatus = "已发布";
+  assert.equal(researchAssetDisplayStatus(asset), "已发布");
+});
+
+test("project assets are read-only while mine exposes confirm and publish by state", () => {
+  assert.deepEqual(researchAssetDisplayActions("待确认", "project"), ["查看"]);
+  assert.deepEqual(researchAssetDisplayActions("审核中", "project"), ["查看"]);
+  assert.deepEqual(researchAssetDisplayActions("待发布", "project"), ["查看"]);
+  assert.deepEqual(researchAssetDisplayActions("已发布", "project"), ["查看"]);
+  assert.deepEqual(researchAssetDisplayActions("待确认", "mine"), ["查看", "确认"]);
+  assert.deepEqual(researchAssetDisplayActions("审核中", "mine"), ["查看"]);
+  assert.deepEqual(researchAssetDisplayActions("待发布", "mine"), ["查看", "发布"]);
+  assert.deepEqual(researchAssetDisplayActions("已发布", "mine"), ["查看"]);
+});
+
+test("research asset publication channel follows the asset type", () => {
+  assert.equal(researchAssetPublishChannel("智能体"), "科研智能体");
+  assert.equal(researchAssetPublishChannel("Skill"), "科研技能");
+  assert.equal(researchAssetPublishChannel("模型"), "科研模型");
+  assert.equal(researchAssetPublishChannel("数据集"), "科研数据集");
+  assert.equal(researchAssetPublishChannel("方案模板"), "科研资产目录");
+});
 
 test("personal context does not pull assets created by the same person in projects", () => {
   const state = createSeed();

@@ -1,5 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
 test("knowledge center view model covers discovery, libraries and graph catalog", async () => {
   const view = await import("./knowledge-view").catch(() => ({
@@ -19,4 +21,26 @@ test("knowledge center view model covers discovery, libraries and graph catalog"
   );
   assert.equal(view.knowledgeView!.graphs.length, 4);
   assert.ok(view.knowledgeView!.graphs.every((item) => item.entities > 0 && item.relations > 0));
+});
+
+test("knowledge result controls do not show native blue focus rings", () => {
+  const cssPath = fileURLToPath(new URL("./knowledge-results.css", import.meta.url));
+  const css = readFileSync(cssPath, "utf8");
+
+  assert.match(css, /v-knowledge-results-filters[\s\S]*select:focus/);
+  assert.match(css, /v-knowledge-results-filters[\s\S]*input\[type="checkbox"\]:focus/);
+  assert.match(css, /v-knowledge-results-search[\s\S]*focus-within/);
+  assert.match(css, /outline:\s*none/);
+  assert.match(css, /box-shadow:\s*none/);
+  assert.match(css, /v-knowledge-results-filters \.v-select[\s\S]*border:\s*0/);
+  assert.match(css, /v-knowledge-results-filters \.v-select select[\s\S]*border:\s*1px/);
+});
+
+test("knowledge result action adds an item to the knowledge base", () => {
+  const sourcePath = fileURLToPath(new URL("./knowledge.tsx", import.meta.url));
+  const source = readFileSync(sourcePath, "utf8");
+
+  assert.match(source, /function addToKnowledgeBase/);
+  assert.match(source, /加入知识库/);
+  assert.match(source, /已加入知识库/);
 });
